@@ -1,0 +1,226 @@
+/* Shared by the pages that render inside the admin shell. */
+:host {
+  display: block;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+h3 {
+  margin: 16px 0 8px;
+  font-size: 17px;
+}
+
+.lead {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-ar);
+  font-size: 16px;
+  padding: 10px 12px;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.btn-primary,
+.btn-quiet,
+.btn-warn {
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 18px;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-hover);
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink-2);
+}
+
+.btn-warn {
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  border-color: var(--orange);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-weight: 600;
+}
+
+.ok {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--green-soft);
+  color: var(--green-ink);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--surface-muted);
+  color: var(--ink-2);
+}
+
+.badge.aiApproved {
+  background: var(--green-soft);
+  color: var(--green-ink);
+}
+
+.badge.needsAttention,
+.badge.failed {
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+}
+
+.badge.published {
+  background: var(--blue-soft);
+  color: var(--blue-tag);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: start;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+}
+
+th {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--line-strong);
+  background: transparent;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.tabs button.on {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  color: var(--blue-tag);
+}
+
+.key {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: 2px;
+  direction: ltr;
+  user-select: all;
+  padding: 12px 16px;
+  background: var(--surface-muted);
+  border-radius: 12px;
+  display: inline-block;
+}
+
+ul.plain {
+  margin: 0;
+  padding-inline-start: 20px;
+  line-height: 1.8;
+}

@@ -7,6 +7,8 @@ export interface Me {
   email: string;
   displayName: string | null;
   roles: string[];
+  twoFactorEnabled: boolean;
+  signedInWithTwoFactor: boolean;
 }
 
 /** Shape of ASP.NET validation problems: field or error code → messages. */
@@ -23,6 +25,13 @@ const REGISTER_ERRORS: Record<string, string> = {
   PasswordRequiresDigit: 'كلمة المرور يجب أن تحتوي على رقم واحد على الأقل.',
 };
 
+/** Thrown by `login` when the account has two-factor sign-in on and no code was given. */
+export class TwoFactorRequiredError extends Error {
+  constructor() {
+    super('أدخل الرمز من تطبيق المصادقة.');
+  }
+}
+
 /** The website signs in with an HttpOnly cookie; the API sets and reads it. */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -31,6 +40,8 @@ export class AuthService {
   /** Undefined until the first check, null when signed out. */
   readonly user = signal<Me | null | undefined>(undefined);
   readonly isSignedIn = computed(() => !!this.user());
+  readonly isStaff = computed(() => !!this.user()?.roles.some((role) => role === 'Reviewer' || role === 'Admin'));
+  readonly isAdmin = computed(() => !!this.user()?.roles.includes('Admin'));
 
   /** Name to greet the learner with: their display name, else the start of their email. */
   readonly displayName = computed(() => {
@@ -53,15 +64,22 @@ export class AuthService {
     return this.user() === undefined ? this.loadUser() : (this.user() ?? null);
   }
 
-  async login(email: string, password: string): Promise<void> {
+  async login(email: string, password: string, twoFactorCode?: string): Promise<void> {
     try {
-      await firstValueFrom(this.http.post('/api/v1/auth/login?useCookies=true', { email, password }));
-    } catch (error) {
-      throw new Error(
-        error instanceof HttpErrorResponse && error.status === 401
-          ? 'البريد أو كلمة المرور غير صحيحة.'
-          : 'تعذّر تسجيل الدخول. حاول مرة أخرى.',
+      await firstValueFrom(
+        this.http.post('/api/v1/auth/login?useCookies=true', { email, password, twoFactorCode: twoFactorCode || undefined }),
       );
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        const detail = (error.error as { detail?: string } | null)?.detail;
+        if (detail === 'RequiresTwoFactor') {
+          throw new TwoFactorRequiredError();
+        }
+        throw new Error(
+          twoFactorCode ? 'الرمز غير صحيح أو انتهت صلاحيته.' : 'البريد أو كلمة المرور غير صحيحة.',
+        );
+      }
+      throw new Error('تعذّر تسجيل الدخول. حاول مرة أخرى.');
     }
     await this.loadUser();
   }

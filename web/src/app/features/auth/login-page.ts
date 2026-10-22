@@ -1,7 +1,7 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
+import { AuthService, TwoFactorRequiredError } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -28,6 +28,14 @@ import { AuthService } from '../../core/auth/auth.service';
           <input id="login-password" class="ltr" type="password" autocomplete="current-password" formControlName="password" />
         </div>
 
+        @if (needsCode()) {
+          <div class="field">
+            <label for="login-code">رمز المصادقة</label>
+            <input id="login-code" class="ltr" inputmode="numeric" autocomplete="one-time-code" maxlength="8" formControlName="code" />
+            <span class="field__hint">الرمز المكوّن من 6 أرقام في تطبيق المصادقة (أو رمز الاسترداد).</span>
+          </div>
+        }
+
         @if (error()) {
           <p class="error" role="alert">{{ error() }}</p>
         }
@@ -47,14 +55,16 @@ export class LoginPage {
   private readonly router = inject(Router);
 
   /** Where to go after signing in (set by the auth guard). */
-  readonly returnUrl = input<string>('/app');
+  readonly returnUrl = input<string>('');
 
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly needsCode = signal(false);
 
   protected readonly form = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    code: new FormControl('', { nonNullable: true }),
   });
 
   protected async submit(): Promise<void> {
@@ -66,10 +76,11 @@ export class LoginPage {
     this.busy.set(true);
     this.error.set(null);
     try {
-      const { email, password } = this.form.getRawValue();
-      await this.auth.login(email, password);
-      await this.router.navigateByUrl(this.returnUrl() || '/app');
+      const { email, password, code } = this.form.getRawValue();
+      await this.auth.login(email, password, code.trim());
+      await this.router.navigateByUrl(this.returnUrl() || (this.auth.isStaff() ? '/admin' : '/app'));
     } catch (error) {
+      this.needsCode.set(this.needsCode() || error instanceof TwoFactorRequiredError);
       this.error.set((error as Error).message);
     } finally {
       this.busy.set(false);
