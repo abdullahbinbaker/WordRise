@@ -1,0 +1,60 @@
+<div class="learner" dir="rtl">
+  @if (showTabs() && tabs() === 'top') {
+    <nav class="tabs-top" aria-label="أقسام التطبيق">
+      @for (tab of tabItems; track tab.screen) {
+        <button
+          type="button"
+          [class.active]="store.screen() === tab.screen"
+          [attr.aria-current]="store.screen() === tab.screen ? 'page' : null"
+          (click)="store.go(tab.screen)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+  }
+
+  @if (store.inLesson()) {
+    <div class="lesson-bar">
+      <button type="button" class="lesson-bar__close" aria-label="إغلاق الدرس" (click)="store.go('home')">✕</button>
+      <div
+        class="lesson-bar__track"
+        role="progressbar"
+        aria-label="تقدّم الدرس"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="store.lessonProgress()"
+      >
+        <div class="lesson-bar__fill" [style.width.%]="store.lessonProgress()"></div>
+      </div>
+    </div>
+  }
+
+  @switch (store.screen()) {
+    @case ('goal') { <app-goal-screen /> }
+    @case ('home') { <app-home-screen /> }
+    @case ('review') { <app-review-screen /> }
+    @case ('newword') { <app-new-word-screen /> }
+    @case ('grocery') { <app-chat-screen /> }
+    @case ('can') { <app-grammar-screen /> }
+    @case ('listen') { <app-listen-screen /> }
+    @case ('done') { <app-done-screen /> }
+    @case ('words') { <app-words-screen /> }
+  }
+
+  @if (showTabs() && tabs() === 'bottom') {
+    <nav class="tabs-bottom" aria-label="أقسام التطبيق">
+      @for (tab of tabItems; track tab.screen) {
+        <button
+          type="button"
+          [class.active]="store.screen() === tab.screen"
+          [attr.aria-current]="store.screen() === tab.screen ? 'page' : null"
+          (click)="store.go(tab.screen)"
+        >
+          <span class="tabs-bottom__bar" aria-hidden="true"></span>
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+  }
+</div>

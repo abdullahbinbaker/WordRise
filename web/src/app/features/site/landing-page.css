@@ -1,0 +1,413 @@
+.site {
+  max-width: 1360px;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+/* Header */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding: 22px 56px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+}
+
+.brand:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand__mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.brand__name {
+  font-weight: 700;
+  font-size: 26px;
+}
+
+.topnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+  font-size: 19px;
+}
+
+.topnav__link {
+  color: var(--ink);
+}
+
+.topnav__link--current {
+  font-weight: 600;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.user__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Hero with the live app */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 600px;
+  gap: 64px;
+  padding: 64px 56px 80px;
+  align-items: start;
+}
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: 24px;
+}
+
+.pill {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hero__title {
+  margin: 0;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.hero__lead {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.8;
+  color: var(--ink-2);
+  max-width: 520px;
+  text-wrap: pretty;
+}
+
+.hero__features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 520px;
+}
+
+.hero__features li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 19px;
+}
+
+.hero__bullet {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.hero__app {
+  height: 860px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 50px rgba(28, 27, 25, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared section heading */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.section-head p {
+  margin: 0;
+  font-size: 20px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* How it works */
+.how {
+  padding: 80px 56px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.how__grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.how__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 30px;
+  border-radius: 24px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.how__num {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.how__card h3 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.how__card p {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+/* FAQ */
+.faq {
+  padding: 80px 56px;
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+
+.faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq__item {
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.faq__item--open {
+  border: 2px solid var(--blue);
+}
+
+.faq__q {
+  margin: 0;
+}
+
+.faq__toggle {
+  width: 100%;
+  min-height: 76px;
+  padding: 18px 26px;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: right;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.faq__icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.faq__a {
+  margin: 0;
+  padding: 0 26px 24px;
+  font-size: 19px;
+  line-height: 1.8;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+/* Footer */
+.footer {
+  padding: 32px 56px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+/* Tablet: stack the hero, keep two-column FAQ until it gets tight. */
+@media (max-width: 1100px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .hero__app {
+    width: 100%;
+    max-width: 600px;
+    justify-self: center;
+  }
+
+  .faq {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+/* Phone */
+@media (max-width: 720px) {
+  .topbar,
+  .hero,
+  .how,
+  .faq,
+  .footer {
+    padding-inline: 16px;
+  }
+
+  .topbar {
+    padding-block: 16px;
+  }
+
+  .hero {
+    padding-block: 32px 48px;
+  }
+
+  .hero__copy {
+    padding-top: 0;
+    gap: 20px;
+  }
+
+  .hero__title {
+    font-size: 34px;
+  }
+
+  .hero__lead {
+    font-size: 19px;
+  }
+
+  .hero__app {
+    height: 760px;
+    border-radius: 24px;
+  }
+
+  .how,
+  .faq {
+    padding-block: 48px;
+  }
+
+  .section-head h2 {
+    font-size: 30px;
+  }
+
+  .how__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .how__card {
+    padding: 22px;
+  }
+
+  .faq__toggle {
+    padding: 16px 18px;
+    font-size: 19px;
+  }
+
+  .faq__a {
+    padding: 0 18px 20px;
+    font-size: 18px;
+  }
+}

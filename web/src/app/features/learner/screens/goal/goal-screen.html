@@ -1,0 +1,42 @@
+<div class="screen__body goal">
+  <div class="brand">
+    <span class="brand__mark en" aria-hidden="true">W</span>
+    <span class="brand__name en" dir="ltr">Wordrise</span>
+  </div>
+
+  <div class="intro">
+    <h2>كم كلمة تريد أن تتعلّم كل يوم؟</h2>
+    <p>ابدأ بالقليل، ويمكنك التغيير لاحقاً.</p>
+  </div>
+
+  <div class="options" role="radiogroup" aria-label="عدد الكلمات اليومي">
+    @for (option of options; track option.count) {
+      <button
+        type="button"
+        role="radio"
+        class="option"
+        [class.option--on]="store.goal() === option.count"
+        [attr.aria-checked]="store.goal() === option.count"
+        (click)="store.goal.set(option.count)"
+      >
+        <span class="option__count">{{ option.count | arabicDigits }}</span>
+        <span class="option__text">
+          <span class="option__title">{{ option.title }}</span>
+          <span class="option__sub">{{ option.sub }}</span>
+        </span>
+        <span class="option__radio" aria-hidden="true"></span>
+      </button>
+    }
+  </div>
+
+  <div class="tip">
+    <span class="dot" aria-hidden="true"></span>
+    <span>{{ tip() }}</span>
+  </div>
+</div>
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" (click)="store.finishOnboarding()">
+    {{ store.onboarded() ? 'احفظ هدفي' : 'ابدأ' }}
+  </button>
+</div>

@@ -1,0 +1,51 @@
+<div class="screen__body listen">
+  <div class="heading">
+    <span class="heading__label">تمرين استماع</span>
+    <h2 class="heading__title">استمع، ثم اختر الكلمة التي سمعتها</h2>
+  </div>
+
+  <div class="player">
+    <button type="button" class="player__play" aria-label="تشغيل الجملة" (click)="play()">
+      <span class="player__triangle" aria-hidden="true"></span>
+    </button>
+    <span class="player__hint">اضغط للاستماع</span>
+    <button type="button" class="player__slow" (click)="play(true)">استمع ببطء</button>
+  </div>
+
+  <div class="options">
+    @for (option of options(); track option.en; let i = $index) {
+      <button
+        type="button"
+        dir="ltr"
+        class="option en choice"
+        [class.choice--selected]="option.state === 'selected'"
+        [class.choice--right]="option.state === 'right'"
+        [class.choice--wrong]="option.state === 'wrong'"
+        [attr.aria-pressed]="option.state !== 'idle'"
+        (click)="store.pickListen(i)"
+      >
+        {{ option.en }}
+      </button>
+    }
+  </div>
+</div>
+
+@if (step() === 'next') {
+  <div class="feedback feedback--right" role="status">
+    صحيح! سمعت: <span class="en" dir="ltr">{{ sentence }}</span>
+  </div>
+}
+@if (step() === 'retry') {
+  <div class="feedback feedback--wrong" role="status">ليست هذه. استمع مرة أخرى وجرّب.</div>
+}
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" [disabled]="step() === 'choose'" (click)="primaryAction()">
+    @switch (step()) {
+      @case ('choose') { اختر إجابة }
+      @case ('check') { تحقّق }
+      @case ('retry') { حاول مرة أخرى }
+      @case ('next') { أنهِ الدرس }
+    }
+  </button>
+</div>

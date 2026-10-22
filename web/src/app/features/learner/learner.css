@@ -1,0 +1,118 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.learner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.tabs-top {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+  margin: 14px 20px 0;
+  background: var(--surface-muted);
+  border-radius: 16px;
+}
+
+.tabs-top button {
+  flex: 1;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--muted);
+}
+
+.tabs-top button.active {
+  background: #fff;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.lesson-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px 4px;
+}
+
+.lesson-bar__close {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  border: 2px solid var(--line-strong);
+  background: #fff;
+  font-size: 20px;
+  color: #4A4741;
+}
+
+.lesson-bar__track {
+  flex: 1;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--blue-track);
+  overflow: hidden;
+}
+
+.lesson-bar__fill {
+  height: 100%;
+  border-radius: 7px;
+  background: var(--blue);
+  transition: width 0.4s;
+}
+
+.tabs-bottom {
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  padding: 8px 8px 6px;
+}
+
+.tabs-bottom button {
+  flex: 1;
+  height: 60px;
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tabs-bottom button.active {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.tabs-bottom__bar {
+  width: 28px;
+  height: 5px;
+  border-radius: 3px;
+  background: transparent;
+}
+
+.tabs-bottom button.active .tabs-bottom__bar {
+  background: var(--blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-bar__fill {
+    transition: none;
+  }
+}

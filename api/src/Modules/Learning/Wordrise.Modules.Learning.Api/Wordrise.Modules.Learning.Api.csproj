@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.Learning.Application\Wordrise.Modules.Learning.Application.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.Learning.Infrastructure\Wordrise.Modules.Learning.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

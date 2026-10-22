@@ -1,0 +1,31 @@
+<div class="screen__body done">
+  <div class="badge" aria-hidden="true">✓</div>
+
+  <div class="title">
+    <h2>أحسنت يا أبو خالد!</h2>
+    <p>أنهيت درس اليوم كاملاً.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat card">
+      <span class="stat__value">{{ newCount | arabicDigits }}</span>
+      <span class="stat__label">كلمات جديدة</span>
+    </div>
+    <div class="stat card">
+      <span class="stat__value">{{ reviewedCount | arabicDigits }}</span>
+      <span class="stat__label">كلمات راجعتها</span>
+    </div>
+  </div>
+
+  <div class="streak">
+    <span class="streak__count" aria-hidden="true">{{ streakDays | arabicDigits }}</span>
+    <div class="streak__text">
+      <span class="streak__title">{{ streakDays | arabicDigits }} أيام متتالية!</span>
+      <span class="streak__sub">عُد غداً لتحافظ على سلسلتك.</span>
+    </div>
+  </div>
+</div>
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" (click)="store.finishLesson()">العودة للرئيسية</button>
+</div>

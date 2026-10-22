@@ -1,0 +1,112 @@
+.label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.rule {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.rule__en {
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.rule__ar {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.explain {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.pattern {
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.pattern__chips {
+  display: flex;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.chip {
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--surface-muted);
+}
+
+.chip--key {
+  background: var(--blue);
+  color: #fff;
+}
+
+.pattern__formula {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.example {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.example__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.example__en {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.example__ar {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.note {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--surface-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.note__em {
+  font-weight: 700;
+}
+
+.note__wrong {
+  text-decoration: line-through;
+}

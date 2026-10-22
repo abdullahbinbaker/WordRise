@@ -1,0 +1,168 @@
+.home {
+  padding: 18px 24px;
+  gap: 20px;
+}
+
+.home__footer {
+  padding-bottom: 16px;
+}
+
+.greeting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.greeting__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.greeting__hello {
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.greeting__name {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink-2);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.today {
+  border-radius: 24px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.today__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.today__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.today__goal {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.today__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.track {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--blue-track);
+  overflow: hidden;
+}
+
+.track__fill {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 6px;
+}
+
+.today__progress-label {
+  font-size: 16px;
+  color: var(--blue-ink);
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--surface-muted);
+}
+
+.step__mark {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--muted);
+  border: 2px solid var(--step-line);
+}
+
+.step__label {
+  font-size: 19px;
+  color: var(--ink);
+}
+
+.step--next .step__mark {
+  color: var(--blue);
+  border: 3px solid var(--blue);
+}
+
+.step--done .step__mark {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+}
+
+.step--done .step__label {
+  color: var(--muted);
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  flex: 1;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat__value {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stat__label {
+  font-size: 17px;
+  color: var(--muted);
+}

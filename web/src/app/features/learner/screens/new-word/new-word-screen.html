@@ -1,0 +1,35 @@
+<div class="screen__body">
+  <div class="screen__meta">
+    <strong>كلمة جديدة</strong>
+    <span>{{ store.wordIndex() + 1 | arabicDigits }} من {{ total | arabicDigits }}</span>
+  </div>
+
+  <!-- Placeholder until each word has an illustration. -->
+  <div class="photo" role="img" [attr.aria-label]="'صورة: ' + word().ar">
+    <span class="photo__label" dir="ltr">photo: {{ word().en }}</span>
+  </div>
+
+  <div class="headword">
+    <div class="headword__text">
+      <span class="headword__en en" dir="ltr">{{ word().en }}</span>
+      <span class="headword__tr">تُنطق: «{{ word().tr }}»</span>
+    </div>
+    <app-speak-button [text]="word().en" [size]="80" [iconSize]="36" />
+  </div>
+
+  <div class="meaning">{{ word().ar }}</div>
+
+  <div class="example card">
+    <div class="example__text">
+      <span class="example__en en" dir="ltr">{{ word().ex }}</span>
+      <span class="example__ar">{{ word().exAr }}</span>
+    </div>
+    <app-speak-button [text]="word().ex" [size]="52" [iconSize]="24" label="استمع للجملة" />
+  </div>
+</div>
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" (click)="store.nextWord()">
+    {{ isLast() ? 'تابع إلى المحادثة' : 'الكلمة التالية' }}
+  </button>
+</div>

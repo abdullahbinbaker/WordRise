@@ -1,0 +1,94 @@
+<div class="site" dir="rtl">
+  <header class="topbar">
+    <a class="brand" routerLink="/" aria-label="Wordrise، الصفحة الرئيسية">
+      <span class="brand__mark en" aria-hidden="true">W</span>
+      <span class="brand__name en" dir="ltr">Wordrise</span>
+    </a>
+    <nav class="topnav" aria-label="القائمة الرئيسية">
+      <a routerLink="/" fragment="web-app" class="topnav__link topnav__link--current">درسي</a>
+      <a routerLink="/" fragment="web-how" class="topnav__link">كيف تعمل المنصة</a>
+      <a routerLink="/" fragment="web-faq" class="topnav__link">أسئلة شائعة</a>
+    </nav>
+    <div class="user">
+      <span class="user__avatar" aria-hidden="true">أ</span>
+      أبو خالد
+    </div>
+  </header>
+
+  <main>
+    <section id="web-app" class="hero">
+      <div class="hero__copy">
+        <div class="pill">
+          <span class="dot" aria-hidden="true"></span>
+          مجاني بالكامل، بدعم من المتبرعين
+        </div>
+        <h1 class="hero__title">تعلّم الإنجليزية بخطوات صغيرة كل يوم</h1>
+        <p class="hero__lead">
+          درس قصير كل يوم: تراجع كلماتك القديمة، وتتعلّم كلمات جديدة، وتتدرّب على مواقف من حياتك اليومية. تقدّمك محفوظ
+          على الجوال والكمبيوتر.
+        </p>
+        <ul class="hero__features">
+          @for (feature of features; track feature) {
+            <li><span class="hero__bullet" aria-hidden="true"></span>{{ feature }}</li>
+          }
+        </ul>
+      </div>
+      <div class="hero__app" aria-label="جرّب درس اليوم">
+        <app-learner start="home" tabs="top" />
+      </div>
+    </section>
+
+    <section id="web-how" class="how">
+      <div class="section-head">
+        <h2>كيف تعمل المنصة؟</h2>
+        <p>ثلاث خطوات بسيطة، ١٠ دقائق في اليوم.</p>
+      </div>
+      <ol class="how__grid">
+        @for (step of steps; track step.n) {
+          <li class="how__card">
+            <span class="how__num" aria-hidden="true">{{ step.n }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.body }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section id="web-faq" class="faq">
+      <div class="section-head">
+        <h2>أسئلة شائعة</h2>
+        <p>اضغط على أي سؤال لترى الجواب.</p>
+      </div>
+      <div class="faq__list">
+        @for (item of faq(); track item.index) {
+          <div class="faq__item" [class.faq__item--open]="item.open">
+            <h3 class="faq__q">
+              <button
+                type="button"
+                class="faq__toggle"
+                [attr.aria-expanded]="item.open"
+                [attr.aria-controls]="'faq-answer-' + item.index"
+                (click)="toggleFaq(item.index)"
+              >
+                {{ item.q }}
+                <span class="faq__icon" aria-hidden="true">{{ item.open ? '−' : '+' }}</span>
+              </button>
+            </h3>
+            @if (item.open) {
+              <p class="faq__a" [id]="'faq-answer-' + item.index">{{ item.a }}</p>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Wordrise منصة خيرية غير ربحية</span>
+    <nav class="footer__links" aria-label="روابط التذييل">
+      <a routerLink="/" fragment="web-how">عن المنصة</a>
+      <a routerLink="/" fragment="web-faq">تواصل معنا</a>
+      <a routerLink="/" fragment="web-faq">الخصوصية</a>
+    </nav>
+  </footer>
+</div>

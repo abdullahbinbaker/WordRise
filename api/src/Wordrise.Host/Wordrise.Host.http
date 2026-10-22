@@ -1,0 +1,82 @@
+@host = https://localhost:7163
+@email = learner@example.com
+@password = wordrise123
+
+### Register
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+### Sign in with a bearer token (mobile app)
+# @name login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+### Sign in with a cookie (website)
+POST {{host}}/api/v1/auth/login?useCookies=true
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+### Current account
+GET {{host}}/api/v1/me
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Set display name
+PUT {{host}}/api/v1/me
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{ "displayName": "أبو خالد" }
+
+### Add a child profile (makes the account a parent)
+POST {{host}}/api/v1/me/children
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{ "displayName": "خالد", "avatarKey": "lion", "birthYear": 2019, "dailyMinutesLimit": 20 }
+
+### List child profiles
+GET {{host}}/api/v1/me/children
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### ---------- Learning ----------
+
+### Today: next lesson, reviews due, streak
+# @name today
+GET {{host}}/api/v1/learning/today
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Set the daily word commitment (5, 10 or 15)
+PUT {{host}}/api/v1/learning/goal
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{ "wordsPerDay": 15 }
+
+### The whole lesson
+GET {{host}}/api/v1/learning/lessons/{{today.response.body.nextLesson.id}}
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Finish the lesson (its words are reviewed from tomorrow)
+POST {{host}}/api/v1/learning/lessons/{{today.response.body.nextLesson.id}}/complete
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### My words (filter: all, due, mastered)
+# @name words
+GET {{host}}/api/v1/learning/words?filter=all
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Words to review today
+GET {{host}}/api/v1/learning/reviews/due
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Rate a word: hard, good or easy
+POST {{host}}/api/v1/learning/reviews/{{words.response.body.$[0].wordId}}
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{ "rating": "good" }

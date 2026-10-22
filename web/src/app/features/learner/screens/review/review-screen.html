@@ -1,0 +1,35 @@
+<div class="screen__body">
+  <div class="screen__meta">
+    <strong>مراجعة الكلمات</strong>
+    <span>{{ store.cardIndex() + 1 | arabicDigits }} من {{ total | arabicDigits }}</span>
+  </div>
+
+  <div class="flashcard card">
+    <app-speak-button [text]="card().en" [size]="72" [iconSize]="32" />
+    <div class="flashcard__word en" dir="ltr">{{ card().en }}</div>
+    @if (store.revealed()) {
+      <div class="flashcard__rule" aria-hidden="true"></div>
+      <div class="flashcard__meaning">{{ card().ar }}</div>
+    } @else {
+      <span class="flashcard__prompt">هل تتذكّر معناها؟</span>
+    }
+  </div>
+</div>
+
+@if (store.revealed()) {
+  <div class="ratings">
+    <span class="ratings__title">كم كانت سهلة عليك؟</span>
+    <div class="ratings__row">
+      @for (rating of ratings; track rating.label) {
+        <button type="button" class="rating" (click)="store.rateCard()">
+          <span class="rating__label">{{ rating.label }}</span>
+          <span class="rating__when">{{ rating.when }}</span>
+        </button>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="screen__footer">
+    <button type="button" class="btn-primary" (click)="store.revealCard()">أظهر المعنى</button>
+  </div>
+}

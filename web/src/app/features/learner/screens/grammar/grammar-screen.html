@@ -1,0 +1,41 @@
+<div class="screen__body">
+  <div class="label">قاعدة اليوم</div>
+
+  <div class="rule">
+    <span class="rule__en en" dir="ltr">can</span>
+    <span class="rule__ar">= يستطيع</span>
+  </div>
+
+  <p class="explain">نستخدمها لنقول إننا نقدر على فعل شيء.</p>
+
+  <div class="pattern card">
+    <div class="pattern__chips en" dir="ltr">
+      <span class="chip">I</span>
+      <span class="chip chip--key">can</span>
+      <span class="chip">swim</span>
+    </div>
+    <div class="pattern__formula">الشخص + can + الفعل</div>
+  </div>
+
+  <ul class="examples">
+    @for (example of examples; track example.en) {
+      <li class="example">
+        <div class="example__text">
+          <span class="example__en en" dir="ltr">{{ example.en }}</span>
+          <span class="example__ar">{{ example.ar }}</span>
+        </div>
+        <app-speak-button [text]="example.en" [size]="48" [iconSize]="22" />
+      </li>
+    }
+  </ul>
+
+  <div class="note">
+    الفعل بعد <span class="en note__em" dir="ltr">can</span> لا يتغيّر: نقول
+    <span class="en note__em" dir="ltr">She can swim</span> وليس
+    <span class="en note__wrong" dir="ltr">swims</span>
+  </div>
+</div>
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" (click)="store.go('listen')">فهمت، تابع</button>
+</div>

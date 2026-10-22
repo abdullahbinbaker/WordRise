@@ -1,0 +1,80 @@
+.flashcard {
+  flex: 1;
+  min-height: 320px;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px rgba(28, 27, 25, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 28px;
+}
+
+.flashcard__word {
+  font-size: 46px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.flashcard__prompt {
+  font-size: 19px;
+  color: var(--muted);
+}
+
+.flashcard__rule {
+  width: 60%;
+  height: 2px;
+  background: var(--surface-muted);
+}
+
+.flashcard__meaning {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.ratings {
+  padding: 8px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ratings__title {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.ratings__row {
+  display: flex;
+  gap: 10px;
+}
+
+.rating {
+  flex: 1;
+  height: 76px;
+  border-radius: 18px;
+  border: 2px solid var(--blue-line);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.rating:hover {
+  border-color: var(--blue);
+}
+
+.rating__label {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.rating__when {
+  font-size: 15px;
+  color: var(--blue-ink);
+}

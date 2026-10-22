@@ -1,0 +1,39 @@
+<div class="header">
+  <div class="header__title">
+    <h2>كلماتي</h2>
+    <span>{{ total | arabicDigits }} كلمة</span>
+  </div>
+  <div class="filters" role="tablist" aria-label="تصفية الكلمات">
+    @for (filter of filters; track filter.key) {
+      <button
+        type="button"
+        role="tab"
+        class="filter"
+        [class.filter--on]="store.wordFilter() === filter.key"
+        [attr.aria-selected]="store.wordFilter() === filter.key"
+        (click)="store.wordFilter.set(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+  </div>
+</div>
+
+<ul class="list">
+  @for (word of words(); track word.en) {
+    <li class="word">
+      <app-speak-button [text]="word.en" [size]="50" [iconSize]="22" />
+      <div class="word__text">
+        <span class="word__en en" dir="ltr">{{ word.en }}</span>
+        <span class="word__ar">{{ word.ar }}</span>
+      </div>
+      <span class="tag" [class]="'tag tag--' + word.status">{{ statusLabels[word.status] }}</span>
+    </li>
+  }
+</ul>
+
+<div class="screen__footer words__footer">
+  <button type="button" class="btn-primary" (click)="store.startReview()">
+    راجع {{ dueCount | arabicDigits }} كلمات الآن
+  </button>
+</div>

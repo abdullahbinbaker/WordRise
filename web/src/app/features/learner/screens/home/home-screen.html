@@ -1,0 +1,59 @@
+<div class="screen__body home">
+  <div class="greeting">
+    <div class="greeting__text">
+      <span class="greeting__hello">صباح الخير</span>
+      <span class="greeting__name">أبو خالد</span>
+    </div>
+    <div class="streak">
+      <span class="dot" aria-hidden="true"></span>
+      {{ streak() }}
+    </div>
+  </div>
+
+  <section class="today card" aria-label="درس اليوم">
+    <div class="today__head">
+      <h2 class="today__title">درس اليوم</h2>
+      <span class="today__goal">هدفك: {{ store.goal() | arabicDigits }} كلمات</span>
+    </div>
+
+    <div class="today__progress">
+      <div
+        class="track"
+        role="progressbar"
+        aria-label="تقدّم درس اليوم"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="store.lessonDone() ? 100 : 0"
+      >
+        <div class="track__fill" [style.width.%]="store.lessonDone() ? 100 : 0"></div>
+      </div>
+      <span class="today__progress-label">{{ progressLabel() }}</span>
+    </div>
+
+    <ol class="steps">
+      @for (step of steps; track step; let i = $index) {
+        <li class="step" [class.step--done]="store.lessonDone()" [class.step--next]="!store.lessonDone() && i === 0">
+          <span class="step__mark" aria-hidden="true">{{ store.lessonDone() ? '✓' : (i + 1 | arabicDigits) }}</span>
+          <span class="step__label">{{ step }}</span>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <div class="stats">
+    <div class="stat card">
+      <span class="stat__value">{{ learnedCount() | arabicDigits }}</span>
+      <span class="stat__label">كلمة تعلّمتها</span>
+    </div>
+    <div class="stat card">
+      <span class="stat__value">{{ dueCount() | arabicDigits }}</span>
+      <span class="stat__label">للمراجعة اليوم</span>
+    </div>
+  </div>
+</div>
+
+<div class="screen__footer home__footer">
+  <button type="button" class="btn-primary" (click)="primaryAction()">
+    {{ store.lessonDone() ? 'تصفّح كلماتي' : 'ابدأ درس اليوم' }}
+  </button>
+</div>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.Identity.Contracts\Wordrise.Modules.Identity.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

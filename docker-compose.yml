@@ -1,0 +1,15 @@
+# Local services for development: docker compose up -d
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: wordrise
+      POSTGRES_USER: wordrise
+      POSTGRES_PASSWORD: wordrise_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

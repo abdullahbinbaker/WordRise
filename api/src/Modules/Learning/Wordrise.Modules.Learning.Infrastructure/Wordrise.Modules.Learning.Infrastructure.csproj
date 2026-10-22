@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.Learning.Application\Wordrise.Modules.Learning.Application.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,86 @@
+.listen {
+  gap: 20px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heading__label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.heading__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.player__play {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  border: none;
+  background: var(--blue);
+  box-shadow: 0 0 0 12px var(--blue-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player__play:hover {
+  background: var(--blue-hover);
+}
+
+/* The play triangle always points right, even in RTL. */
+.player__triangle {
+  width: 0;
+  height: 0;
+  border-top: 22px solid transparent;
+  border-bottom: 22px solid transparent;
+  border-left: 36px solid #fff;
+  margin-left: 8px;
+}
+
+.player__hint {
+  font-size: 18px;
+  color: var(--ink-2);
+  margin-top: 10px;
+}
+
+.player__slow {
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 8px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.option {
+  height: 76px;
+  border-radius: 18px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+}
