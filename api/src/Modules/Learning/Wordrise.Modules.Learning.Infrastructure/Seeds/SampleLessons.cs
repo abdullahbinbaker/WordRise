@@ -3,8 +3,8 @@ using Wordrise.Modules.Learning.Domain.Lessons;
 namespace Wordrise.Modules.Learning.Infrastructure.Seeds;
 
 /// <summary>
-/// The first lesson, so the app works before content authoring exists. Ids are fixed so a
-/// reseeded database keeps the same lesson and word ids.
+/// The first lesson, so a fresh database has something to teach. The lesson id is fixed so a
+/// reseeded database keeps it; word ids come from the words themselves.
 /// </summary>
 internal static class SampleLessons
 {
@@ -22,9 +22,9 @@ internal static class SampleLessons
             {
                 Words =
                 [
-                    Word("0b1f6a52-3c4e-4d0a-9d5f-1a2b3c4d5e11", "apple", "تفاحة", "آبِل", "I want an apple.", "أريد تفاحة."),
-                    Word("0b1f6a52-3c4e-4d0a-9d5f-1a2b3c4d5e12", "milk", "حليب", "مِلك", "The milk is cold.", "الحليب بارد."),
-                    Word("0b1f6a52-3c4e-4d0a-9d5f-1a2b3c4d5e13", "rice", "أرز", "رايس", "I buy rice every week.", "أشتري الأرز كل أسبوع."),
+                    Word("apple", "تفاحة", "آبِل", "I want an apple.", "أريد تفاحة."),
+                    Word("milk", "حليب", "مِلك", "The milk is cold.", "الحليب بارد."),
+                    Word("rice", "أرز", "رايس", "I buy rice every week.", "أشتري الأرز كل أسبوع."),
                 ],
                 Dialogue =
                 [
@@ -64,10 +64,10 @@ internal static class SampleLessons
             }),
     ];
 
-    private static LessonWord Word(string id, string english, string arabic, string pronunciation, string example, string exampleArabic) =>
+    private static LessonWord Word(string english, string arabic, string pronunciation, string example, string exampleArabic) =>
         new()
         {
-            Id = Guid.Parse(id),
+            Id = WordIdentity.For(english),
             English = english,
             Arabic = arabic,
             Pronunciation = pronunciation,

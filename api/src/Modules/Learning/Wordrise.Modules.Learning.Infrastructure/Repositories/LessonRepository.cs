@@ -9,4 +9,16 @@ internal sealed class LessonRepository(LearningDbContext db) : ILessonRepository
 {
     public Task<Lesson?> GetAsync(Guid lessonId, CancellationToken cancellationToken) =>
         db.Lessons.AsNoTracking().SingleOrDefaultAsync(l => l.Id == lessonId, cancellationToken);
+
+    public async Task<int?> GetNumberAsync(Guid lessonId, CancellationToken cancellationToken) =>
+        await db.Lessons
+            .AsNoTracking()
+            .Where(l => l.Id == lessonId)
+            .Select(l => (int?)l.Number)
+            .SingleOrDefaultAsync(cancellationToken);
+
+    public async Task<int> NextNumberAsync(CancellationToken cancellationToken) =>
+        (await db.Lessons.MaxAsync(l => (int?)l.Number, cancellationToken) ?? 0) + 1;
+
+    public void Add(Lesson lesson) => db.Lessons.Add(lesson);
 }

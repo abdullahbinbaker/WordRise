@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Anthropic" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Learning\Wordrise.Modules.Learning.Contracts\Wordrise.Modules.Learning.Contracts.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.ContentAuthoring.Application\Wordrise.Modules.ContentAuthoring.Application.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -7,5 +7,6 @@ public static class LearningErrors
     public const string ReviewBacklog = "learning.review_backlog";
     public const string ReviewsDisabled = "learning.reviews_disabled";
     public const string LessonNotFound = "learning.lesson_not_found";
+    public const string LessonInvalid = "learning.lesson_invalid";
     public const string WordNotFound = "learning.word_not_found";
 }

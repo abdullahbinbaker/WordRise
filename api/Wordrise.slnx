@@ -3,6 +3,12 @@
     <Project Path="src/Wordrise.Host/Wordrise.Host.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/ContentAuthoring/">
+    <Project Path="src/Modules/ContentAuthoring/Wordrise.Modules.ContentAuthoring.Api/Wordrise.Modules.ContentAuthoring.Api.csproj" />
+    <Project Path="src/Modules/ContentAuthoring/Wordrise.Modules.ContentAuthoring.Application/Wordrise.Modules.ContentAuthoring.Application.csproj" />
+    <Project Path="src/Modules/ContentAuthoring/Wordrise.Modules.ContentAuthoring.Domain/Wordrise.Modules.ContentAuthoring.Domain.csproj" />
+    <Project Path="src/Modules/ContentAuthoring/Wordrise.Modules.ContentAuthoring.Infrastructure/Wordrise.Modules.ContentAuthoring.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Modules/Identity/Wordrise.Modules.Identity.Contracts/Wordrise.Modules.Identity.Contracts.csproj" />
     <Project Path="src/Modules/Identity/Wordrise.Modules.Identity.Core/Wordrise.Modules.Identity.Core.csproj" />
@@ -10,6 +16,7 @@
   <Folder Name="/src/Modules/Learning/">
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Api/Wordrise.Modules.Learning.Api.csproj" />
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Application/Wordrise.Modules.Learning.Application.csproj" />
+    <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Contracts/Wordrise.Modules.Learning.Contracts.csproj" />
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Domain/Wordrise.Modules.Learning.Domain.csproj" />
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Infrastructure/Wordrise.Modules.Learning.Infrastructure.csproj" />
   </Folder>
@@ -20,6 +27,8 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Wordrise.ArchitectureTests/Wordrise.ArchitectureTests.csproj" />
+    <Project Path="tests/Wordrise.Modules.ContentAuthoring.Domain.Tests/Wordrise.Modules.ContentAuthoring.Domain.Tests.csproj" />
+    <Project Path="tests/Wordrise.Modules.ContentAuthoring.Tests/Wordrise.Modules.ContentAuthoring.Tests.csproj" />
     <Project Path="tests/Wordrise.Modules.Identity.Tests/Wordrise.Modules.Identity.Tests.csproj" />
     <Project Path="tests/Wordrise.Modules.Learning.Domain.Tests/Wordrise.Modules.Learning.Domain.Tests.csproj" />
     <Project Path="tests/Wordrise.Modules.Learning.Tests/Wordrise.Modules.Learning.Tests.csproj" />

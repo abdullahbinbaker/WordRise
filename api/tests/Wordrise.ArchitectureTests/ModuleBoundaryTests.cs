@@ -1,5 +1,9 @@
 using System.Reflection;
 using NetArchTest.Rules;
+using Wordrise.Modules.ContentAuthoring.Api;
+using Wordrise.Modules.ContentAuthoring.Application.Abstractions;
+using Wordrise.Modules.ContentAuthoring.Domain;
+using Wordrise.Modules.ContentAuthoring.Infrastructure.Extensions;
 using Wordrise.Modules.Identity.Contracts;
 using Wordrise.Modules.Identity.Core;
 using Wordrise.Modules.Learning.Api;
@@ -40,6 +44,21 @@ public sealed class ModuleBoundaryTests
                 "Wordrise.Modules.Learning.Application",
                 "Wordrise.Modules.Learning.Infrastructure",
                 "Wordrise.Modules.Learning.Api",
+            ]),
+        new(
+            "ContentAuthoring",
+            typeof(ContentAuthoringModuleStartup).Assembly,
+            [
+                typeof(AuthoringErrors).Assembly,
+                typeof(IDraftRepository).Assembly,
+                typeof(AuthoringInfrastructureExtensions).Assembly,
+                typeof(ContentAuthoringModuleStartup).Assembly,
+            ],
+            [
+                "Wordrise.Modules.ContentAuthoring.Domain",
+                "Wordrise.Modules.ContentAuthoring.Application",
+                "Wordrise.Modules.ContentAuthoring.Infrastructure",
+                "Wordrise.Modules.ContentAuthoring.Api",
             ]),
     ];
 
@@ -110,11 +129,62 @@ public sealed class ModuleBoundaryTests
     }
 
     [Fact]
+    public void Authoring_domain_depends_on_nothing_but_the_shared_kernel()
+    {
+        var result = Types.InAssembly(typeof(AuthoringErrors).Assembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "Wordrise.Modules.ContentAuthoring.Application",
+                "Wordrise.Modules.ContentAuthoring.Infrastructure",
+                "Wordrise.Modules.ContentAuthoring.Api",
+                "Microsoft.EntityFrameworkCore",
+                "Microsoft.AspNetCore",
+                "Anthropic",
+                "Mediator")
+            .GetResult();
+
+        Assert.True(result.IsSuccessful, Describe(result));
+    }
+
+    [Fact]
+    public void Authoring_application_does_not_know_the_database_the_web_or_the_ai_provider()
+    {
+        var result = Types.InAssembly(typeof(IDraftRepository).Assembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "Wordrise.Modules.ContentAuthoring.Infrastructure",
+                "Wordrise.Modules.ContentAuthoring.Api",
+                "Microsoft.EntityFrameworkCore",
+                "Microsoft.AspNetCore",
+                "Anthropic")
+            .GetResult();
+
+        Assert.True(result.IsSuccessful, Describe(result));
+    }
+
+    [Fact]
+    public void Only_authoring_infrastructure_talks_to_the_ai_provider()
+    {
+        var others = Modules
+            .SelectMany(m => m.Assemblies)
+            .Where(a => a != typeof(AuthoringInfrastructureExtensions).Assembly)
+            .ToArray();
+
+        var result = Types.InAssemblies(others).ShouldNot().HaveDependencyOn("Anthropic").GetResult();
+
+        Assert.True(result.IsSuccessful, Describe(result));
+    }
+
+    [Fact]
     public void Contracts_do_not_depend_on_any_module_internals()
     {
         var internals = Modules.SelectMany(m => m.InternalNamespaces).ToArray();
 
-        var result = Types.InAssembly(typeof(Roles).Assembly).ShouldNot().HaveDependencyOnAny(internals).GetResult();
+        var result = Types
+            .InAssemblies([typeof(Roles).Assembly, typeof(Wordrise.Modules.Learning.Contracts.ILessonPublisher).Assembly])
+            .ShouldNot()
+            .HaveDependencyOnAny(internals)
+            .GetResult();
 
         Assert.True(result.IsSuccessful, Describe(result));
     }

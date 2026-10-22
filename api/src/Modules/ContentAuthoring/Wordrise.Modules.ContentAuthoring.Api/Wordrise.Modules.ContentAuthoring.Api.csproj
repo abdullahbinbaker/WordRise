@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Identity\Wordrise.Modules.Identity.Contracts\Wordrise.Modules.Identity.Contracts.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.ContentAuthoring.Application\Wordrise.Modules.ContentAuthoring.Application.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.ContentAuthoring.Infrastructure\Wordrise.Modules.ContentAuthoring.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

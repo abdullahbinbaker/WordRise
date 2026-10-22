@@ -1,5 +1,6 @@
 using Mediator;
 using Wordrise.Host;
+using Wordrise.Modules.ContentAuthoring.Api;
 using Wordrise.Modules.Identity.Core;
 using Wordrise.Modules.Learning.Api;
 using Wordrise.Shared.Abstractions;
@@ -14,6 +15,7 @@ IReadOnlyList<IModuleStartup> modules =
     {
         new IdentityModuleStartup(),
         new LearningModuleStartup(),
+        new ContentAuthoringModuleStartup(),
     }.OrderBy(module => module.Order),
 ];
 

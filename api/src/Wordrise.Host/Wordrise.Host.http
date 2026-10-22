@@ -80,3 +80,30 @@ Authorization: Bearer {{login.response.body.accessToken}}
 Content-Type: application/json
 
 { "rating": "good" }
+
+### Authoring (staff with two-factor only): the grammar steps to build lessons on
+GET {{host}}/api/v1/admin/lessons/curriculum
+Authorization: Bearer {{staffToken}}
+
+### Ask for a new lesson
+# @name draft
+POST {{host}}/api/v1/admin/lessons/drafts
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "scenario": "grocery store", "grammarStep": 4, "wordCount": 5 }
+
+### See the draft (queued, inProgress, aiApproved, needsAttention, failed, published)
+GET {{host}}/api/v1/admin/lessons/drafts/{{draft.response.body.id}}
+Authorization: Bearer {{staffToken}}
+
+### Publish it to learners
+POST {{host}}/api/v1/admin/lessons/drafts/{{draft.response.body.id}}/approve
+Authorization: Bearer {{staffToken}}
+
+### Or send it back with a note
+POST {{host}}/api/v1/admin/lessons/drafts/{{draft.response.body.id}}/reject
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{ "note": "Use shorter sentences." }
