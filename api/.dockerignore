@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/.vs/
+tests/
+*.slnx
+*.db
+*.db-shm
+*.db-wal
+**/media-data/
+Dockerfile
+.dockerignore

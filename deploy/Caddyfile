@@ -1,0 +1,26 @@
+# Caddy gets and renews the HTTPS certificate by itself for the domain in .env.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		-Server
+	}
+
+	# The API and the website share one address, so the sign-in cookie needs no cross-site setup.
+	# reverse_proxy adds X-Forwarded-For and X-Forwarded-Proto, which the API trusts.
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		reverse_proxy web:4000
+	}
+}
