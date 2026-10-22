@@ -58,6 +58,19 @@ internal sealed class LearningQueries(LearningDbContext db, ILearningSettings se
         return lesson is null ? null : ToDto(lesson);
     }
 
+    public async Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken)
+    {
+        // The words live inside each lesson's JSON body; a course has tens of lessons, so they are flattened here.
+        var lessons = await db.Lessons.AsNoTracking().OrderBy(l => l.Number).ToListAsync(cancellationToken);
+        return
+        [
+            .. lessons
+                .SelectMany(l => l.Content.Words)
+                .Select(w => w.English)
+                .Distinct(StringComparer.OrdinalIgnoreCase),
+        ];
+    }
+
     public async Task<IReadOnlyList<DueReviewDto>> GetDueReviewsAsync(
         Guid learnerId,
         DateOnly today,

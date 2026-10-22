@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <UserSecretsId>wordrise-host</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <!-- Generates the mediator for every module's commands and queries; only the host references it. -->
@@ -13,6 +17,7 @@
     <ProjectReference Include="..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\Modules\Identity\Wordrise.Modules.Identity.Core\Wordrise.Modules.Identity.Core.csproj" />
     <ProjectReference Include="..\Modules\Learning\Wordrise.Modules.Learning.Api\Wordrise.Modules.Learning.Api.csproj" />
+    <ProjectReference Include="..\Modules\ContentAuthoring\Wordrise.Modules.ContentAuthoring.Api\Wordrise.Modules.ContentAuthoring.Api.csproj" />
   </ItemGroup>
 
 </Project>

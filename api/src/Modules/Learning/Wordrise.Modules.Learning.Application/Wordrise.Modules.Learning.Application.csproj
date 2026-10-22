@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Wordrise.Modules.Learning.Domain\Wordrise.Modules.Learning.Domain.csproj" />
+    <ProjectReference Include="..\Wordrise.Modules.Learning.Contracts\Wordrise.Modules.Learning.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

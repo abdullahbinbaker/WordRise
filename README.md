@@ -69,6 +69,23 @@ dotnet run --project src/Wordrise.Host --launch-profile https-sqlite
 
 القيم خارج المدى توقف التطبيق عند التشغيل برسالة تذكر اسم الإعداد. ويمكن تغيير أي إعداد على السيرفر بمتغير بيئة، مثلاً: `Learning__Reviews__Enabled=false`.
 
+### إنتاج الدروس بالذكاء الاصطناعي (موديول `ContentAuthoring`)
+
+الدورة: تطلب درساً (موقف + خطوة نحو) ← الكاتب (Claude Opus) يكتبه ← فحوص مجانية للشكل ← المراجع (Claude Sonnet) يحكم عليه ← يعيد الكاتب إصلاحه حتى 3 مرات ← يصل إليك للمراجعة ← عند موافقتك يُنشر للمتعلّمين. كل شيء عبر `/api/v1/admin/lessons/*` وللمراجع أو المدير بعد التحقق بخطوتين (2FA) فقط.
+
+**مفتاح Claude لا يوضع في أي ملف.** على السيرفر: متغير البيئة `Authoring__Claude__ApiKey`. وعلى جهازك: `dotnet user-secrets set "Authoring:Claude:ApiKey" "..." --project api/src/Wordrise.Host`. وفي بيئة التطوير المزوّد افتراضياً `Sample` (دروس تجريبية بلا تكلفة)، فلا يحتاج مفتاحاً.
+
+| المفتاح | الافتراضي | المعنى |
+|---|---|---|
+| `Authoring:Provider` | `Claude` | `Sample` يكتب دروساً تجريبية بلا اتصال بأي خدمة |
+| `Authoring:MaxCycles` | `3` | عدد محاولات الكتابة والمراجعة قبل أن يُعلَّم الدرس «يحتاج انتباهك» |
+| `Authoring:Worker:Enabled` | `true` | `false` يوقف المعالجة الخلفية |
+| `Authoring:Worker:PollIntervalSeconds` | `30` | كل كم ثانية يفحص الطابور |
+| `Authoring:Worker:MaxDraftsPerPoll` | `3` | أقصى عدد مسودات في كل فحص |
+| `Authoring:Claude:Writer` / `Reviewer` | Opus 5.5 (High) / Sonnet 5.5 (Medium) | النموذج والجهد وأقصى عدد رموز لكل دور |
+
+إذا نقص المفتاح تفشل المسودة برسالة واضحة (والمتعلّمون لا يتأثرون)، وتعيدها بـ `requeue` بعد إضافته.
+
 ### هيكل الـ API
 
 - `src/Wordrise.Host`: المشروع الذي يُشغَّل. رفيع: المصادقة وCORS والصحة، ويسجّل الموديولات فقط في قائمة صريحة داخل `Program.cs`.
