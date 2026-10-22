@@ -20,13 +20,13 @@
   </div>
 
   <ul class="examples">
-    @for (example of grammar().examples; track example.english) {
+    @for (example of grammar().examples; track example.target) {
       <li class="example">
         <div class="example__text">
-          <span class="example__en en" dir="ltr">{{ example.english }}</span>
-          <span class="example__ar">{{ example.arabic }}</span>
+          <span class="example__en en" dir="ltr">{{ example.target }}</span>
+          <span class="example__ar">{{ example.native }}</span>
         </div>
-        <app-speak-button [text]="example.english" [size]="48" [iconSize]="22" />
+        <app-speak-button [text]="example.target" [size]="48" [iconSize]="22" />
       </li>
     }
   </ul>

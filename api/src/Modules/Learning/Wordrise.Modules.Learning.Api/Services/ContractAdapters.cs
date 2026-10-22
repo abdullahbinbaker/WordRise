@@ -20,9 +20,9 @@ internal sealed class LessonPublisherAdapter(IMediator mediator) : ILessonPublis
 /// <summary>Lets other modules read which words learners were taught.</summary>
 internal sealed class PublishedVocabularyAdapter(IMediator mediator) : IPublishedVocabulary
 {
-    public async Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<string>> GetTaughtWordsAsync(string targetLanguage, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetTaughtWordsQuery(), cancellationToken);
+        var result = await mediator.Send(new GetTaughtWordsQuery(targetLanguage), cancellationToken);
         return result.IsSuccess
             ? result.Value
             : throw new InvalidOperationException(result.Error!.Message);

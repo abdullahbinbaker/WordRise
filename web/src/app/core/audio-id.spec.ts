@@ -15,15 +15,16 @@ describe('audioId', () => {
 
   // The same values come out of the API (`AudioId.For`), which is how the app finds recordings.
   it('matches the names the API gives recordings', () => {
-    expect(audioId('apple')).toBe('7441e112be2685a40ab86b37fe161ea1');
-    expect(audioId('I can buy bread.', true)).toBe('1f707f8299a056b9d1585a536cb45669');
+    expect(audioId('en', 'apple')).toBe('f41e0a4134d0d7aec2945806eebb7370');
+    expect(audioId('en', 'I can buy bread.', true)).toBe('cedab8a21e7469cae5d949e73a29038c');
   });
 
   it('ignores extra spaces, as the API does', () => {
-    expect(audioId('  I want   an apple. ')).toBe(audioId('I want an apple.'));
+    expect(audioId('en', '  I want   an apple. ')).toBe(audioId('en', 'I want an apple.'));
   });
 
   it('tells the slow recording from the normal one', () => {
-    expect(audioId('apple', true)).not.toBe(audioId('apple'));
+    expect(audioId('en', 'apple', true)).not.toBe(audioId('en', 'apple'));
+    expect(audioId('fr', 'apple')).not.toBe(audioId('en', 'apple'));
   });
 });

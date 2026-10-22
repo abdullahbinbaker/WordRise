@@ -38,18 +38,18 @@ export interface GrammarPoint {
 }
 
 export interface Word {
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
   pronunciation: string;
   example: string;
-  exampleArabic: string;
+  exampleNative: string;
 }
 
 export interface DialogueLine {
   speaker: string;
   isLearner: boolean;
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
 }
 
 export interface AnswerOption {
@@ -68,7 +68,7 @@ export interface DraftContent {
     meaning: string;
     explanation: string;
     pattern: string;
-    examples: { english: string; arabic: string }[];
+    examples: { target: string; native: string }[];
     note: string;
   };
   listeningSentence: string;
@@ -87,7 +87,7 @@ export interface Revision {
 
 export interface DraftDetail {
   id: string;
-  brief: { scenario: string; grammarStep: number; grammarPoint: string; level: string; wordCount: number };
+  brief: { targetLanguage: string; nativeLanguage: string; scenario: string; grammarStep: number; grammarPoint: string; level: string; wordCount: number };
   status: DraftStatus;
   error: string | null;
   cyclesUsed: number;

@@ -55,9 +55,15 @@ internal sealed class AzureSpeechSynthesizer(HttpClient http, IOptions<MediaOpti
 
     internal static string Ssml(SpokenText text, AzureSpeechOptions azure)
     {
-        var voice = text.Voice == SpeakerVoice.Secondary ? azure.SecondaryVoice : azure.PrimaryVoice;
+        if (!azure.Voices.TryGetValue(text.Language, out var voices))
+        {
+            throw new InvalidOperationException(
+                $"No voice is set for language '{text.Language}'. Add Media:Azure:Voices:{text.Language} (Locale, Primary, Secondary).");
+        }
+
+        var voice = text.Voice == SpeakerVoice.Secondary ? voices.Secondary : voices.Primary;
         var spoken = SecurityElement.Escape(AudioId.Normalize(text.Text));
         var body = text.Slow ? $"<prosody rate=\"{SecurityElement.Escape(azure.SlowRate)}\">{spoken}</prosody>" : spoken;
-        return $"<speak version=\"1.0\" xml:lang=\"en-US\"><voice name=\"{SecurityElement.Escape(voice)}\">{body}</voice></speak>";
+        return $"<speak version=\"1.0\" xml:lang=\"{SecurityElement.Escape(voices.Locale)}\"><voice name=\"{SecurityElement.Escape(voice)}\">{body}</voice></speak>";
     }
 }

@@ -55,6 +55,11 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("NativeLanguage")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
@@ -62,6 +67,11 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("TargetLanguage")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -84,18 +94,8 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                     b.Property<Guid>("WordId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Arabic")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<DateOnly>("DueOn")
                         .HasColumnType("date");
-
-                    b.Property<string>("English")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("IntervalDays")
                         .HasColumnType("integer");
@@ -107,8 +107,18 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                     b.Property<Guid>("LessonId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Native")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<int>("ReviewCount")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Target")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("LearnerId", "WordId");
 
@@ -171,15 +181,15 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                     b2.Property<int>("__synthesizedOrdinal")
                                         .ValueGeneratedOnAdd();
 
-                                    b2.Property<string>("Arabic")
-                                        .IsRequired();
-
-                                    b2.Property<string>("English")
-                                        .IsRequired();
-
                                     b2.Property<bool>("IsLearner");
 
+                                    b2.Property<string>("Native")
+                                        .IsRequired();
+
                                     b2.Property<string>("Speaker")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Target")
                                         .IsRequired();
 
                                     b2.HasKey("LessonContentLessonId", "__synthesizedOrdinal");
@@ -223,10 +233,10 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                             b3.Property<int>("__synthesizedOrdinal")
                                                 .ValueGeneratedOnAdd();
 
-                                            b3.Property<string>("Arabic")
+                                            b3.Property<string>("Native")
                                                 .IsRequired();
 
-                                            b3.Property<string>("English")
+                                            b3.Property<string>("Target")
                                                 .IsRequired();
 
                                             b3.HasKey("GrammarExplanationLessonContentLessonId", "__synthesizedOrdinal");
@@ -287,21 +297,21 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                     b2.Property<int>("__synthesizedOrdinal")
                                         .ValueGeneratedOnAdd();
 
-                                    b2.Property<string>("Arabic")
-                                        .IsRequired();
-
-                                    b2.Property<string>("English")
-                                        .IsRequired();
-
                                     b2.Property<string>("Example")
                                         .IsRequired();
 
-                                    b2.Property<string>("ExampleArabic")
+                                    b2.Property<string>("ExampleNative")
                                         .IsRequired();
 
                                     b2.Property<Guid>("Id");
 
+                                    b2.Property<string>("Native")
+                                        .IsRequired();
+
                                     b2.Property<string>("Pronunciation")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Target")
                                         .IsRequired();
 
                                     b2.HasKey("LessonContentLessonId", "__synthesizedOrdinal");

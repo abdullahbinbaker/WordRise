@@ -15,6 +15,8 @@ internal static class SampleLessons
         Lesson.Create(
             GroceryLessonId,
             number: 1,
+            targetLanguage: LessonLanguages.English,
+            nativeLanguage: LessonLanguages.Arabic,
             title: "في البقالة",
             scenario: "grocery",
             grammarPoint: "can / can't",
@@ -28,9 +30,9 @@ internal static class SampleLessons
                 ],
                 Dialogue =
                 [
-                    new DialogueLine { Speaker = "الكاشير", English = "Hello! Can I help you?", Arabic = "مرحباً! هل أستطيع مساعدتك؟" },
-                    new DialogueLine { Speaker = "أنت", IsLearner = true, English = "Yes. Milk and bread, please.", Arabic = "نعم. حليب وخبز من فضلك." },
-                    new DialogueLine { Speaker = "الكاشير", English = "That is twelve riyals.", Arabic = "المبلغ اثنا عشر ريالاً." },
+                    new DialogueLine { Speaker = "الكاشير", Target = "Hello! Can I help you?", Native = "مرحباً! هل أستطيع مساعدتك؟" },
+                    new DialogueLine { Speaker = "أنت", IsLearner = true, Target = "Yes. Milk and bread, please.", Native = "نعم. حليب وخبز من فضلك." },
+                    new DialogueLine { Speaker = "الكاشير", Target = "That is twelve riyals.", Native = "المبلغ اثنا عشر ريالاً." },
                 ],
                 ChatPrompt = "الكاشير ينتظر. ماذا تقول وأنت تعطيه المال؟",
                 ChatOptions =
@@ -46,10 +48,10 @@ internal static class SampleLessons
                     Pattern = "الشخص + can + الفعل",
                     Examples =
                     [
-                        new GrammarExample { English = "I can read.", Arabic = "أستطيع القراءة." },
-                        new GrammarExample { English = "She can cook.", Arabic = "هي تستطيع الطبخ." },
-                        new GrammarExample { English = "I can't drive.", Arabic = "لا أستطيع القيادة." },
-                        new GrammarExample { English = "Can you help me?", Arabic = "هل تستطيع مساعدتي؟" },
+                        new GrammarExample { Target = "I can read.", Native = "أستطيع القراءة." },
+                        new GrammarExample { Target = "She can cook.", Native = "هي تستطيع الطبخ." },
+                        new GrammarExample { Target = "I can't drive.", Native = "لا أستطيع القيادة." },
+                        new GrammarExample { Target = "Can you help me?", Native = "هل تستطيع مساعدتي؟" },
                     ],
                     Note = "الفعل بعد can لا يتغيّر: نقول She can swim وليس swims.",
                 },
@@ -64,14 +66,14 @@ internal static class SampleLessons
             }),
     ];
 
-    private static LessonWord Word(string english, string arabic, string pronunciation, string example, string exampleArabic) =>
+    private static LessonWord Word(string target, string native, string pronunciation, string example, string exampleNative) =>
         new()
         {
-            Id = WordIdentity.For(english),
-            English = english,
-            Arabic = arabic,
+            Id = WordIdentity.For(LessonLanguages.English, target),
+            Target = target,
+            Native = native,
             Pronunciation = pronunciation,
             Example = example,
-            ExampleArabic = exampleArabic,
+            ExampleNative = exampleNative,
         };
 }

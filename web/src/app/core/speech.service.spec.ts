@@ -50,14 +50,23 @@ describe('SpeechService', () => {
   it('plays the recording the server made, not the device voice', () => {
     service().speak('apple');
 
-    expect(FakeAudio.instances.map((a) => a.src)).toEqual([`/api/v1/media/audio/${audioId('apple')}`]);
+    expect(FakeAudio.instances.map((a) => a.src)).toEqual([`/api/v1/media/audio/${audioId('en', 'apple')}`]);
     expect(speak).not.toHaveBeenCalled();
+  });
+
+  it('uses the language of the lesson being studied', () => {
+    const speech = service();
+    speech.language = 'fr';
+
+    speech.speak('apple');
+
+    expect(FakeAudio.instances[0].src).toBe(`/api/v1/media/audio/${audioId('fr', 'apple')}`);
   });
 
   it('asks for the slow recording when slow is requested', () => {
     service().speak('I can buy bread.', true);
 
-    expect(FakeAudio.instances[0].src).toBe(`/api/v1/media/audio/${audioId('I can buy bread.', true)}`);
+    expect(FakeAudio.instances[0].src).toBe(`/api/v1/media/audio/${audioId('en', 'I can buy bread.', true)}`);
   });
 
   it('falls back to the device voice when there is no recording, and remembers that', () => {

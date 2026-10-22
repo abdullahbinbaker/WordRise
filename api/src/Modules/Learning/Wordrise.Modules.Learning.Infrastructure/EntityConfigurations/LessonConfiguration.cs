@@ -12,6 +12,8 @@ internal sealed class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.HasKey(l => l.Id);
         builder.Property(l => l.Id).ValueGeneratedNever();
         builder.HasIndex(l => l.Number).IsUnique();
+        builder.Property(l => l.TargetLanguage).HasMaxLength(8);
+        builder.Property(l => l.NativeLanguage).HasMaxLength(8);
         builder.Property(l => l.Title).HasMaxLength(100);
         builder.Property(l => l.Scenario).HasMaxLength(100);
         builder.Property(l => l.GrammarPoint).HasMaxLength(100);

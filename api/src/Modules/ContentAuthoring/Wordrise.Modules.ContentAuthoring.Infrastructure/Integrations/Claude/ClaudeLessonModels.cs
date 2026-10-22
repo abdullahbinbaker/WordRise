@@ -17,8 +17,8 @@ internal sealed record LessonJson(
 {
     public static LessonJson From(DraftContent c) => new(
         c.Title,
-        [.. c.Words.Select(w => new WordJson(w.English, w.Arabic, w.Pronunciation, w.Example, w.ExampleArabic))],
-        [.. c.Dialogue.Select(d => new DialogueLineJson(d.Speaker, d.IsLearner, d.English, d.Arabic))],
+        [.. c.Words.Select(w => new WordJson(w.Target, w.Native, w.Pronunciation, w.Example, w.ExampleNative))],
+        [.. c.Dialogue.Select(d => new DialogueLineJson(d.Speaker, d.IsLearner, d.Target, d.Native))],
         c.ChatPrompt,
         [.. c.ChatOptions.Select(o => new OptionJson(o.Text, o.IsCorrect))],
         new GrammarJson(
@@ -26,7 +26,7 @@ internal sealed record LessonJson(
             c.Grammar.Meaning,
             c.Grammar.Explanation,
             c.Grammar.Pattern,
-            [.. c.Grammar.Examples.Select(e => new GrammarExampleJson(e.English, e.Arabic))],
+            [.. c.Grammar.Examples.Select(e => new GrammarExampleJson(e.Target, e.Native))],
             c.Grammar.Note),
         c.ListeningSentence,
         [.. c.ListeningOptions.Select(o => new OptionJson(o.Text, o.IsCorrect))]);
@@ -38,11 +38,11 @@ internal sealed record LessonJson(
         [
             .. (Words ?? []).Select(w => new DraftWord
             {
-                English = w.English ?? string.Empty,
-                Arabic = w.Arabic ?? string.Empty,
+                Target = w.Target ?? string.Empty,
+                Native = w.Native ?? string.Empty,
                 Pronunciation = w.Pronunciation ?? string.Empty,
                 Example = w.Example ?? string.Empty,
-                ExampleArabic = w.ExampleArabic ?? string.Empty,
+                ExampleNative = w.ExampleNative ?? string.Empty,
             }),
         ],
         Dialogue =
@@ -51,8 +51,8 @@ internal sealed record LessonJson(
             {
                 Speaker = d.Speaker ?? string.Empty,
                 IsLearner = d.IsLearner,
-                English = d.English ?? string.Empty,
-                Arabic = d.Arabic ?? string.Empty,
+                Target = d.Target ?? string.Empty,
+                Native = d.Native ?? string.Empty,
             }),
         ],
         ChatPrompt = ChatPrompt ?? string.Empty,
@@ -67,8 +67,8 @@ internal sealed record LessonJson(
             [
                 .. (Grammar?.Examples ?? []).Select(e => new DraftGrammarExample
                 {
-                    English = e.English ?? string.Empty,
-                    Arabic = e.Arabic ?? string.Empty,
+                    Target = e.Target ?? string.Empty,
+                    Native = e.Native ?? string.Empty,
                 }),
             ],
             Note = Grammar?.Note ?? string.Empty,
@@ -78,9 +78,9 @@ internal sealed record LessonJson(
     };
 }
 
-internal sealed record WordJson(string English, string Arabic, string Pronunciation, string Example, string ExampleArabic);
+internal sealed record WordJson(string Target, string Native, string Pronunciation, string Example, string ExampleNative);
 
-internal sealed record DialogueLineJson(string Speaker, bool IsLearner, string English, string Arabic);
+internal sealed record DialogueLineJson(string Speaker, bool IsLearner, string Target, string Native);
 
 internal sealed record OptionJson(string Text, bool IsCorrect);
 
@@ -92,7 +92,7 @@ internal sealed record GrammarJson(
     List<GrammarExampleJson> Examples,
     string Note);
 
-internal sealed record GrammarExampleJson(string English, string Arabic);
+internal sealed record GrammarExampleJson(string Target, string Native);
 
 internal sealed record ReviewJson(string Summary, List<CriterionJson> Criteria, List<IssueJson> Issues)
 {

@@ -6,19 +6,19 @@ namespace Wordrise.Modules.Learning.Domain.Tests;
 
 public sealed class LessonTests
 {
-    private static LessonWord Word(string english) =>
-        new() { Id = WordIdentity.For(english), English = english, Arabic = "معنى" };
+    private static LessonWord Word(string target) =>
+        new() { Id = WordIdentity.For("en", target), Target = target, Native = "معنى" };
 
     private static LessonContent ValidContent() => new()
     {
         Words = [Word("apple"), Word("milk")],
-        Dialogue = [new DialogueLine { Speaker = "A", English = "Hi", Arabic = "مرحبا" }],
+        Dialogue = [new DialogueLine { Speaker = "A", Target = "Hi", Native = "مرحبا" }],
         ChatOptions = [new AnswerOption { Text = "Yes", IsCorrect = true }, new AnswerOption { Text = "No" }],
         ListeningOptions = [new AnswerOption { Text = "apple", IsCorrect = true }, new AnswerOption { Text = "milk" }],
     };
 
     private static Lesson Create(LessonContent content, string title = "في البقالة") =>
-        Lesson.Create(Guid.NewGuid(), 1, title, "grocery", "can / can't", content);
+        Lesson.Create(Guid.NewGuid(), 1, "en", "ar", title, "grocery", "can / can't", content);
 
     [Fact]
     public void A_complete_lesson_is_created()
@@ -32,9 +32,37 @@ public sealed class LessonTests
     [Fact]
     public void A_word_has_the_same_id_wherever_it_is_taught()
     {
-        Assert.Equal(WordIdentity.For("Milk"), WordIdentity.For("  milk "));
-        Assert.Equal(WordIdentity.For("thank you"), WordIdentity.For("Thank   YOU"));
-        Assert.NotEqual(WordIdentity.For("milk"), WordIdentity.For("rice"));
+        Assert.Equal(WordIdentity.For("en", "Milk"), WordIdentity.For("en", "  milk "));
+        Assert.Equal(WordIdentity.For("en", "thank you"), WordIdentity.For("en", "Thank   YOU"));
+        Assert.NotEqual(WordIdentity.For("en", "milk"), WordIdentity.For("en", "rice"));
+    }
+
+    [Fact]
+    public void The_same_spelling_in_two_languages_is_two_words()
+    {
+        Assert.NotEqual(WordIdentity.For("en", "pain"), WordIdentity.For("fr", "pain"));
+    }
+
+    [Fact]
+    public void A_lesson_remembers_the_languages_it_teaches_and_explains_in()
+    {
+        var lesson = Lesson.Create(Guid.NewGuid(), 1, " EN ", "ar", "في البقالة", "grocery", "can", ValidContent());
+
+        Assert.Equal("en", lesson.TargetLanguage);
+        Assert.Equal("ar", lesson.NativeLanguage);
+    }
+
+    [Theory]
+    [InlineData("", "ar")]
+    [InlineData("en", "")]
+    [InlineData("english", "ar")]
+    [InlineData("en", "a1")]
+    public void A_lesson_needs_valid_language_codes(string target, string native)
+    {
+        var error = Assert.Throws<BusinessRuleException>(
+            () => Lesson.Create(Guid.NewGuid(), 1, target, native, "في البقالة", "grocery", "can", ValidContent()));
+
+        Assert.Equal(LearningErrors.LessonInvalid, error.Code);
     }
 
     public static TheoryData<string, Func<LessonContent>> BrokenLessons() => new()

@@ -4,6 +4,8 @@ namespace Wordrise.Modules.Learning.Application.Features.Lessons;
 public sealed record LessonDto(
     Guid Id,
     int Number,
+    string TargetLanguage,
+    string NativeLanguage,
     string Title,
     string Scenario,
     string GrammarPoint,
@@ -16,13 +18,13 @@ public sealed record LessonDto(
 
 public sealed record LessonWordDto(
     Guid Id,
-    string English,
-    string Arabic,
+    string Target,
+    string Native,
     string Pronunciation,
     string Example,
-    string ExampleArabic);
+    string ExampleNative);
 
-public sealed record DialogueLineDto(string Speaker, bool IsLearner, string English, string Arabic);
+public sealed record DialogueLineDto(string Speaker, bool IsLearner, string Target, string Native);
 
 public sealed record AnswerOptionDto(string Text, bool IsCorrect);
 
@@ -34,7 +36,7 @@ public sealed record GrammarDto(
     IReadOnlyList<GrammarExampleDto> Examples,
     string Note);
 
-public sealed record GrammarExampleDto(string English, string Arabic);
+public sealed record GrammarExampleDto(string Target, string Native);
 
 public sealed record ListeningDto(string Sentence, IReadOnlyList<AnswerOptionDto> Options);
 

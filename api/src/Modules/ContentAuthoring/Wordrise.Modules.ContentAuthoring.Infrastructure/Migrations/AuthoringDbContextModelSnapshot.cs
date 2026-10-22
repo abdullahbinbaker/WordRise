@@ -166,15 +166,15 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Migrations
                                             b3.Property<int>("__synthesizedOrdinal")
                                                 .ValueGeneratedOnAdd();
 
-                                            b3.Property<string>("Arabic")
-                                                .IsRequired();
-
-                                            b3.Property<string>("English")
-                                                .IsRequired();
-
                                             b3.Property<bool>("IsLearner");
 
+                                            b3.Property<string>("Native")
+                                                .IsRequired();
+
                                             b3.Property<string>("Speaker")
+                                                .IsRequired();
+
+                                            b3.Property<string>("Target")
                                                 .IsRequired();
 
                                             b3.HasKey("DraftContentDraftRevisionLessonDraftId", "DraftContentDraftRevision__synthesizedOrdinal", "__synthesizedOrdinal");
@@ -222,10 +222,10 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Migrations
                                                     b4.Property<int>("__synthesizedOrdinal")
                                                         .ValueGeneratedOnAdd();
 
-                                                    b4.Property<string>("Arabic")
+                                                    b4.Property<string>("Native")
                                                         .IsRequired();
 
-                                                    b4.Property<string>("English")
+                                                    b4.Property<string>("Target")
                                                         .IsRequired();
 
                                                     b4.HasKey("DraftGrammarDraftContentDraftRevisionLessonDraftId", "DraftGrammarDraftContentDraftRevision__synthesizedOrdinal", "__synthesizedOrdinal");
@@ -248,19 +248,19 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Migrations
                                             b3.Property<int>("__synthesizedOrdinal")
                                                 .ValueGeneratedOnAdd();
 
-                                            b3.Property<string>("Arabic")
-                                                .IsRequired();
-
-                                            b3.Property<string>("English")
-                                                .IsRequired();
-
                                             b3.Property<string>("Example")
                                                 .IsRequired();
 
-                                            b3.Property<string>("ExampleArabic")
+                                            b3.Property<string>("ExampleNative")
+                                                .IsRequired();
+
+                                            b3.Property<string>("Native")
                                                 .IsRequired();
 
                                             b3.Property<string>("Pronunciation")
+                                                .IsRequired();
+
+                                            b3.Property<string>("Target")
                                                 .IsRequired();
 
                                             b3.HasKey("DraftContentDraftRevisionLessonDraftId", "DraftContentDraftRevision__synthesizedOrdinal", "__synthesizedOrdinal");
@@ -405,11 +405,23 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Migrations
                                 .HasColumnType("integer")
                                 .HasColumnName("GrammarStep");
 
+                            b1.Property<string>("NativeLanguage")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)")
+                                .HasColumnName("NativeLanguage");
+
                             b1.Property<string>("Scenario")
                                 .IsRequired()
                                 .HasMaxLength(60)
                                 .HasColumnType("character varying(60)")
                                 .HasColumnName("Scenario");
+
+                            b1.Property<string>("TargetLanguage")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)")
+                                .HasColumnName("TargetLanguage");
 
                             b1.Property<int>("WordCount")
                                 .HasColumnType("integer")

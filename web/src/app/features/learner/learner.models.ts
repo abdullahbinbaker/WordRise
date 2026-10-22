@@ -35,19 +35,19 @@ export interface DailyGoal {
 
 export interface LessonWord {
   id: string;
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
   /** How the word sounds, in Arabic letters. */
   pronunciation: string;
   example: string;
-  exampleArabic: string;
+  exampleNative: string;
 }
 
 export interface DialogueLine {
   speaker: string;
   isLearner: boolean;
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
 }
 
 export interface AnswerOption {
@@ -56,8 +56,8 @@ export interface AnswerOption {
 }
 
 export interface GrammarExample {
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
 }
 
 export interface Grammar {
@@ -72,6 +72,10 @@ export interface Grammar {
 export interface Lesson {
   id: string;
   number: number;
+  /** ISO code of the language being taught, for example en. */
+  targetLanguage: string;
+  /** ISO code of the language the lesson explains it in, for example ar. */
+  nativeLanguage: string;
   title: string;
   scenario: string;
   grammarPoint: string;
@@ -85,8 +89,8 @@ export interface Lesson {
 
 export interface ReviewCard {
   wordId: string;
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
 }
 
 export interface CompleteResult {
@@ -97,8 +101,8 @@ export interface CompleteResult {
 
 export interface MyWord {
   wordId: string;
-  english: string;
-  arabic: string;
+  target: string;
+  native: string;
   status: WordStatus;
   nextReviewOn: string;
 }

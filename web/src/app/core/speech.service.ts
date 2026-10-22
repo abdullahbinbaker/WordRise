@@ -2,14 +2,20 @@ import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { audioId } from './audio-id';
 
+/** The device voice needs a locale; recordings only need the language. */
+const DEVICE_LOCALES: Record<string, string> = { en: 'en-US' };
+
 /**
- * Speaks English text. Plays the recording the server made when the lesson was published; when
+ * Speaks text in the language being taught. Plays the recording the server made when the lesson was published; when
  * there is none (no speech provider yet, or one recording failed) it uses the device's own voice,
  * so a learner always hears something.
  */
 @Injectable({ providedIn: 'root' })
 export class SpeechService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  /** The language of the lesson being studied, as an ISO code; the lesson screen sets it. */
+  language = 'en';
 
   private player: HTMLAudioElement | null = null;
 
@@ -23,7 +29,7 @@ export class SpeechService {
 
     this.stop();
 
-    const id = audioId(text, slow);
+    const id = audioId(this.language, text, slow);
     if (this.missing.has(id)) {
       this.speakWithDevice(text, slow);
       return;
@@ -58,7 +64,7 @@ export class SpeechService {
       return;
     }
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
+    utterance.lang = DEVICE_LOCALES[this.language] ?? this.language;
     utterance.rate = slow ? 0.55 : 0.85;
     window.speechSynthesis.speak(utterance);
   }

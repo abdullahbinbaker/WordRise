@@ -76,19 +76,19 @@ public sealed class MediaTests : IAsyncLifetime
         return await scope.ServiceProvider.GetRequiredService<IAudioLibrary>().EnsureAsync(texts, CancellationToken.None);
     }
 
-    private static string Url(string text, bool slow = false) => $"/api/v1/media/audio/{AudioId.For(text, slow)}";
+    private static string Url(string text, bool slow = false) => $"/api/v1/media/audio/{AudioId.For("en", text, slow)}";
 
     [Fact]
     public void A_recording_is_named_from_its_text_alone()
     {
-        Assert.Equal(AudioId.For("apple"), AudioId.For("  apple "));
-        Assert.Equal(AudioId.For("I want  an apple."), AudioId.For("I want an apple."));
-        Assert.NotEqual(AudioId.For("apple"), AudioId.For("apple", slow: true));
-        Assert.NotEqual(AudioId.For("apple"), AudioId.For("Apple"));
-        Assert.Matches("^[0-9a-f]{32}$", AudioId.For("apple"));
+        Assert.Equal(AudioId.For("en", "apple"), AudioId.For("en", "  apple "));
+        Assert.Equal(AudioId.For("en", "I want  an apple."), AudioId.For("en", "I want an apple."));
+        Assert.NotEqual(AudioId.For("en", "apple"), AudioId.For("en", "apple", slow: true));
+        Assert.NotEqual(AudioId.For("en", "apple"), AudioId.For("en", "Apple"));
+        Assert.Matches("^[0-9a-f]{32}$", AudioId.For("en", "apple"));
 
         // The website computes the same names: this value is repeated in web/src/app/core/audio-id.spec.ts.
-        Assert.Equal("7441e112be2685a40ab86b37fe161ea1", AudioId.For("apple"));
+        Assert.Equal("f41e0a4134d0d7aec2945806eebb7370", AudioId.For("en", "apple"));
     }
 
     [Fact]
@@ -98,9 +98,9 @@ public sealed class MediaTests : IAsyncLifetime
 
         var result = await EnsureAsync(
             factory,
-            new SpokenText("apple"),
-            new SpokenText("Hello! Can I help you?", SpeakerVoice.Secondary),
-            new SpokenText("I can buy apple.", Slow: true));
+            new SpokenText("apple", "en"),
+            new SpokenText("Hello! Can I help you?", "en", SpeakerVoice.Secondary),
+            new SpokenText("I can buy apple.", "en", Slow: true));
 
         Assert.Equal(new AudioGenerationResult(true, 3, 3, 0, 0), result);
         Assert.Equal(3, _requests.Count);
@@ -118,7 +118,7 @@ public sealed class MediaTests : IAsyncLifetime
     {
         using var factory = Factory();
 
-        await EnsureAsync(factory, new SpokenText("Tom & Jerry <3"));
+        await EnsureAsync(factory, new SpokenText("Tom & Jerry <3", "en"));
 
         Assert.Contains("Tom &amp; Jerry &lt;3", _requests.Single().Ssml);
     }
@@ -128,8 +128,8 @@ public sealed class MediaTests : IAsyncLifetime
     {
         using var factory = Factory();
 
-        await EnsureAsync(factory, new SpokenText("apple"), new SpokenText(" apple"), new SpokenText("milk"));
-        var again = await EnsureAsync(factory, new SpokenText("apple"), new SpokenText("milk"));
+        await EnsureAsync(factory, new SpokenText("apple", "en"), new SpokenText(" apple", "en"), new SpokenText("milk", "en"));
+        var again = await EnsureAsync(factory, new SpokenText("apple", "en"), new SpokenText("milk", "en"));
 
         Assert.Equal(2, _requests.Count);
         Assert.Equal(new AudioGenerationResult(true, 2, 0, 2, 0), again);
@@ -141,7 +141,7 @@ public sealed class MediaTests : IAsyncLifetime
         _status = 401;
         using var factory = Factory();
 
-        var result = await EnsureAsync(factory, new SpokenText("apple"), new SpokenText("milk"));
+        var result = await EnsureAsync(factory, new SpokenText("apple", "en"), new SpokenText("milk", "en"));
 
         Assert.Equal(new AudioGenerationResult(true, 2, 0, 0, 2), result);
         Assert.Equal(HttpStatusCode.NotFound, (await factory.CreateHttpsClient().GetAsync(Url("apple"))).StatusCode);
@@ -152,7 +152,7 @@ public sealed class MediaTests : IAsyncLifetime
     {
         using var factory = Factory(azure: false);
 
-        var result = await EnsureAsync(factory, new SpokenText("apple"));
+        var result = await EnsureAsync(factory, new SpokenText("apple", "en"));
 
         Assert.Equal(new AudioGenerationResult(false, 1, 0, 0, 0), result);
         Assert.Empty(_requests);
@@ -164,7 +164,7 @@ public sealed class MediaTests : IAsyncLifetime
         using var factory = Factory();
         factory.Settings["Media:Azure:Key"] = "";
 
-        var result = await EnsureAsync(factory, new SpokenText("apple"));
+        var result = await EnsureAsync(factory, new SpokenText("apple", "en"));
 
         Assert.False(result.Enabled);
         Assert.Empty(_requests);
@@ -174,7 +174,7 @@ public sealed class MediaTests : IAsyncLifetime
     public async Task A_recording_is_served_to_anyone_and_cached_for_a_day_then_checked()
     {
         using var factory = Factory();
-        await EnsureAsync(factory, new SpokenText("apple"));
+        await EnsureAsync(factory, new SpokenText("apple", "en"));
 
         var response = await factory.CreateHttpsClient().GetAsync(Url("apple"));
 
@@ -193,7 +193,7 @@ public sealed class MediaTests : IAsyncLifetime
     public async Task Parts_of_a_recording_can_be_requested_as_Safari_does()
     {
         using var factory = Factory();
-        await EnsureAsync(factory, new SpokenText("apple"));
+        await EnsureAsync(factory, new SpokenText("apple", "en"));
         var request = new HttpRequestMessage(HttpMethod.Get, Url("apple")) { Headers = { Range = new RangeHeaderValue(0, 3) } };
 
         var response = await factory.CreateHttpsClient().SendAsync(request);
@@ -206,7 +206,7 @@ public sealed class MediaTests : IAsyncLifetime
     [InlineData("0123456789abcdef0123456789abcdef")]
     [InlineData("..%2f..%2fappsettings")]
     [InlineData("not-an-id")]
-    [InlineData("7441E112BE2685A40AB86B37FE161EA1")]
+    [InlineData("F41E0A4134D0D7AEC2945806EEBB7370")]
     public async Task Unknown_or_malformed_names_are_not_found(string id)
     {
         using var factory = Factory();

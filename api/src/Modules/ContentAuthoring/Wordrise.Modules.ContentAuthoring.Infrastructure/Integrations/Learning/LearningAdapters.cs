@@ -20,11 +20,13 @@ internal sealed class LearningLessonPublisher(LearningContracts.ILessonPublisher
         // The draft id is the lesson id: publishing the same draft again finds its lesson and changes nothing.
         var request = new LearningContracts.PublishLessonRequest(
             draftId,
+            brief.TargetLanguage,
+            brief.NativeLanguage,
             content.Title,
             brief.Scenario,
             brief.Grammar.Title,
-            [.. content.Words.Select(w => new LearningContracts.PublishedWord(w.English, w.Arabic, w.Pronunciation, w.Example, w.ExampleArabic))],
-            [.. content.Dialogue.Select(d => new LearningContracts.PublishedDialogueLine(d.Speaker, d.IsLearner, d.English, d.Arabic))],
+            [.. content.Words.Select(w => new LearningContracts.PublishedWord(w.Target, w.Native, w.Pronunciation, w.Example, w.ExampleNative))],
+            [.. content.Dialogue.Select(d => new LearningContracts.PublishedDialogueLine(d.Speaker, d.IsLearner, d.Target, d.Native))],
             content.ChatPrompt,
             [.. content.ChatOptions.Select(o => new LearningContracts.PublishedAnswerOption(o.Text, o.IsCorrect))],
             new LearningContracts.PublishedGrammar(
@@ -32,7 +34,7 @@ internal sealed class LearningLessonPublisher(LearningContracts.ILessonPublisher
                 content.Grammar.Meaning,
                 content.Grammar.Explanation,
                 content.Grammar.Pattern,
-                [.. content.Grammar.Examples.Select(e => new LearningContracts.PublishedGrammarExample(e.English, e.Arabic))],
+                [.. content.Grammar.Examples.Select(e => new LearningContracts.PublishedGrammarExample(e.Target, e.Native))],
                 content.Grammar.Note),
             content.ListeningSentence,
             [.. content.ListeningOptions.Select(o => new LearningContracts.PublishedAnswerOption(o.Text, o.IsCorrect))]);
@@ -52,6 +54,6 @@ internal sealed class LearningLessonPublisher(LearningContracts.ILessonPublisher
 
 internal sealed class LearningKnownVocabulary(LearningContracts.IPublishedVocabulary learning) : IKnownVocabulary
 {
-    public Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken) =>
-        learning.GetTaughtWordsAsync(cancellationToken);
+    public Task<IReadOnlyList<string>> GetTaughtWordsAsync(string targetLanguage, CancellationToken cancellationToken) =>
+        learning.GetTaughtWordsAsync(targetLanguage, cancellationToken);
 }

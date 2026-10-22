@@ -48,24 +48,24 @@ public static partial class LessonContentValidator
             add("words", $"The lesson must teach exactly {brief.WordCount} new words, but has {content.Words.Count}.");
         }
 
-        var dialogueText = string.Join(' ', content.Dialogue.Select(d => d.English));
+        var dialogueText = string.Join(' ', content.Dialogue.Select(d => d.Target));
         foreach (var word in content.Words)
         {
-            var where = $"word: {word.English}";
-            RequireText(word.English, where, add, latin: true);
-            RequireText(word.Arabic, $"{where} (Arabic meaning)", add, arabic: true);
+            var where = $"word: {word.Target}";
+            RequireText(word.Target, where, add, latin: true);
+            RequireText(word.Native, $"{where} (Arabic meaning)", add, arabic: true);
             RequireText(word.Pronunciation, $"{where} (pronunciation)", add, arabic: true);
             RequireText(word.Example, $"{where} (example)", add, latin: true);
-            RequireText(word.ExampleArabic, $"{where} (example translation)", add, arabic: true);
+            RequireText(word.ExampleNative, $"{where} (example translation)", add, arabic: true);
 
-            if (!string.IsNullOrWhiteSpace(word.English) && !ContainsWord(dialogueText, word.English.Trim().TrimEnd('?', '.', '!')))
+            if (!string.IsNullOrWhiteSpace(word.Target) && !ContainsWord(dialogueText, word.Target.Trim().TrimEnd('?', '.', '!')))
             {
                 add(where, "The dialogue never uses this word; every new word must appear in the dialogue.");
             }
         }
 
         foreach (var repeated in content.Words
-            .GroupBy(w => w.English.Trim(), StringComparer.OrdinalIgnoreCase)
+            .GroupBy(w => w.Target.Trim(), StringComparer.OrdinalIgnoreCase)
             .Where(g => g.Count() > 1))
         {
             add($"word: {repeated.Key}", "The same word is listed twice.");
@@ -94,8 +94,8 @@ public static partial class LessonContentValidator
         {
             var where = $"dialogue line {i + 1}";
             RequireText(lines[i].Speaker, $"{where} (speaker)", add);
-            RequireText(lines[i].English, where, add, latin: true);
-            RequireText(lines[i].Arabic, $"{where} (translation)", add, arabic: true);
+            RequireText(lines[i].Target, where, add, latin: true);
+            RequireText(lines[i].Native, $"{where} (translation)", add, arabic: true);
         }
     }
 
@@ -113,8 +113,8 @@ public static partial class LessonContentValidator
 
         for (var i = 0; i < grammar.Examples.Count; i++)
         {
-            RequireText(grammar.Examples[i].English, $"grammar example {i + 1}", add, latin: true);
-            RequireText(grammar.Examples[i].Arabic, $"grammar example {i + 1} (translation)", add, arabic: true);
+            RequireText(grammar.Examples[i].Target, $"grammar example {i + 1}", add, latin: true);
+            RequireText(grammar.Examples[i].Native, $"grammar example {i + 1} (translation)", add, arabic: true);
         }
     }
 

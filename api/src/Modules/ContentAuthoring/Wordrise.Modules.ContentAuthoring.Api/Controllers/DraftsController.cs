@@ -39,7 +39,12 @@ internal sealed class DraftsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Create(CreateDraftRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(
-            new CreateDraftCommand(request.Scenario, request.GrammarStep, request.WordCount),
+            new CreateDraftCommand(
+                request.Scenario,
+                request.GrammarStep,
+                request.WordCount,
+                request.TargetLanguage,
+                request.NativeLanguage),
             cancellationToken);
 
         return result.IsSuccess
@@ -72,7 +77,12 @@ internal sealed class DraftsController(IMediator mediator) : ControllerBase
         this.ToActionResult(await mediator.Send(new RequeueDraftCommand(draftId), cancellationToken));
 }
 
-internal sealed record CreateDraftRequest(string? Scenario, int GrammarStep, int? WordCount);
+internal sealed record CreateDraftRequest(
+    string? Scenario,
+    int GrammarStep,
+    int? WordCount,
+    string? TargetLanguage,
+    string? NativeLanguage);
 
 internal sealed record RejectDraftRequest(string? Note);
 

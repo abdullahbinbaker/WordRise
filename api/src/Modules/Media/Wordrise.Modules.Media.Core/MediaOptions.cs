@@ -32,15 +32,29 @@ internal sealed class AzureSpeechOptions
     /// <summary>Overrides the service address; only tests use it.</summary>
     public string Endpoint { get; set; } = string.Empty;
 
-    public string PrimaryVoice { get; set; } = "en-US-JennyNeural";
-
-    public string SecondaryVoice { get; set; } = "en-US-GuyNeural";
+    /// <summary>The voices to use for each language, by ISO code. Teaching a new language starts here.</summary>
+    public Dictionary<string, LanguageVoices> Voices { get; set; } = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["en"] = new() { Locale = "en-US", Primary = "en-US-JennyNeural", Secondary = "en-US-GuyNeural" },
+    };
 
     /// <summary>How much slower the slow version speaks, as SSML prosody rate.</summary>
     public string SlowRate { get; set; } = "-40%";
 
     /// <summary>Synthesis requests running at the same time.</summary>
     public int MaxParallelRequests { get; set; } = 3;
+}
+
+internal sealed class LanguageVoices
+{
+    /// <summary>The locale of the voices, for example en-US.</summary>
+    public string Locale { get; set; } = string.Empty;
+
+    /// <summary>Reads words and the learner's own lines.</summary>
+    public string Primary { get; set; } = string.Empty;
+
+    /// <summary>Reads the other person in a dialogue.</summary>
+    public string Secondary { get; set; } = string.Empty;
 }
 
 internal sealed class StorageOptions
@@ -63,6 +77,14 @@ internal sealed class MediaOptionsValidator : IValidateOptions<MediaOptions>
         if (string.IsNullOrWhiteSpace(options.Storage.Path))
         {
             failures.Add("Media:Storage:Path is required.");
+        }
+
+        foreach (var (language, voices) in options.Azure.Voices)
+        {
+            if (string.IsNullOrWhiteSpace(voices.Locale) || string.IsNullOrWhiteSpace(voices.Primary) || string.IsNullOrWhiteSpace(voices.Secondary))
+            {
+                failures.Add($"Media:Azure:Voices:{language} needs Locale, Primary and Secondary.");
+            }
         }
 
         if (string.IsNullOrWhiteSpace(options.Azure.SlowRate))

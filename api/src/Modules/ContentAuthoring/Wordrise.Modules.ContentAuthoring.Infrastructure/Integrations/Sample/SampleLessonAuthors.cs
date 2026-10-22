@@ -11,7 +11,7 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Integrations.Sample;
 internal sealed class SampleLessonWriter : ILessonWriter
 {
     // English, Arabic meaning, pronunciation in Arabic letters.
-    private static readonly (string English, string Arabic, string Pronunciation)[] Bank =
+    private static readonly (string Target, string Native, string Pronunciation)[] Bank =
     [
         ("apple", "تفاحة", "آبِل"),
         ("milk", "حليب", "مِلك"),
@@ -51,11 +51,11 @@ internal sealed class SampleLessonWriter : ILessonWriter
 
         // Prefer words learners have not met; fall back to the whole bank if it runs out.
         var known = context.KnownWords.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var fresh = Bank.Where(w => !known.Contains(w.English)).ToList();
+        var fresh = Bank.Where(w => !known.Contains(w.Target)).ToList();
         var picked = (fresh.Count >= brief.WordCount ? fresh : [.. Bank]).Take(brief.WordCount).ToList();
 
-        var correct = picked[0].English;
-        var distractors = Bank.Where(w => w.English != correct).Take(3).Select(w => w.English);
+        var correct = picked[0].Target;
+        var distractors = Bank.Where(w => w.Target != correct).Take(3).Select(w => w.Target);
 
         return new DraftContent
         {
@@ -64,22 +64,22 @@ internal sealed class SampleLessonWriter : ILessonWriter
             [
                 .. picked.Select(w => new DraftWord
                 {
-                    English = w.English,
-                    Arabic = w.Arabic,
+                    Target = w.Target,
+                    Native = w.Native,
                     Pronunciation = w.Pronunciation,
-                    Example = $"I like {w.English}.",
-                    ExampleArabic = $"أحب {w.Arabic}.",
+                    Example = $"I like {w.Target}.",
+                    ExampleNative = $"أحب {w.Native}.",
                 }),
             ],
             Dialogue =
             [
-                new DraftDialogueLine { Speaker = "البائع", English = "Hello! Can I help you?", Arabic = "مرحباً! هل أستطيع مساعدتك؟" },
+                new DraftDialogueLine { Speaker = "البائع", Target = "Hello! Can I help you?", Native = "مرحباً! هل أستطيع مساعدتك؟" },
                 .. picked.Chunk(2).Select(pair => new DraftDialogueLine
                 {
                     Speaker = "أنت",
                     IsLearner = true,
-                    English = $"Can I have {string.Join(" and ", pair.Select(w => w.English))}, please?",
-                    Arabic = $"هل أستطيع الحصول على {string.Join(" و", pair.Select(w => w.Arabic))} من فضلك؟",
+                    Target = $"Can I have {string.Join(" and ", pair.Select(w => w.Target))}, please?",
+                    Native = $"هل أستطيع الحصول على {string.Join(" و", pair.Select(w => w.Native))} من فضلك؟",
                 }),
             ],
             ChatPrompt = "البائع ينتظر. ماذا تقول وأنت تعطيه المال؟",
@@ -96,9 +96,9 @@ internal sealed class SampleLessonWriter : ILessonWriter
                 Pattern = "الشخص + الفعل",
                 Examples =
                 [
-                    new DraftGrammarExample { English = "I can read.", Arabic = "أستطيع القراءة." },
-                    new DraftGrammarExample { English = "She can cook.", Arabic = "هي تستطيع الطبخ." },
-                    new DraftGrammarExample { English = "I can't drive.", Arabic = "لا أستطيع القيادة." },
+                    new DraftGrammarExample { Target = "I can read.", Native = "أستطيع القراءة." },
+                    new DraftGrammarExample { Target = "She can cook.", Native = "هي تستطيع الطبخ." },
+                    new DraftGrammarExample { Target = "I can't drive.", Native = "لا أستطيع القيادة." },
                 ],
                 Note = "ملاحظة تجريبية.",
             },

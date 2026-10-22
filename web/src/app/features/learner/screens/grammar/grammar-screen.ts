@@ -16,7 +16,7 @@ export class GrammarScreen {
   /** The first example split into word chips, the grammar word highlighted: I | can | read. */
   protected readonly chips = computed(() => {
     const { title, examples } = this.grammar();
-    const words = (examples[0]?.english ?? '').replace(/[.?!]/g, '').split(/\s+/).filter(Boolean);
+    const words = (examples[0]?.target ?? '').replace(/[.?!]/g, '').split(/\s+/).filter(Boolean);
     return words.map((text) => ({ text, key: text.toLowerCase() === title.toLowerCase() }));
   });
 }

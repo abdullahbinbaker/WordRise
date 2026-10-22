@@ -108,10 +108,17 @@ dotnet run --project src/Wordrise.Host --launch-profile https-sqlite
 |---|---|---|
 | `Media:Provider` | `None` | `Azure` لتفعيل التسجيل |
 | `Media:Azure:Key` / `Region` | فارغ | من مورد Speech في Azure (مثلاً `westeurope`) |
-| `Media:Azure:PrimaryVoice` | `en-US-JennyNeural` | صوت الكلمات وصوت المتعلّم في الحوار |
-| `Media:Azure:SecondaryVoice` | `en-US-GuyNeural` | صوت الطرف الآخر في الحوار |
+| `Media:Azure:Voices:<لغة>` | `en`: `en-US-JennyNeural` و`en-US-GuyNeural` | أصوات كل لغة تعلّم: `Locale` و`Primary` (الكلمات وصوت المتعلّم) و`Secondary` (الطرف الآخر في الحوار) |
 | `Media:Azure:SlowRate` | `-40%` | سرعة النسخة البطيئة في تمرين الاستماع |
 | `Media:Storage:Path` | `media-data` | مجلد التسجيلات (لا يُرفع إلى git) |
+
+### اللغات: لغة التعلّم ولغة الشرح
+
+كل درس يحمل لغتين برمز ISO: `targetLanguage` (ما يتعلّمه المتعلّم، الآن `en`) و`nativeLanguage` (لغته التي نشرح بها، الآن `ar`). لذلك الحقول عامة (`target` و`native` و`exampleNative`) وليست `english` و`arabic`.
+
+الجاهز لإضافة لغة جديدة: أسماء الحقول، ومعرّف الكلمة (`WordIdentity` يتضمن اللغة)، ومعرّف التسجيل (`AudioId` يتضمنها)، وأصوات Azure لكل لغة (`Media:Azure:Voices`)، والكلمات المعروفة تُصفّى حسب اللغة.
+
+**غير جاهز بعد (يُبنى مع أول لغة جديدة):** قائمة الدورات المدعومة (`SupportedCourses` تقبل `en`→`ar` فقط، وغيرها يُرفض برسالة واضحة)، ومنهج القواعد (`GrammarCurriculum` إنجليزي)، وتعليمات الكاتب والمراجع (مكتوبة للإنجليزية)، وفحوص الشكل (حروف عربية/لاتينية)، وواجهة الموقع (عربية فقط).
 
 ### هيكل الـ API
 

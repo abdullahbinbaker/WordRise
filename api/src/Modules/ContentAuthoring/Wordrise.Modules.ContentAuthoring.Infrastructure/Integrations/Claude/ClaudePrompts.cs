@@ -20,6 +20,10 @@ internal static class ClaudePrompts
         real-life situation (the scenario) and one grammar point: the learner studies the new words,
         reads a dialogue that uses them, learns the grammar from that dialogue, then does two short
         exercises (a question about what to say, and a listening exercise).
+
+        In the lesson JSON, "target" is text in the language being taught (English) and "native" is the
+        same thing in the learner's own language (Arabic): a word's meaning, a dialogue line's translation,
+        a grammar example's translation. "exampleNative" is the translation of the word's example sentence.
         """;
 
     public const string WriterSystem = $"""

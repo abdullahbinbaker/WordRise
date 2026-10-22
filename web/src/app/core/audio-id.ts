@@ -3,9 +3,9 @@
  * server which recordings exist. Mirrors `AudioId` in the API (Media.Contracts); change both together.
  * Synchronous on purpose: playback must start inside the tap, or Safari refuses to play it.
  */
-export function audioId(text: string, slow = false): string {
+export function audioId(language: string, text: string, slow = false): string {
   const normalized = text.replace(/\s+/g, ' ').trim();
-  const key = `wordrise:audio:v1:${slow ? 'slow:' : ''}${normalized}`;
+  const key = `wordrise:audio:v2:${language.trim().toLowerCase()}:${slow ? 'slow:' : ''}${normalized}`;
   return sha256(new TextEncoder().encode(key))
     .slice(0, 16)
     .reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '');

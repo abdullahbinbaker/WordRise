@@ -20,6 +20,8 @@ internal sealed class LessonDraftConfiguration : IEntityTypeConfiguration<Lesson
 
         builder.OwnsOne(d => d.Brief, brief =>
         {
+            brief.Property(b => b.TargetLanguage).HasColumnName("TargetLanguage").HasMaxLength(8);
+            brief.Property(b => b.NativeLanguage).HasColumnName("NativeLanguage").HasMaxLength(8);
             brief.Property(b => b.Scenario).HasColumnName("Scenario").HasMaxLength(LessonBrief.MaxScenarioLength);
             brief.Property(b => b.GrammarStep).HasColumnName("GrammarStep");
             brief.Property(b => b.WordCount).HasColumnName("WordCount");

@@ -11,9 +11,10 @@ public enum SpeakerVoice
     Secondary,
 }
 
-/// <summary>An English text that learners will want to hear.</summary>
+/// <summary>A text that learners will want to hear.</summary>
+/// <param name="Language">ISO code of the language the text is in, for example en.</param>
 /// <param name="Slow">The slow, clearly pronounced version used by listening exercises.</param>
-public sealed record SpokenText(string Text, SpeakerVoice Voice = SpeakerVoice.Primary, bool Slow = false);
+public sealed record SpokenText(string Text, string Language, SpeakerVoice Voice = SpeakerVoice.Primary, bool Slow = false);
 
 /// <param name="Enabled">False when no speech provider is configured: nothing was attempted.</param>
 public sealed record AudioGenerationResult(bool Enabled, int Requested, int Created, int AlreadyThere, int Failed);
@@ -35,13 +36,13 @@ public interface IAudioLibrary
 /// </summary>
 public static partial class AudioId
 {
-    private const string Prefix = "wordrise:audio:v1:";
+    private const string Prefix = "wordrise:audio:v2:";
 
     public static string Normalize(string text) => Whitespace().Replace(text, " ").Trim();
 
-    public static string For(string text, bool slow = false)
+    public static string For(string language, string text, bool slow = false)
     {
-        var key = Prefix + (slow ? "slow:" : string.Empty) + Normalize(text);
+        var key = Prefix + language.Trim().ToLowerInvariant() + ":" + (slow ? "slow:" : string.Empty) + Normalize(text);
         return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(key)).AsSpan(0, 16));
     }
 

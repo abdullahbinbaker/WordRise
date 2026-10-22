@@ -15,16 +15,16 @@ internal static class ClaudeSchemas
         Obj(
             ("title", Str()),
             ("words", Arr(Obj(
-                ("english", Str()),
-                ("arabic", Str()),
+                ("target", Str()),
+                ("native", Str()),
                 ("pronunciation", Str()),
                 ("example", Str()),
-                ("exampleArabic", Str())))),
+                ("exampleNative", Str())))),
             ("dialogue", Arr(Obj(
                 ("speaker", Str()),
                 ("isLearner", Bool()),
-                ("english", Str()),
-                ("arabic", Str())))),
+                ("target", Str()),
+                ("native", Str())))),
             ("chatPrompt", Str()),
             ("chatOptions", Arr(Option())),
             ("grammar", Obj(
@@ -32,7 +32,7 @@ internal static class ClaudeSchemas
                 ("meaning", Str()),
                 ("explanation", Str()),
                 ("pattern", Str()),
-                ("examples", Arr(Obj(("english", Str()), ("arabic", Str())))),
+                ("examples", Arr(Obj(("target", Str()), ("native", Str())))),
                 ("note", Str()))),
             ("listeningSentence", Str()),
             ("listeningOptions", Arr(Option()))));

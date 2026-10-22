@@ -15,7 +15,7 @@ public sealed class GenerateLessonAudioCommandHandler(ILessonRepository lessons,
 {
     public async ValueTask<AudioGenerationResult> Handle(GenerateLessonAudioCommand command, CancellationToken cancellationToken)
     {
-        var texts = (await lessons.ListAsync(cancellationToken)).SelectMany(l => LessonSpeech.Collect(l.Content)).ToList();
+        var texts = (await lessons.ListAsync(cancellationToken)).SelectMany(l => LessonSpeech.Collect(l)).ToList();
         return await audio.EnsureAsync(texts, cancellationToken);
     }
 }

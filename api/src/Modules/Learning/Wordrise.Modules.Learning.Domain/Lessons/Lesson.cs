@@ -17,6 +17,12 @@ public sealed class Lesson
     /// <summary>Position in the course; learners take lessons in this order.</summary>
     public int Number { get; private set; }
 
+    /// <summary>ISO code of the language being taught, for example en.</summary>
+    public string TargetLanguage { get; private set; } = LessonLanguages.English;
+
+    /// <summary>ISO code of the language the lesson explains it in, for example ar.</summary>
+    public string NativeLanguage { get; private set; } = LessonLanguages.Arabic;
+
     public string Title { get; private set; } = string.Empty;
 
     public string Scenario { get; private set; } = string.Empty;
@@ -29,16 +35,22 @@ public sealed class Lesson
     public static Lesson Create(
         Guid id,
         int number,
+        string targetLanguage,
+        string nativeLanguage,
         string title,
         string scenario,
         string grammarPoint,
         LessonContent content)
     {
-        EnsureTeachable(title, scenario, grammarPoint, content);
+        targetLanguage = (targetLanguage ?? string.Empty).Trim().ToLowerInvariant();
+        nativeLanguage = (nativeLanguage ?? string.Empty).Trim().ToLowerInvariant();
+        EnsureTeachable(targetLanguage, nativeLanguage, title, scenario, grammarPoint, content);
         return new Lesson
         {
             Id = id,
             Number = number,
+            TargetLanguage = targetLanguage,
+            NativeLanguage = nativeLanguage,
             Title = title.Trim(),
             Scenario = scenario.Trim(),
             GrammarPoint = grammarPoint.Trim(),
@@ -46,10 +58,12 @@ public sealed class Lesson
         };
     }
 
-    private static void EnsureTeachable(string title, string scenario, string grammarPoint, LessonContent content)
+    private static void EnsureTeachable(string targetLanguage, string nativeLanguage, string title, string scenario, string grammarPoint, LessonContent content)
     {
         var problem =
-            string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(scenario) || string.IsNullOrWhiteSpace(grammarPoint)
+            !LessonLanguages.IsValidCode(targetLanguage) || !LessonLanguages.IsValidCode(nativeLanguage)
+                ? "A lesson needs the language it teaches and the language it explains in (ISO codes such as en and ar)."
+            : string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(scenario) || string.IsNullOrWhiteSpace(grammarPoint)
                 ? "A lesson needs a title, a scenario and a grammar point."
             : content.Words.Count == 0
                 ? "A lesson needs at least one word."
@@ -95,16 +109,16 @@ public sealed class LessonWord
 {
     public Guid Id { get; init; }
 
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 
-    /// <summary>How the word sounds, written in Arabic letters.</summary>
+    /// <summary>How the word sounds, written in the learner's own script.</summary>
     public string Pronunciation { get; init; } = string.Empty;
 
     public string Example { get; init; } = string.Empty;
 
-    public string ExampleArabic { get; init; } = string.Empty;
+    public string ExampleNative { get; init; } = string.Empty;
 }
 
 public sealed class DialogueLine
@@ -114,9 +128,9 @@ public sealed class DialogueLine
     /// <summary>True when the learner says this line.</summary>
     public bool IsLearner { get; init; }
 
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 }
 
 public sealed class AnswerOption
@@ -143,7 +157,7 @@ public sealed class GrammarExplanation
 
 public sealed class GrammarExample
 {
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 }

@@ -15,6 +15,12 @@ public sealed class LessonBrief
     {
     }
 
+    /// <summary>ISO code of the language being taught.</summary>
+    public string TargetLanguage { get; private set; } = SupportedCourses.English;
+
+    /// <summary>ISO code of the language the lesson explains it in.</summary>
+    public string NativeLanguage { get; private set; } = SupportedCourses.Arabic;
+
     /// <summary>The real-life situation, in the manager's words: "at the airport", "grocery store".</summary>
     public string Scenario { get; private set; } = string.Empty;
 
@@ -32,8 +38,18 @@ public sealed class LessonBrief
     public IReadOnlyList<string> AllowedGrammar => [.. GrammarCurriculum.UpTo(GrammarStep).Select(g => g.Title)];
 
     /// <exception cref="BusinessRuleException">The brief cannot produce a lesson.</exception>
-    public static LessonBrief Create(string? scenario, int grammarStep, int? wordCount)
+    public static LessonBrief Create(
+        string? scenario,
+        int grammarStep,
+        int? wordCount,
+        string targetLanguage = SupportedCourses.English,
+        string nativeLanguage = SupportedCourses.Arabic)
     {
+        if (!SupportedCourses.IsSupported(targetLanguage, nativeLanguage))
+        {
+            throw Invalid($"There is no course that teaches '{targetLanguage}' to '{nativeLanguage}' speakers yet.");
+        }
+
         var normalized = string.Join(' ', (scenario ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         if (normalized.Length is < MinScenarioLength or > MaxScenarioLength)
         {
@@ -51,7 +67,14 @@ public sealed class LessonBrief
             throw Invalid($"A lesson introduces {MinWords} to {MaxWords} new words.");
         }
 
-        return new LessonBrief { Scenario = normalized, GrammarStep = grammarStep, WordCount = words };
+        return new LessonBrief
+        {
+            TargetLanguage = targetLanguage.ToLowerInvariant(),
+            NativeLanguage = nativeLanguage.ToLowerInvariant(),
+            Scenario = normalized,
+            GrammarStep = grammarStep,
+            WordCount = words,
+        };
     }
 
     private static BusinessRuleException Invalid(string message) => new(AuthoringErrors.BriefInvalid, message);
