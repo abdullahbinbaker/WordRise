@@ -1,0 +1,52 @@
+<div class="screen__body chat">
+  <div class="chat__title">محادثة: {{ lesson().title }}</div>
+
+  @for (line of lesson().dialogue; track $index) {
+    <div class="line" [class.line--me]="line.isLearner">
+      <span class="line__who">{{ line.speaker }}</span>
+      <div class="bubble">
+        <div class="bubble__text">
+          <span class="bubble__en en" dir="ltr">{{ line.english }}</span>
+          <span class="bubble__ar">{{ line.arabic }}</span>
+        </div>
+        <app-speak-button [text]="line.english" [size]="46" [iconSize]="22" />
+      </div>
+    </div>
+  }
+
+  <div class="question">{{ lesson().chatPrompt }}</div>
+
+  @for (option of options(); track option.text; let i = $index) {
+    <button
+      type="button"
+      class="answer choice"
+      [class.choice--selected]="option.state === 'selected'"
+      [class.choice--right]="option.state === 'right'"
+      [class.choice--wrong]="option.state === 'wrong'"
+      [attr.aria-pressed]="option.state !== 'idle'"
+      (click)="pick(i)"
+    >
+      <span class="answer__en en" dir="ltr">{{ option.text }}</span>
+    </button>
+  }
+</div>
+
+@if (step() === 'next') {
+  <div class="feedback feedback--right" role="status">
+    صحيح! <span class="en" dir="ltr">{{ correctAnswer() }}</span>
+  </div>
+}
+@if (step() === 'retry') {
+  <div class="feedback feedback--wrong" role="status">ليست هذه الإجابة. جرّب مرة أخرى.</div>
+}
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" [disabled]="step() === 'choose'" (click)="primaryAction()">
+    @switch (step()) {
+      @case ('choose') { اختر إجابة }
+      @case ('check') { تحقّق }
+      @case ('retry') { حاول مرة أخرى }
+      @case ('next') { تابع }
+    }
+  </button>
+</div>

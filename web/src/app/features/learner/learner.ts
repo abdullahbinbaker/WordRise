@@ -1,7 +1,9 @@
-import { Component, OnInit, computed, inject, input } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input } from '@angular/core';
+import { ApiLearnerData } from './api-learner-data';
+import { DemoLearnerData } from './demo-learner-data';
 import { LearnerStore, Screen } from './learner.store';
-import { ChatScreen } from './screens/chat/chat-screen';
 import { DoneScreen } from './screens/done/done-screen';
+import { DialogueScreen } from './screens/dialogue/dialogue-screen';
 import { GoalScreen } from './screens/goal/goal-screen';
 import { GrammarScreen } from './screens/grammar/grammar-screen';
 import { HomeScreen } from './screens/home/home-screen';
@@ -10,7 +12,10 @@ import { NewWordScreen } from './screens/new-word/new-word-screen';
 import { ReviewScreen } from './screens/review/review-screen';
 import { WordsScreen } from './screens/words/words-screen';
 
-/** The learner app: used full screen on phones and embedded in the website. */
+/**
+ * The learner app: full screen on phones (live data) and embedded in the landing page
+ * (demo data, nothing saved).
+ */
 @Component({
   selector: 'app-learner',
   imports: [
@@ -18,7 +23,7 @@ import { WordsScreen } from './screens/words/words-screen';
     HomeScreen,
     ReviewScreen,
     NewWordScreen,
-    ChatScreen,
+    DialogueScreen,
     GrammarScreen,
     ListenScreen,
     DoneScreen,
@@ -30,9 +35,13 @@ import { WordsScreen } from './screens/words/words-screen';
 })
 export class Learner implements OnInit {
   protected readonly store = inject(LearnerStore);
+  private readonly api = inject(ApiLearnerData);
 
-  readonly start = input<Screen>('goal');
+  readonly mode = input<'live' | 'demo'>('demo');
+  readonly start = input<Screen>('home');
   readonly tabs = input<'top' | 'bottom'>('bottom');
+  readonly learnerName = input('');
+  readonly logout = input<(() => void) | null>(null);
 
   protected readonly tabItems: readonly { screen: Screen; label: string }[] = [
     { screen: 'home', label: 'الرئيسية' },
@@ -45,7 +54,20 @@ export class Learner implements OnInit {
     return screen === 'home' || screen === 'words' || (screen === 'goal' && this.store.onboarded());
   });
 
+  /** Lesson screens need the lesson loaded; until then the shell shows progress. */
+  protected readonly ready = computed(() => {
+    const screen = this.store.screen();
+    if (screen === 'home') return !!this.store.today();
+    if (['newword', 'dialogue', 'grammar', 'listen'].includes(screen)) return !!this.store.lesson();
+    return true;
+  });
+
+  constructor() {
+    effect(() => this.store.learnerName.set(this.learnerName()));
+    effect(() => this.store.logoutHandler.set(this.logout()));
+  }
+
   ngOnInit(): void {
-    this.store.start(this.start());
+    void this.store.init(this.mode() === 'live' ? this.api : new DemoLearnerData(), this.start());
   }
 }

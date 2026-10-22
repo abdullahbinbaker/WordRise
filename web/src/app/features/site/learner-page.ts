@@ -1,13 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 import { Learner } from '../learner/learner';
+import { Screen } from '../learner/learner.store';
 
-/** Full-screen learner app for phones (`/app`). */
+/** The signed-in learner's app (`/app`), full screen on phones. */
 @Component({
   selector: 'app-learner-page',
   imports: [Learner],
   template: `
     <div class="frame">
-      <app-learner start="goal" tabs="bottom" />
+      <app-learner
+        mode="live"
+        tabs="bottom"
+        [start]="startScreen()"
+        [learnerName]="auth.displayName()"
+        [logout]="logout"
+      />
     </div>
   `,
   styles: `
@@ -28,4 +37,16 @@ import { Learner } from '../learner/learner';
     }
   `,
 })
-export class LearnerPage {}
+export class LearnerPage {
+  protected readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  /** `?start=goal` right after registering: a new learner picks their daily goal first. */
+  readonly start = input<string>();
+
+  protected readonly startScreen = computed((): Screen => (this.start() === 'goal' ? 'goal' : 'home'));
+
+  protected readonly logout = (): void => {
+    void this.auth.logout().then(() => this.router.navigateByUrl('/'));
+  };
+}

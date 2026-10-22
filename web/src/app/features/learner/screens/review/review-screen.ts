@@ -1,8 +1,8 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ArabicDigitsPipe } from '../../../../core/arabic-digits.pipe';
 import { SpeakButton } from '../../../../shared/speak-button/speak-button';
+import { Rating } from '../../learner.models';
 import { LearnerStore } from '../../learner.store';
-import { REVIEW_CARDS, REVIEW_RATINGS } from '../../lesson.data';
 
 @Component({
   selector: 'app-review-screen',
@@ -13,7 +13,10 @@ import { REVIEW_CARDS, REVIEW_RATINGS } from '../../lesson.data';
 })
 export class ReviewScreen {
   protected readonly store = inject(LearnerStore);
-  protected readonly total = REVIEW_CARDS.length;
-  protected readonly ratings = REVIEW_RATINGS;
-  protected readonly card = computed(() => REVIEW_CARDS[this.store.cardIndex()]);
+
+  protected readonly ratings: readonly { rating: Rating; label: string; when: string }[] = [
+    { rating: 'hard', label: 'صعبة', when: 'غداً' },
+    { rating: 'good', label: 'جيدة', when: 'بعد ٣ أيام' },
+    { rating: 'easy', label: 'سهلة', when: 'بعد أسبوع' },
+  ];
 }

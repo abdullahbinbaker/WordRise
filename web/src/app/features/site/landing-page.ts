@@ -1,5 +1,6 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 import { Learner } from '../learner/learner';
 
 interface FaqItem {
@@ -14,6 +15,15 @@ interface FaqItem {
   styleUrl: './landing-page.css',
 })
 export class LandingPage {
+  protected readonly auth = inject(AuthService);
+
+  protected readonly initial = computed(() => this.auth.displayName().charAt(0));
+
+  constructor() {
+    // The page is prerendered for everyone; who is signed in is only known in the browser.
+    afterNextRender(() => void this.auth.ensureUser());
+  }
+
   protected readonly features: readonly string[] = [
     'نطق صوتي لكل كلمة وجملة',
     'شرح بالعربية، بلا مصطلحات صعبة',

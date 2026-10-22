@@ -61,11 +61,70 @@
   font-weight: 600;
 }
 
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account__login {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 10px 8px;
+}
+
+.account__cta {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--blue);
+  padding: 10px 20px;
+  border-radius: 12px;
+}
+
+.account__cta:hover {
+  color: #fff;
+  background: var(--blue-hover);
+  text-decoration: none;
+}
+
 .user {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 18px;
+  color: var(--muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  padding: 0 32px;
+  border-radius: 18px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.hero__cta:hover {
+  color: #fff;
+  background: var(--blue-hover);
+  text-decoration: none;
+}
+
+.hero__hint {
+  font-size: 17px;
   color: var(--muted);
 }
 

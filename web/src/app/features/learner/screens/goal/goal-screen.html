@@ -10,7 +10,7 @@
   </div>
 
   <div class="options" role="radiogroup" aria-label="عدد الكلمات اليومي">
-    @for (option of options; track option.count) {
+    @for (option of options(); track option.count) {
       <button
         type="button"
         role="radio"
@@ -33,10 +33,14 @@
     <span class="dot" aria-hidden="true"></span>
     <span>{{ tip() }}</span>
   </div>
+
+  @if (store.onboarded() && store.logoutHandler(); as logout) {
+    <button type="button" class="logout" (click)="logout()">تسجيل الخروج</button>
+  }
 </div>
 
 <div class="screen__footer">
-  <button type="button" class="btn-primary" (click)="store.finishOnboarding()">
+  <button type="button" class="btn-primary" [disabled]="store.loading()" (click)="store.saveGoal()">
     {{ store.onboarded() ? 'احفظ هدفي' : 'ابدأ' }}
   </button>
 </div>

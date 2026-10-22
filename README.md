@@ -9,18 +9,28 @@
 | `web/` | الموقع: Angular 22 مع SSR ودعم الاتجاه من اليمين لليسار |
 | `api/` | الـ Backend: ASP.NET Core (.NET 10) بمعمارية Modular Monolith |
 
-## تشغيل الموقع
+## تشغيل المنصة كاملة محلياً
 
+تحتاج نافذتين (Terminal):
+
+**1. الـ API** (بدون تثبيت أي شيء، على SQLite):
+```bash
+cd api
+dotnet run --project src/Wordrise.Host --launch-profile https-sqlite
+```
+
+**2. الموقع:**
 ```bash
 cd web
 npm install
 npm start
 ```
 
-ثم افتح `http://localhost:4200`:
+ثم افتح `http://localhost:4200`. الموقع يمرر كل طلبات `/api` إلى الـ API عبر Proxy (`web/proxy.conf.json`)، فيبدوان كموقع واحد ويعمل تسجيل الدخول بالكوكيز.
 
-- `/`: الموقع، وفيه التطبيق التفاعلي مدمجاً.
-- `/app`: التطبيق بملء الشاشة للجوال.
+- `/`: الصفحة الرئيسية، وفيها تجربة درس ببيانات تجريبية بدون تسجيل.
+- `/register` و`/login`: إنشاء حساب وتسجيل الدخول.
+- `/app`: التطبيق الحقيقي ببيانات الطالب (يتطلب تسجيل الدخول).
 
 أوامر أخرى داخل `web/`: `npm run build` للبناء، و`npx ng test --watch=false` للاختبارات.
 
@@ -71,13 +81,25 @@ dotnet run --project src/Wordrise.Host --launch-profile https-sqlite
   - `Infrastructure`: `Repositories` للكتابة، و`Queries` للقراءة، وقاعدة البيانات والـ Migrations.
   - `Api/Controllers`: Controllers رفيعة ترسل الـ Commands والـ Queries فقط.
 - `src/Shared/Wordrise.Shared.Kernel`: نوع `Result` وقواعد العمل المشتركة، بدون أي اعتماديات.
-- `src/Integrations`: الربط مع الخدمات الخارجية (الذكاء الاصطناعي، والصوت، والبريد). القواعد في `src/Integrations/README.md`.
+### الربط مع الخدمات الخارجية (Claude، وAzure Speech، والبريد)
+
+كل موديول يملك الربط الذي يحتاجه، حتى إذا فُصل يوماً إلى Microservice أخذ ما يحتاجه معه بدون تفكيك:
+
+| النوع | المكان | مثال |
+|---|---|---|
+| ربط فيه منطق خاص بالموديول (الأغلب) | `Modules/<Module>/.../Infrastructure/Integrations/` | كتابة الدروس بـ Claude داخل موديول إنتاج المحتوى |
+| عميل تقني عام تحتاجه عدة موديولات، بلا منطق أعمال | `src/Shared/Wordrise.Shared.Integrations.<Provider>`، ويصبح حزمة NuGet عند الفصل | عميل Azure Blob لرفع الملفات |
+| خدمة يحتاجها الجميع | موديول مستقل تطلب منه البقية عبر الـ Contracts أو الأحداث | موديول Notifications لإرسال البريد |
+
+وفي كل الحالات: الموديول لا يتصل بالخدمة الخارجية مباشرة من الـ Application، بل يعرّف واجهة يحتاجها وينفّذها الـ Infrastructure، فيمكن تغيير المزوّد بدون لمس منطق الموديول. والمفاتيح والعناوين من الإعدادات، لا من الكود.
 - `src/Modules/<Module>/*.Contracts`: الشيء الوحيد الذي يُسمح لموديول آخر باستخدامه.
 - `tests/Wordrise.ArchitectureTests`: تكسر البناء إذا استخدم موديولٌ داخلَ موديول آخر.
 
 ## أين يوجد ماذا في `web/src/app`
 
 - `features/site/`: صفحة الموقع وصفحة التطبيق بملء الشاشة.
-- `features/learner/`: تطبيق التعلّم. `learner.store.ts` يدير حالة الدرس، و`lesson.data.ts` فيه بيانات درس تجريبي إلى أن يُربط الـ API، و`screens/` فيه الشاشات التسع.
-- `core/`: النطق الصوتي (مؤقتاً من المتصفح) وتحويل الأرقام إلى العربية.
+- `features/learner/`: تطبيق التعلّم. `learner.store.ts` يدير حالة الدرس، و`screens/` فيه الشاشات التسع. البيانات تأتي من `LearnerData` بتنفيذين: `ApiLearnerData` (الـ API الحقيقي، في `/app`) و`DemoLearnerData` (بيانات تجريبية في الذاكرة، للتجربة في الصفحة الرئيسية).
+- `features/auth/`: صفحتا تسجيل الدخول وإنشاء الحساب.
+- `core/auth/`: خدمة الدخول (`AuthService`) وحماية الصفحات (`authGuard`).
+- `core/`: أيضاً النطق الصوتي (مؤقتاً من المتصفح) وتحويل الأرقام إلى العربية.
 - `src/styles.css`: ألوان التصميم وخطوطه.

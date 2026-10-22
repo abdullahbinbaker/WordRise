@@ -6,7 +6,7 @@
           type="button"
           [class.active]="store.screen() === tab.screen"
           [attr.aria-current]="store.screen() === tab.screen ? 'page' : null"
-          (click)="store.go(tab.screen)"
+          (click)="tab.screen === 'home' ? store.goHome() : store.go(tab.screen)"
         >
           {{ tab.label }}
         </button>
@@ -16,7 +16,7 @@
 
   @if (store.inLesson()) {
     <div class="lesson-bar">
-      <button type="button" class="lesson-bar__close" aria-label="إغلاق الدرس" (click)="store.go('home')">✕</button>
+      <button type="button" class="lesson-bar__close" aria-label="إغلاق الدرس" (click)="store.goHome()">✕</button>
       <div
         class="lesson-bar__track"
         role="progressbar"
@@ -30,16 +30,32 @@
     </div>
   }
 
-  @switch (store.screen()) {
-    @case ('goal') { <app-goal-screen /> }
-    @case ('home') { <app-home-screen /> }
-    @case ('review') { <app-review-screen /> }
-    @case ('newword') { <app-new-word-screen /> }
-    @case ('grocery') { <app-chat-screen /> }
-    @case ('can') { <app-grammar-screen /> }
-    @case ('listen') { <app-listen-screen /> }
-    @case ('done') { <app-done-screen /> }
-    @case ('words') { <app-words-screen /> }
+  @if (store.error()) {
+    <div class="error" role="alert">
+      <span>{{ store.error() }}</span>
+      <button type="button" class="error__retry" (click)="store.goHome()">العودة للرئيسية</button>
+    </div>
+  }
+
+  @if (ready()) {
+    @switch (store.screen()) {
+      @case ('goal') { <app-goal-screen /> }
+      @case ('home') { <app-home-screen /> }
+      @case ('review') { <app-review-screen /> }
+      @case ('newword') { <app-new-word-screen /> }
+      @case ('dialogue') { <app-dialogue-screen /> }
+      @case ('grammar') { <app-grammar-screen /> }
+      @case ('listen') { <app-listen-screen /> }
+      @case ('done') { <app-done-screen /> }
+      @case ('words') { <app-words-screen /> }
+    }
+  } @else {
+    <div class="loading" role="status">
+      @if (store.loading()) {
+        <span class="loading__dot" aria-hidden="true"></span>
+        جارٍ التحميل…
+      }
+    </div>
   }
 
   @if (showTabs() && tabs() === 'bottom') {
@@ -49,7 +65,7 @@
           type="button"
           [class.active]="store.screen() === tab.screen"
           [attr.aria-current]="store.screen() === tab.screen ? 'page' : null"
-          (click)="store.go(tab.screen)"
+          (click)="tab.screen === 'home' ? store.goHome() : store.go(tab.screen)"
         >
           <span class="tabs-bottom__bar" aria-hidden="true"></span>
           {{ tab.label }}

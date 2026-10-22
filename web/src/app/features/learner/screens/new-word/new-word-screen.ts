@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { ArabicDigitsPipe } from '../../../../core/arabic-digits.pipe';
 import { SpeakButton } from '../../../../shared/speak-button/speak-button';
 import { LearnerStore } from '../../learner.store';
-import { NEW_WORDS } from '../../lesson.data';
 
 @Component({
   selector: 'app-new-word-screen',
@@ -13,7 +12,6 @@ import { NEW_WORDS } from '../../lesson.data';
 })
 export class NewWordScreen {
   protected readonly store = inject(LearnerStore);
-  protected readonly total = NEW_WORDS.length;
-  protected readonly word = computed(() => NEW_WORDS[this.store.wordIndex()]);
-  protected readonly isLast = computed(() => this.store.wordIndex() === NEW_WORDS.length - 1);
+  protected readonly total = computed(() => this.store.lesson()?.words.length ?? 0);
+  protected readonly isLast = computed(() => this.store.wordIndex() === this.total() - 1);
 }
