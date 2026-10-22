@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Shared\Wordrise.Shared.Infrastructure\Wordrise.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="../../Identity/Wordrise.Modules.Identity.Contracts/Wordrise.Modules.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Wordrise.Modules.Learning.Application\Wordrise.Modules.Learning.Application.csproj" />
     <ProjectReference Include="..\Wordrise.Modules.Learning.Infrastructure\Wordrise.Modules.Learning.Infrastructure.csproj" />
   </ItemGroup>

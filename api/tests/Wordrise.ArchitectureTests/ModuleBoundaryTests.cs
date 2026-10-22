@@ -9,6 +9,7 @@ using Wordrise.Modules.Identity.Core;
 using Wordrise.Modules.Learning.Api;
 using Wordrise.Modules.Learning.Application.Abstractions;
 using Wordrise.Modules.Learning.Domain;
+using Wordrise.Modules.Media.Core;
 using Wordrise.Modules.Learning.Infrastructure.Extensions;
 using Wordrise.Shared.Abstractions;
 using Wordrise.Shared.Kernel;
@@ -60,6 +61,11 @@ public sealed class ModuleBoundaryTests
                 "Wordrise.Modules.ContentAuthoring.Infrastructure",
                 "Wordrise.Modules.ContentAuthoring.Api",
             ]),
+        new(
+            "Media",
+            typeof(MediaModuleStartup).Assembly,
+            [typeof(MediaModuleStartup).Assembly],
+            ["Wordrise.Modules.Media.Core"]),
     ];
 
     public static TheoryData<string> ModuleNames() => [.. Modules.Select(m => m.Name)];
@@ -181,7 +187,7 @@ public sealed class ModuleBoundaryTests
         var internals = Modules.SelectMany(m => m.InternalNamespaces).ToArray();
 
         var result = Types
-            .InAssemblies([typeof(Roles).Assembly, typeof(Wordrise.Modules.Learning.Contracts.ILessonPublisher).Assembly])
+            .InAssemblies([typeof(Roles).Assembly, typeof(Wordrise.Modules.Learning.Contracts.ILessonPublisher).Assembly, typeof(Wordrise.Modules.Media.Contracts.IAudioLibrary).Assembly])
             .ShouldNot()
             .HaveDependencyOnAny(internals)
             .GetResult();

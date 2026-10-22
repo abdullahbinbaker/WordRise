@@ -3,6 +3,7 @@ using Wordrise.Host;
 using Wordrise.Modules.ContentAuthoring.Api;
 using Wordrise.Modules.Identity.Core;
 using Wordrise.Modules.Learning.Api;
+using Wordrise.Modules.Media.Core;
 using Wordrise.Shared.Abstractions;
 using Wordrise.Shared.Infrastructure.Web;
 
@@ -16,6 +17,7 @@ IReadOnlyList<IModuleStartup> modules =
         new IdentityModuleStartup(),
         new LearningModuleStartup(),
         new ContentAuthoringModuleStartup(),
+        new MediaModuleStartup(),
     }.OrderBy(module => module.Order),
 ];
 

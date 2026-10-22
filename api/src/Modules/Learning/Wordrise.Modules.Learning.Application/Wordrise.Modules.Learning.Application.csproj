@@ -2,11 +2,13 @@
 
   <ItemGroup>
     <PackageReference Include="Mediator.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Wordrise.Modules.Learning.Domain\Wordrise.Modules.Learning.Domain.csproj" />
     <ProjectReference Include="..\Wordrise.Modules.Learning.Contracts\Wordrise.Modules.Learning.Contracts.csproj" />
+    <ProjectReference Include="../../Media/Wordrise.Modules.Media.Contracts/Wordrise.Modules.Media.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

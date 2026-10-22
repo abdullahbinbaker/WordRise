@@ -1,7 +1,9 @@
 using Mediator;
+using Microsoft.Extensions.Logging;
 using Wordrise.Modules.Learning.Application.Abstractions;
 using Wordrise.Modules.Learning.Contracts;
 using Wordrise.Modules.Learning.Domain.Lessons;
+using Wordrise.Modules.Media.Contracts;
 using Wordrise.Shared.Kernel;
 
 namespace Wordrise.Modules.Learning.Application.Features.Lessons;
@@ -12,7 +14,11 @@ namespace Wordrise.Modules.Learning.Application.Features.Lessons;
 /// </summary>
 public sealed record PublishLessonCommand(PublishLessonRequest Request) : ICommand<Result<PublishedLessonInfo>>;
 
-public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnitOfWork unitOfWork)
+public sealed class PublishLessonCommandHandler(
+    ILessonRepository lessons,
+    IUnitOfWork unitOfWork,
+    IAudioLibrary audio,
+    ILogger<PublishLessonCommandHandler> logger)
     : ICommandHandler<PublishLessonCommand, Result<PublishedLessonInfo>>
 {
     public async ValueTask<Result<PublishedLessonInfo>> Handle(
@@ -70,6 +76,28 @@ public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnit
         lessons.Add(lesson);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await RecordAudioAsync(lesson, cancellationToken);
+
         return new PublishedLessonInfo(lesson.Id, lesson.Number, AlreadyPublished: false);
+    }
+
+    /// <summary>
+    /// The lesson is already saved, so a speech outage must not undo the publication: the app
+    /// speaks with the device's voice until the audio is made (see <see cref="GenerateLessonAudioCommand"/>).
+    /// </summary>
+    private async Task RecordAudioAsync(Lesson lesson, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await audio.EnsureAsync(LessonSpeech.Collect(lesson.Content), cancellationToken);
+            if (result.Failed > 0)
+            {
+                logger.LogWarning("Lesson {Number}: {Failed} of {Requested} recordings failed", lesson.Number, result.Failed, result.Requested);
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogWarning(exception, "Lesson {Number} was published without audio", lesson.Number);
+        }
     }
 }
