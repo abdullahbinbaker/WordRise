@@ -2,27 +2,28 @@ import { Component, computed, inject } from '@angular/core';
 import { SpeechService } from '../../../../core/speech.service';
 import { SpeakButton } from '../../../../shared/speak-button/speak-button';
 import { LearnerStore, answerState, answerStep } from '../../learner.store';
-import { CHAT_OPTIONS, GROCERY_CHAT } from '../../lesson.data';
 
 @Component({
-  selector: 'app-chat-screen',
+  selector: 'app-dialogue-screen',
   imports: [SpeakButton],
-  templateUrl: './chat-screen.html',
-  styleUrl: './chat-screen.css',
+  templateUrl: './dialogue-screen.html',
+  styleUrl: './dialogue-screen.css',
   host: { class: 'screen' },
 })
-export class ChatScreen {
+export class DialogueScreen {
   protected readonly store = inject(LearnerStore);
   private readonly speech = inject(SpeechService);
 
-  protected readonly lines = GROCERY_CHAT;
+  protected readonly lesson = computed(() => this.store.lesson()!);
 
   protected readonly options = computed(() =>
-    CHAT_OPTIONS.map((option, index) => ({
+    this.lesson().chatOptions.map((option, index) => ({
       ...option,
-      state: answerState(this.store.chatPick() === index, this.store.chatChecked(), option.ok),
+      state: answerState(this.store.chatPick() === index, this.store.chatChecked(), option.isCorrect),
     })),
   );
+
+  protected readonly correctAnswer = computed(() => this.lesson().chatOptions.find((o) => o.isCorrect)?.text ?? '');
 
   protected readonly step = computed(() =>
     answerStep(this.store.chatPick(), this.store.chatChecked(), this.store.chatOk()),
@@ -31,7 +32,7 @@ export class ChatScreen {
   protected pick(index: number): void {
     if (this.store.chatChecked()) return;
     this.store.pickChat(index);
-    this.speech.speak(CHAT_OPTIONS[index].en);
+    this.speech.speak(this.lesson().chatOptions[index].text);
   }
 
   protected primaryAction(): void {
@@ -43,7 +44,7 @@ export class ChatScreen {
         this.store.retryChat();
         break;
       case 'next':
-        this.store.go('can');
+        this.store.go('grammar');
         break;
     }
   }

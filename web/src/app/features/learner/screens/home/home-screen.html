@@ -1,59 +1,66 @@
 <div class="screen__body home">
   <div class="greeting">
     <div class="greeting__text">
-      <span class="greeting__hello">صباح الخير</span>
-      <span class="greeting__name">أبو خالد</span>
+      <span class="greeting__hello">{{ greeting() }}</span>
+      <span class="greeting__name">{{ store.learnerName() }}</span>
     </div>
     <div class="streak">
       <span class="dot" aria-hidden="true"></span>
-      {{ streak() }}
+      {{ today().streak | arabicDigits }} أيام
     </div>
   </div>
+
+  @if (notice()) {
+    <p class="notice" role="status">{{ notice() }}</p>
+  }
 
   <section class="today card" aria-label="درس اليوم">
     <div class="today__head">
       <h2 class="today__title">درس اليوم</h2>
-      <span class="today__goal">هدفك: {{ store.goal() | arabicDigits }} كلمات</span>
+      <span class="today__goal">هدفك: {{ today().dailyGoal | arabicDigits }} كلمات</span>
     </div>
 
-    <div class="today__progress">
-      <div
-        class="track"
-        role="progressbar"
-        aria-label="تقدّم درس اليوم"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        [attr.aria-valuenow]="store.lessonDone() ? 100 : 0"
-      >
-        <div class="track__fill" [style.width.%]="store.lessonDone() ? 100 : 0"></div>
+    @if (today().completedLessonToday) {
+      <div class="today__done">
+        <span class="today__check" aria-hidden="true">✓</span>
+        <div class="today__done-text">
+          <span class="today__done-title">أحسنت! أنهيت درس اليوم.</span>
+          @if (today().nextLesson; as next) {
+            <span class="today__done-next">الدرس القادم غداً: {{ next.title }}</span>
+          }
+        </div>
       </div>
-      <span class="today__progress-label">{{ progressLabel() }}</span>
-    </div>
+    } @else if (today().nextLesson; as next) {
+      <div class="today__progress">
+        <span class="today__lesson">الدرس {{ next.number | arabicDigits }}: {{ next.title }}</span>
+        <span class="today__progress-label">{{ steps().length | arabicDigits }} أجزاء · حوالي {{ today().dailyGoal | arabicDigits }} دقائق</span>
+      </div>
 
-    <ol class="steps">
-      @for (step of steps; track step; let i = $index) {
-        <li class="step" [class.step--done]="store.lessonDone()" [class.step--next]="!store.lessonDone() && i === 0">
-          <span class="step__mark" aria-hidden="true">{{ store.lessonDone() ? '✓' : (i + 1 | arabicDigits) }}</span>
-          <span class="step__label">{{ step }}</span>
-        </li>
-      }
-    </ol>
+      <ol class="steps" [class.steps--paused]="today().newLessonsPaused">
+        @for (step of steps(); track step; let i = $index) {
+          <li class="step" [class.step--next]="i === 0">
+            <span class="step__mark" aria-hidden="true">{{ i + 1 | arabicDigits }}</span>
+            <span class="step__label">{{ step }}</span>
+          </li>
+        }
+      </ol>
+    }
   </section>
 
   <div class="stats">
     <div class="stat card">
-      <span class="stat__value">{{ learnedCount() | arabicDigits }}</span>
+      <span class="stat__value">{{ today().learnedWordsCount | arabicDigits }}</span>
       <span class="stat__label">كلمة تعلّمتها</span>
     </div>
     <div class="stat card">
-      <span class="stat__value">{{ dueCount() | arabicDigits }}</span>
+      <span class="stat__value">{{ today().dueReviewCount | arabicDigits }}</span>
       <span class="stat__label">للمراجعة اليوم</span>
     </div>
   </div>
 </div>
 
 <div class="screen__footer home__footer">
-  <button type="button" class="btn-primary" (click)="primaryAction()">
-    {{ store.lessonDone() ? 'تصفّح كلماتي' : 'ابدأ درس اليوم' }}
+  <button type="button" class="btn-primary" [disabled]="store.loading()" (click)="run(action().kind)">
+    {{ action().label }}
   </button>
 </div>

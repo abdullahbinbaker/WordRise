@@ -120,6 +120,16 @@
   border: 8px solid var(--blue);
 }
 
+.logout {
+  align-self: center;
+  border: none;
+  background: none;
+  padding: 8px;
+  color: var(--muted);
+  font-size: 17px;
+  text-decoration: underline;
+}
+
 .tip {
   display: flex;
   align-items: center;

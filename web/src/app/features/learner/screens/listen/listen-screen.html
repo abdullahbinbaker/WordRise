@@ -13,7 +13,7 @@
   </div>
 
   <div class="options">
-    @for (option of options(); track option.en; let i = $index) {
+    @for (option of options(); track option.text; let i = $index) {
       <button
         type="button"
         dir="ltr"
@@ -24,7 +24,7 @@
         [attr.aria-pressed]="option.state !== 'idle'"
         (click)="store.pickListen(i)"
       >
-        {{ option.en }}
+        {{ option.text }}
       </button>
     }
   </div>
@@ -32,7 +32,7 @@
 
 @if (step() === 'next') {
   <div class="feedback feedback--right" role="status">
-    صحيح! سمعت: <span class="en" dir="ltr">{{ sentence }}</span>
+    صحيح! سمعت: <span class="en" dir="ltr">{{ listening().sentence }}</span>
   </div>
 }
 @if (step() === 'retry') {
@@ -40,12 +40,17 @@
 }
 
 <div class="screen__footer">
-  <button type="button" class="btn-primary" [disabled]="step() === 'choose'" (click)="primaryAction()">
+  <button
+    type="button"
+    class="btn-primary"
+    [disabled]="step() === 'choose' || store.loading()"
+    (click)="primaryAction()"
+  >
     @switch (step()) {
       @case ('choose') { اختر إجابة }
       @case ('check') { تحقّق }
       @case ('retry') { حاول مرة أخرى }
-      @case ('next') { أنهِ الدرس }
+      @case ('next') { {{ store.loading() ? 'جارٍ الحفظ…' : 'أنهِ الدرس' }} }
     }
   </button>
 </div>

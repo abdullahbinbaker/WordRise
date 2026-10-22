@@ -54,6 +54,21 @@ public sealed class AuthAndProfileTests(WordriseApiFactory factory) : IClassFixt
     }
 
     [Fact]
+    public async Task Logout_ends_the_cookie_session()
+    {
+        var client = factory.CreateHttpsClient();
+        var email = $"{Guid.NewGuid():N}@example.com";
+        await client.PostAsJsonAsync("/api/v1/auth/register", new { email, password = Password });
+        await client.PostAsJsonAsync("/api/v1/auth/login?useCookies=true", new { email, password = Password });
+
+        var logout = await client.PostAsync("/api/v1/auth/logout", null);
+        var me = await client.GetAsync("/api/v1/me");
+
+        Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, me.StatusCode);
+    }
+
+    [Fact]
     public async Task Display_name_can_be_set()
     {
         var client = await SignedInClientAsync();

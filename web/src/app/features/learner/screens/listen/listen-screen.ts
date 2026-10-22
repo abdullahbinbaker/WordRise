@@ -1,7 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { SpeechService } from '../../../../core/speech.service';
 import { LearnerStore, answerState, answerStep } from '../../learner.store';
-import { LISTEN_ANSWER, LISTEN_OPTIONS, LISTEN_SENTENCE } from '../../lesson.data';
 
 @Component({
   selector: 'app-listen-screen',
@@ -13,12 +12,12 @@ export class ListenScreen {
   protected readonly store = inject(LearnerStore);
   private readonly speech = inject(SpeechService);
 
-  protected readonly sentence = LISTEN_SENTENCE;
+  protected readonly listening = computed(() => this.store.lesson()!.listening);
 
   protected readonly options = computed(() =>
-    LISTEN_OPTIONS.map((en, index) => ({
-      en,
-      state: answerState(this.store.listenPick() === index, this.store.listenChecked(), en === LISTEN_ANSWER),
+    this.listening().options.map((option, index) => ({
+      text: option.text,
+      state: answerState(this.store.listenPick() === index, this.store.listenChecked(), option.isCorrect),
     })),
   );
 
@@ -27,7 +26,7 @@ export class ListenScreen {
   );
 
   protected play(slow = false): void {
-    this.speech.speak(LISTEN_SENTENCE, slow);
+    this.speech.speak(this.listening().sentence, slow);
   }
 
   protected primaryAction(): void {
@@ -39,7 +38,7 @@ export class ListenScreen {
         this.store.retryListen();
         break;
       case 'next':
-        this.store.go('done');
+        void this.store.finishLesson();
         break;
     }
   }

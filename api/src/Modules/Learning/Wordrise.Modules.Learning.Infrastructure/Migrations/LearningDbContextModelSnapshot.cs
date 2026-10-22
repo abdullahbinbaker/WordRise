@@ -125,7 +125,6 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<Guid>("LessonId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<DateOnly>("CompletedOn")

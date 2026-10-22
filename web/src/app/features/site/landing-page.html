@@ -9,9 +9,16 @@
       <a routerLink="/" fragment="web-how" class="topnav__link">كيف تعمل المنصة</a>
       <a routerLink="/" fragment="web-faq" class="topnav__link">أسئلة شائعة</a>
     </nav>
-    <div class="user">
-      <span class="user__avatar" aria-hidden="true">أ</span>
-      أبو خالد
+    <div class="account">
+      @if (auth.isSignedIn()) {
+        <a class="user" routerLink="/app">
+          <span class="user__avatar" aria-hidden="true">{{ initial() }}</span>
+          {{ auth.displayName() }}
+        </a>
+      } @else {
+        <a class="account__login" routerLink="/login">تسجيل الدخول</a>
+        <a class="account__cta" routerLink="/register">ابدأ مجاناً</a>
+      }
     </div>
   </header>
 
@@ -32,9 +39,15 @@
             <li><span class="hero__bullet" aria-hidden="true"></span>{{ feature }}</li>
           }
         </ul>
+        <div class="hero__actions">
+          <a class="hero__cta" [routerLink]="auth.isSignedIn() ? '/app' : '/register'">
+            {{ auth.isSignedIn() ? 'أكمل درس اليوم' : 'ابدأ مجاناً الآن' }}
+          </a>
+          <span class="hero__hint">أو جرّب الدرس هنا مباشرة، بدون تسجيل</span>
+        </div>
       </div>
-      <div class="hero__app" aria-label="جرّب درس اليوم">
-        <app-learner start="home" tabs="top" />
+      <div class="hero__app" aria-label="تجربة درس بدون تسجيل">
+        <app-learner mode="demo" start="home" tabs="top" learnerName="أبو خالد" />
       </div>
     </section>
 

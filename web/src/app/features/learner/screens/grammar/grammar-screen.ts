@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { SpeakButton } from '../../../../shared/speak-button/speak-button';
 import { LearnerStore } from '../../learner.store';
-import { CAN_EXAMPLES } from '../../lesson.data';
 
 @Component({
   selector: 'app-grammar-screen',
@@ -12,5 +11,12 @@ import { CAN_EXAMPLES } from '../../lesson.data';
 })
 export class GrammarScreen {
   protected readonly store = inject(LearnerStore);
-  protected readonly examples = CAN_EXAMPLES;
+  protected readonly grammar = computed(() => this.store.lesson()!.grammar);
+
+  /** The first example split into word chips, the grammar word highlighted: I | can | read. */
+  protected readonly chips = computed(() => {
+    const { title, examples } = this.grammar();
+    const words = (examples[0]?.english ?? '').replace(/[.?!]/g, '').split(/\s+/).filter(Boolean);
+    return words.map((text) => ({ text, key: text.toLowerCase() === title.toLowerCase() }));
+  });
 }

@@ -67,7 +67,8 @@
               "buildTarget": "wordrise-web:build:production"
             },
             "development": {
-              "buildTarget": "wordrise-web:build:development"
+              "buildTarget": "wordrise-web:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

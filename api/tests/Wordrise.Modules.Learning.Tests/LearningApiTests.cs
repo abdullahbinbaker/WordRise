@@ -216,6 +216,20 @@ public sealed class LearningApiTests(WordriseApiFactory factory) : IClassFixture
     }
 
     [Fact]
+    public async Task A_learner_who_already_set_a_goal_can_complete_a_lesson()
+    {
+        // Regression: the learner already exists in the database before the first completion.
+        var (client, next) = await LearnerWithFirstLessonAsync();
+        await client.PutAsJsonAsync("/api/v1/learning/goal", new { wordsPerDay = 15 });
+
+        var response = await client.PostAsync($"/api/v1/learning/lessons/{next.Id}/complete", null);
+        var body = await response.Content.ReadFromJsonAsync<CompleteResponse>(Json);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(new CompleteResponse(false, 3, 1), body);
+    }
+
+    [Fact]
     public async Task Rating_a_word_schedules_its_next_review()
     {
         var (client, next) = await LearnerWithFirstLessonAsync();

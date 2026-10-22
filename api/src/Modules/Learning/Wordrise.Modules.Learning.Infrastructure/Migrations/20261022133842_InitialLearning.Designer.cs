@@ -12,7 +12,7 @@ using Wordrise.Modules.Learning.Infrastructure.Contexts;
 namespace Wordrise.Modules.Learning.Infrastructure.Migrations
 {
     [DbContext(typeof(LearningDbContext))]
-    [Migration("20261021142038_InitialLearning")]
+    [Migration("20261022133842_InitialLearning")]
     partial class InitialLearning
     {
         /// <inheritdoc />
@@ -128,7 +128,6 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<Guid>("LessonId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<DateOnly>("CompletedOn")

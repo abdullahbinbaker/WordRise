@@ -1,13 +1,14 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { ArabicDigitsPipe } from '../../../../core/arabic-digits.pipe';
 import { SpeakButton } from '../../../../shared/speak-button/speak-button';
-import { LearnerStore, WordFilter } from '../../learner.store';
-import { MY_WORDS, WordStatus } from '../../lesson.data';
+import { WordFilter, WordStatus } from '../../learner.models';
+import { LearnerStore } from '../../learner.store';
 
 const STATUS_LABELS: Record<WordStatus, string> = {
-  due: 'للمراجعة',
   new: 'جديدة',
-  done: 'أتقنتها',
+  due: 'للمراجعة',
+  learning: 'أتعلّمها',
+  mastered: 'أتقنتها',
 };
 
 @Component({
@@ -17,20 +18,20 @@ const STATUS_LABELS: Record<WordStatus, string> = {
   styleUrl: './words-screen.css',
   host: { class: 'screen' },
 })
-export class WordsScreen {
+export class WordsScreen implements OnInit {
   protected readonly store = inject(LearnerStore);
-  protected readonly total = MY_WORDS.length;
-  protected readonly dueCount = MY_WORDS.filter((word) => word.status === 'due').length;
   protected readonly statusLabels = STATUS_LABELS;
 
   protected readonly filters: readonly { key: WordFilter; label: string }[] = [
     { key: 'all', label: 'الكل' },
     { key: 'due', label: 'للمراجعة' },
-    { key: 'done', label: 'أتقنتها' },
+    { key: 'mastered', label: 'أتقنتها' },
   ];
 
-  protected readonly words = computed(() => {
-    const filter = this.store.wordFilter();
-    return MY_WORDS.filter((word) => filter === 'all' || word.status === filter);
-  });
+  protected readonly dueCount = computed(() => this.store.today()?.dueReviewCount ?? 0);
+  protected readonly canReview = computed(() => !!this.store.today()?.reviewsEnabled && this.dueCount() > 0);
+
+  ngOnInit(): void {
+    void this.store.loadWords(this.store.wordFilter());
+  }
 }

@@ -2,38 +2,38 @@
   <div class="label">قاعدة اليوم</div>
 
   <div class="rule">
-    <span class="rule__en en" dir="ltr">can</span>
-    <span class="rule__ar">= يستطيع</span>
+    <span class="rule__en en" dir="ltr">{{ grammar().title }}</span>
+    <span class="rule__ar">= {{ grammar().meaning }}</span>
   </div>
 
-  <p class="explain">نستخدمها لنقول إننا نقدر على فعل شيء.</p>
+  <p class="explain">{{ grammar().explanation }}</p>
 
   <div class="pattern card">
-    <div class="pattern__chips en" dir="ltr">
-      <span class="chip">I</span>
-      <span class="chip chip--key">can</span>
-      <span class="chip">swim</span>
-    </div>
-    <div class="pattern__formula">الشخص + can + الفعل</div>
+    @if (chips().length > 0) {
+      <div class="pattern__chips en" dir="ltr">
+        @for (chip of chips(); track $index) {
+          <span class="chip" [class.chip--key]="chip.key">{{ chip.text }}</span>
+        }
+      </div>
+    }
+    <div class="pattern__formula">{{ grammar().pattern }}</div>
   </div>
 
   <ul class="examples">
-    @for (example of examples; track example.en) {
+    @for (example of grammar().examples; track example.english) {
       <li class="example">
         <div class="example__text">
-          <span class="example__en en" dir="ltr">{{ example.en }}</span>
-          <span class="example__ar">{{ example.ar }}</span>
+          <span class="example__en en" dir="ltr">{{ example.english }}</span>
+          <span class="example__ar">{{ example.arabic }}</span>
         </div>
-        <app-speak-button [text]="example.en" [size]="48" [iconSize]="22" />
+        <app-speak-button [text]="example.english" [size]="48" [iconSize]="22" />
       </li>
     }
   </ul>
 
-  <div class="note">
-    الفعل بعد <span class="en note__em" dir="ltr">can</span> لا يتغيّر: نقول
-    <span class="en note__em" dir="ltr">She can swim</span> وليس
-    <span class="en note__wrong" dir="ltr">swims</span>
-  </div>
+  @if (grammar().note) {
+    <div class="note">{{ grammar().note }}</div>
+  }
 </div>
 
 <div class="screen__footer">

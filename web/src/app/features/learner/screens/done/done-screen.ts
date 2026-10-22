@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ArabicDigitsPipe } from '../../../../core/arabic-digits.pipe';
 import { LearnerStore } from '../../learner.store';
-import { NEW_WORDS, REVIEW_CARDS } from '../../lesson.data';
 
 @Component({
   selector: 'app-done-screen',
@@ -12,8 +11,17 @@ import { NEW_WORDS, REVIEW_CARDS } from '../../lesson.data';
 })
 export class DoneScreen {
   protected readonly store = inject(LearnerStore);
-  protected readonly newCount = NEW_WORDS.length;
-  protected readonly reviewedCount = REVIEW_CARDS.length;
-  // Sample streak until the progress API exists.
-  protected readonly streakDays = 6;
+
+  protected readonly title = computed(() => {
+    const name = this.store.learnerName();
+    return name ? `أحسنت يا ${name}!` : 'أحسنت!';
+  });
+
+  protected readonly subtitle = computed(() =>
+    this.store.reviewOnly() ? 'أنهيت مراجعة اليوم.' : 'أنهيت درس اليوم كاملاً.',
+  );
+
+  protected readonly newWords = computed(() => this.store.completion()?.wordsAdded ?? 0);
+
+  protected readonly streak = computed(() => this.store.completion()?.streak ?? this.store.today()?.streak ?? 0);
 }
