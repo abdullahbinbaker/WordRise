@@ -1,0 +1,87 @@
+# Wordrise in production: one server, one domain.
+#
+#   Caddy (HTTPS, the only thing open to the internet)
+#     /api/*  -> api       the .NET API
+#     the rest -> web      the Angular website
+#   api -> postgres (private, never published)
+#
+# From this folder:  cp .env.example .env   (fill it in)   then   docker compose up -d --build
+
+name: wordrise
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+  web:
+    build: ../web
+    restart: unless-stopped
+    environment:
+      # Angular refuses requests with a Host header it does not know.
+      NG_ALLOWED_HOSTS: ${DOMAIN},localhost
+
+  api:
+    build: ../api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Caddy sits in front: believe its X-Forwarded-* headers (the API is not reachable any other way).
+      Hosting__TrustProxyHeaders: "true"
+
+      Database__Provider: Postgres
+      Database__ConnectionString: Host=postgres;Database=wordrise;Username=wordrise;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      Database__ApplyMigrationsOnStartup: "true"
+
+      # Named admins must already have registered; they still need two-factor to use the role.
+      Identity__AdminEmails__0: ${ADMIN_EMAIL:-}
+
+      # Lesson writing (Claude) and audio (Azure Speech). Empty keys are fine: the app starts, and
+      # drafts fail with a clear message / the app speaks with the device voice until they are set.
+      Authoring__Provider: ${AUTHORING_PROVIDER:-Claude}
+      Authoring__Claude__ApiKey: ${CLAUDE_API_KEY:-}
+      Media__Provider: ${MEDIA_PROVIDER:-None}
+      Media__Azure__Key: ${AZURE_SPEECH_KEY:-}
+      Media__Azure__Region: ${AZURE_SPEECH_REGION:-}
+    volumes:
+      - media:/data/media
+      - keys:/data/keys
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wordrise
+      POSTGRES_USER: wordrise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wordrise -d wordrise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  caddy-data:
+  caddy-config:
+  media:
+  keys:
+  postgres-data:
