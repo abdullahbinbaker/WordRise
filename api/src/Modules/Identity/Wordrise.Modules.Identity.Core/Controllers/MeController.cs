@@ -25,7 +25,13 @@ internal sealed class MeController(UserManager<AppUser> users) : ControllerBase
         }
 
         var roles = await users.GetRolesAsync(user);
-        return new MeResponse(user.Id, user.Email!, user.DisplayName, [.. roles.Order()]);
+        return new MeResponse(
+            user.Id,
+            user.Email!,
+            user.DisplayName,
+            [.. roles.Order()],
+            user.TwoFactorEnabled,
+            User.HasClaim("amr", "mfa"));
     }
 
     [HttpPut]

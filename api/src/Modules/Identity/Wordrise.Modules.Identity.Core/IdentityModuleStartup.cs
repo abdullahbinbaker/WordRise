@@ -79,6 +79,9 @@ public sealed class IdentityModuleStartup : ModuleStartup
             .AddAuthorizationBuilder()
             .AddPolicy(Policies.Staff, policy => policy
                 .RequireRole(Roles.Reviewer, Roles.Admin)
+                .RequireClaim("amr", "mfa"))
+            .AddPolicy(Policies.Admin, policy => policy
+                .RequireRole(Roles.Admin)
                 .RequireClaim("amr", "mfa"));
 
         services.AddRateLimiter(options =>
@@ -131,6 +134,17 @@ public sealed class IdentityModuleStartup : ModuleStartup
             if (!await roles.RoleExistsAsync(role))
             {
                 await roles.CreateAsync(new IdentityRole<Guid>(role));
+            }
+        }
+
+        // The owner registers normally, then is named an admin in settings; nobody can become one through the API.
+        var users = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+        var adminEmails = scope.ServiceProvider.GetRequiredService<IOptions<IdentityModuleOptions>>().Value.AdminEmails;
+        foreach (var email in adminEmails.Where(e => !string.IsNullOrWhiteSpace(e)))
+        {
+            if (await users.FindByEmailAsync(email.Trim()) is { } admin && !await users.IsInRoleAsync(admin, Roles.Admin))
+            {
+                await users.AddToRoleAsync(admin, Roles.Admin);
             }
         }
     }

@@ -9,6 +9,7 @@ export const routes: Routes = [
   { path: '', component: LandingPage, title: 'Wordrise | تعلّم الإنجليزية بخطوات صغيرة كل يوم' },
   { path: 'login', component: LoginPage, canActivate: [guestGuard], title: 'Wordrise | تسجيل الدخول' },
   { path: 'register', component: RegisterPage, canActivate: [guestGuard], title: 'Wordrise | إنشاء حساب' },
+  { path: 'admin', loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoutes) },
   { path: 'app', component: LearnerPage, canActivate: [authGuard], title: 'Wordrise | درس اليوم' },
   { path: '**', redirectTo: '' },
 ];

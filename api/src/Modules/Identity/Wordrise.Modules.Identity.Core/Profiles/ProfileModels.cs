@@ -1,6 +1,16 @@
 namespace Wordrise.Modules.Identity.Core.Profiles;
 
-internal sealed record MeResponse(Guid Id, string Email, string? DisplayName, IReadOnlyList<string> Roles);
+internal sealed record MeResponse(
+    Guid Id,
+    string Email,
+    string? DisplayName,
+    IReadOnlyList<string> Roles,
+    bool TwoFactorEnabled,
+    bool SignedInWithTwoFactor);
+
+internal sealed record StaffMemberResponse(Guid Id, string Email, string? DisplayName, IReadOnlyList<string> Roles, bool TwoFactorEnabled);
+
+internal sealed record GrantReviewerRequest(string? Email);
 
 internal sealed record UpdateMeRequest(string? DisplayName);
 
