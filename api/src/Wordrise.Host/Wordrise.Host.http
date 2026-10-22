@@ -107,3 +107,7 @@ Authorization: Bearer {{staffToken}}
 Content-Type: application/json
 
 { "note": "Use shorter sentences." }
+
+### Audio (staff with two-factor only): record what lessons are missing
+POST {{host}}/api/v1/admin/lessons/audio
+Authorization: Bearer {{staffToken}}

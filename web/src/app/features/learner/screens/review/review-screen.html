@@ -6,11 +6,11 @@
     </div>
 
     <div class="flashcard card">
-      <app-speak-button [text]="card.english" [size]="72" [iconSize]="32" />
-      <div class="flashcard__word en" dir="ltr">{{ card.english }}</div>
+      <app-speak-button [text]="card.target" [size]="72" [iconSize]="32" />
+      <div class="flashcard__word en" dir="ltr">{{ card.target }}</div>
       @if (store.revealed()) {
         <div class="flashcard__rule" aria-hidden="true"></div>
-        <div class="flashcard__meaning">{{ card.arabic }}</div>
+        <div class="flashcard__meaning">{{ card.native }}</div>
       } @else {
         <span class="flashcard__prompt">هل تتذكّر معناها؟</span>
       }

@@ -11,7 +11,7 @@ public sealed class WordProgressTests
         WordProgress.Introduce(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            new LessonWord { Id = Guid.NewGuid(), English = "milk", Arabic = "حليب" },
+            new LessonWord { Id = Guid.NewGuid(), Target = "milk", Native = "حليب" },
             Today);
 
     [Fact]

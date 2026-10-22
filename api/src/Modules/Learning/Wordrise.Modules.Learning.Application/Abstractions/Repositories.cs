@@ -31,6 +31,8 @@ public interface ILessonRepository
 {
     Task<Lesson?> GetAsync(Guid lessonId, CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<Lesson>> ListAsync(CancellationToken cancellationToken);
+
     /// <returns>The number of the lesson, or null when it is not published.</returns>
     Task<int?> GetNumberAsync(Guid lessonId, CancellationToken cancellationToken);
 

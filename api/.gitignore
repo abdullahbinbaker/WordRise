@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Local SQLite development databases
 wordrise-dev-*.db*
+
+# Recordings made by the Media module (rebuilt from the lessons)
+media-data/

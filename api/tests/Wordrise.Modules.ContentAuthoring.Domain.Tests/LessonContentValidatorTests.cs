@@ -62,9 +62,9 @@ public sealed class LessonContentValidatorTests
     [Fact]
     public void Every_new_word_must_be_used_in_the_dialogue()
     {
-        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Where(d => !d.English.Contains("rice"))
-            .Select(d => d.English.Contains("milk")
-                ? new DraftDialogueLine { Speaker = d.Speaker, IsLearner = d.IsLearner, English = "Can I have apple and milk, please?", Arabic = d.Arabic }
+        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Where(d => !d.Target.Contains("rice"))
+            .Select(d => d.Target.Contains("milk")
+                ? new DraftDialogueLine { Speaker = d.Speaker, IsLearner = d.IsLearner, Target = "Can I have apple and milk, please?", Native = d.Native }
                 : d)]));
 
         var problem = Assert.Single(Validate(content), p => p.Where == "word: rice");
@@ -76,9 +76,9 @@ public sealed class LessonContentValidatorTests
     {
         var content = With(c => Copy(c, dialogue:
         [
-            new DraftDialogueLine { Speaker = "A", English = "Hello!", Arabic = "مرحبا" },
-            new DraftDialogueLine { Speaker = "B", IsLearner = true, English = "I want apples, milk and rice.", Arabic = "أريد" },
-            new DraftDialogueLine { Speaker = "A", English = "Sure.", Arabic = "حسناً" },
+            new DraftDialogueLine { Speaker = "A", Target = "Hello!", Native = "مرحبا" },
+            new DraftDialogueLine { Speaker = "B", IsLearner = true, Target = "I want apples, milk and rice.", Native = "أريد" },
+            new DraftDialogueLine { Speaker = "A", Target = "Sure.", Native = "حسناً" },
         ]));
 
         Assert.Empty(Validate(content));
@@ -88,7 +88,7 @@ public sealed class LessonContentValidatorTests
     public void English_where_arabic_belongs_is_caught()
     {
         var words = ContentFixtures.ValidContent(Brief).Words;
-        words[0] = new DraftWord { English = "apple", Arabic = "apple", Pronunciation = "نُطق", Example = "I like apple.", ExampleArabic = "أحب" };
+        words[0] = new DraftWord { Target = "apple", Native = "apple", Pronunciation = "نُطق", Example = "I like apple.", ExampleNative = "أحب" };
 
         var problem = Assert.Single(Validate(With(c => Copy(c, words: words))));
 
@@ -122,7 +122,7 @@ public sealed class LessonContentValidatorTests
     [Fact]
     public void The_dialogue_needs_the_learner_to_speak()
     {
-        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Select(d => new DraftDialogueLine { Speaker = d.Speaker, English = d.English, Arabic = d.Arabic })]));
+        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Select(d => new DraftDialogueLine { Speaker = d.Speaker, Target = d.Target, Native = d.Native })]));
 
         Assert.Contains(Validate(content), p => p.Where == "dialogue" && p.Message.Contains("learner never speaks"));
     }
@@ -130,7 +130,7 @@ public sealed class LessonContentValidatorTests
     [Fact]
     public void The_dialogue_needs_someone_to_talk_to()
     {
-        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Select(d => new DraftDialogueLine { Speaker = d.Speaker, IsLearner = true, English = d.English, Arabic = d.Arabic })]));
+        var content = With(c => Copy(c, dialogue: [.. c.Dialogue.Select(d => new DraftDialogueLine { Speaker = d.Speaker, IsLearner = true, Target = d.Target, Native = d.Native })]));
 
         Assert.Contains(Validate(content), p => p.Message.Contains("someone to talk to"));
     }

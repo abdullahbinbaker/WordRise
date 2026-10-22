@@ -1,4 +1,5 @@
 import { Injectable, PendingTasks, computed, inject, signal } from '@angular/core';
+import { SpeechService } from '../../core/speech.service';
 import { CompleteResult, LearnerData, Lesson, MyWord, Rating, ReviewCard, Today, WordFilter } from './learner.models';
 
 export type Screen = 'goal' | 'home' | 'review' | 'newword' | 'dialogue' | 'grammar' | 'listen' | 'done' | 'words';
@@ -25,6 +26,7 @@ export function answerStep(pick: number | null, checked: boolean, ok: boolean): 
 @Injectable()
 export class LearnerStore {
   private readonly pendingTasks = inject(PendingTasks);
+  private readonly speech = inject(SpeechService);
   private data!: LearnerData;
 
   readonly screen = signal<Screen>('home');
@@ -221,6 +223,9 @@ export class LearnerStore {
 
   private resetSession(lesson: Lesson | null, cards: ReviewCard[], reviewOnly: boolean): void {
     this.lesson.set(lesson);
+    if (lesson) {
+      this.speech.language = lesson.targetLanguage;
+    }
     this.reviewCards.set(cards);
     this.reviewOnly.set(reviewOnly);
     this.reviewedCount.set(0);

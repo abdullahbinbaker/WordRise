@@ -191,4 +191,43 @@ public sealed class AuthoringApiTests(WordriseApiFactory factory) : IClassFixtur
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Theory]
+    [InlineData("fr", "ar")]
+    [InlineData("en", "fr")]
+    [InlineData("xx", "yy")]
+    public async Task A_course_that_does_not_exist_yet_is_refused(string target, string native)
+    {
+        var response = await factory.CreateStaffClient().PostAsJsonAsync(
+            Drafts,
+            new { scenario = "grocery store", grammarStep = 4, targetLanguage = target, nativeLanguage = native });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task A_lesson_carries_its_languages_from_the_brief_to_the_learners()
+    {
+        var staff = factory.CreateStaffClient();
+        var id = await CreateDraftAsync(staff);
+
+        // Other tests share this app and leave drafts waiting; the worker takes a few per run.
+        for (var run = 0; run < 20 && (await GetAsync(staff, id))!.Status != "aiApproved"; run++)
+        {
+            await RunWorkerAsync();
+        }
+
+        (await staff.PostAsync($"{Drafts}/{id}/approve", null)).EnsureSuccessStatusCode();
+
+        var draft = await staff.GetFromJsonAsync<JsonElement>($"{Drafts}/{id}", Json);
+        var learner = await factory.CreateSignedInClientAsync();
+        var lesson = await learner.GetFromJsonAsync<JsonElement>($"/api/v1/learning/lessons/{id}", Json);
+
+        Assert.Equal("en", draft.GetProperty("brief").GetProperty("targetLanguage").GetString());
+        Assert.Equal("ar", draft.GetProperty("brief").GetProperty("nativeLanguage").GetString());
+        Assert.Equal("en", lesson.GetProperty("targetLanguage").GetString());
+        Assert.Equal("ar", lesson.GetProperty("nativeLanguage").GetString());
+        Assert.False(string.IsNullOrWhiteSpace(lesson.GetProperty("words")[0].GetProperty("target").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(lesson.GetProperty("words")[0].GetProperty("native").GetString()));
+    }
 }

@@ -14,18 +14,20 @@ import {
 export const DEMO_LESSON: Lesson = {
   id: 'demo-grocery',
   number: 1,
+  targetLanguage: 'en',
+  nativeLanguage: 'ar',
   title: 'في البقالة',
   scenario: 'grocery',
   grammarPoint: 'can / can\'t',
   words: [
-    { id: 'apple', english: 'apple', arabic: 'تفاحة', pronunciation: 'آبِل', example: 'I want an apple.', exampleArabic: 'أريد تفاحة.' },
-    { id: 'milk', english: 'milk', arabic: 'حليب', pronunciation: 'مِلك', example: 'The milk is cold.', exampleArabic: 'الحليب بارد.' },
-    { id: 'rice', english: 'rice', arabic: 'أرز', pronunciation: 'رايس', example: 'I buy rice every week.', exampleArabic: 'أشتري الأرز كل أسبوع.' },
+    { id: 'apple', target: 'apple', native: 'تفاحة', pronunciation: 'آبِل', example: 'I want an apple.', exampleNative: 'أريد تفاحة.' },
+    { id: 'milk', target: 'milk', native: 'حليب', pronunciation: 'مِلك', example: 'The milk is cold.', exampleNative: 'الحليب بارد.' },
+    { id: 'rice', target: 'rice', native: 'أرز', pronunciation: 'رايس', example: 'I buy rice every week.', exampleNative: 'أشتري الأرز كل أسبوع.' },
   ],
   dialogue: [
-    { speaker: 'الكاشير', isLearner: false, english: 'Hello! Can I help you?', arabic: 'مرحباً! هل أستطيع مساعدتك؟' },
-    { speaker: 'أنت', isLearner: true, english: 'Yes. Milk and bread, please.', arabic: 'نعم. حليب وخبز من فضلك.' },
-    { speaker: 'الكاشير', isLearner: false, english: 'That is twelve riyals.', arabic: 'المبلغ اثنا عشر ريالاً.' },
+    { speaker: 'الكاشير', isLearner: false, target: 'Hello! Can I help you?', native: 'مرحباً! هل أستطيع مساعدتك؟' },
+    { speaker: 'أنت', isLearner: true, target: 'Yes. Milk and bread, please.', native: 'نعم. حليب وخبز من فضلك.' },
+    { speaker: 'الكاشير', isLearner: false, target: 'That is twelve riyals.', native: 'المبلغ اثنا عشر ريالاً.' },
   ],
   chatPrompt: 'الكاشير ينتظر. ماذا تقول وأنت تعطيه المال؟',
   chatOptions: [
@@ -38,10 +40,10 @@ export const DEMO_LESSON: Lesson = {
     explanation: 'نستخدمها لنقول إننا نقدر على فعل شيء.',
     pattern: 'الشخص + can + الفعل',
     examples: [
-      { english: 'I can read.', arabic: 'أستطيع القراءة.' },
-      { english: 'She can cook.', arabic: 'هي تستطيع الطبخ.' },
-      { english: "I can't drive.", arabic: 'لا أستطيع القيادة.' },
-      { english: 'Can you help me?', arabic: 'هل تستطيع مساعدتي؟' },
+      { target: 'I can read.', native: 'أستطيع القراءة.' },
+      { target: 'She can cook.', native: 'هي تستطيع الطبخ.' },
+      { target: "I can't drive.", native: 'لا أستطيع القيادة.' },
+      { target: 'Can you help me?', native: 'هل تستطيع مساعدتي؟' },
     ],
     note: 'الفعل بعد can لا يتغيّر: نقول She can swim وليس swims.',
   },
@@ -57,22 +59,22 @@ export const DEMO_LESSON: Lesson = {
 };
 
 const DEMO_REVIEWS: ReviewCard[] = [
-  { wordId: 'water', english: 'water', arabic: 'ماء' },
-  { wordId: 'bread', english: 'bread', arabic: 'خبز' },
-  { wordId: 'thank-you', english: 'thank you', arabic: 'شكراً' },
-  { wordId: 'how-much', english: 'How much?', arabic: 'بكم؟' },
+  { wordId: 'water', target: 'water', native: 'ماء' },
+  { wordId: 'bread', target: 'bread', native: 'خبز' },
+  { wordId: 'thank-you', target: 'thank you', native: 'شكراً' },
+  { wordId: 'how-much', target: 'How much?', native: 'بكم؟' },
 ];
 
 const DEMO_WORDS: MyWord[] = [
   ...DEMO_REVIEWS.map((w): MyWord => ({ ...w, status: 'due', nextReviewOn: '' })),
-  ...DEMO_LESSON.words.map((w): MyWord => ({ wordId: w.id, english: w.english, arabic: w.arabic, status: 'new', nextReviewOn: '' })),
+  ...DEMO_LESSON.words.map((w): MyWord => ({ wordId: w.id, target: w.target, native: w.native, status: 'new', nextReviewOn: '' })),
   ...[
     ['hello', 'مرحباً'],
     ['sugar', 'سكر'],
     ['chicken', 'دجاج'],
     ['please', 'من فضلك'],
     ['tea', 'شاي'],
-  ].map(([english, arabic]): MyWord => ({ wordId: english, english, arabic, status: 'mastered', nextReviewOn: '' })),
+  ].map(([target, native]): MyWord => ({ wordId: target, target, native, status: 'mastered', nextReviewOn: '' })),
 ];
 
 /** A self-contained learner for the landing page demo: it behaves like the API in memory. */

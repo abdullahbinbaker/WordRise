@@ -28,7 +28,7 @@ public sealed class LearningApiTests(WordriseApiFactory factory) : IClassFixture
         int? ReviewBacklogLimit,
         NextLesson? NextLesson);
 
-    private sealed record LessonWord(Guid Id, string English, string Arabic);
+    private sealed record LessonWord(Guid Id, string Target, string Native);
 
     private sealed record LessonResponse(Guid Id, string Title, LessonWord[] Words, object[] Dialogue);
 
@@ -36,7 +36,7 @@ public sealed class LearningApiTests(WordriseApiFactory factory) : IClassFixture
 
     private sealed record RateResponse(Guid WordId, int IntervalDays, string NextReviewOn, string Status);
 
-    private sealed record MyWord(Guid WordId, string English, string Status);
+    private sealed record MyWord(Guid WordId, string Target, string Status);
 
     private static Task<T?> Get<T>(HttpClient client, string url) => client.GetFromJsonAsync<T>(url, Json);
 
@@ -179,7 +179,7 @@ public sealed class LearningApiTests(WordriseApiFactory factory) : IClassFixture
         var lesson = await Get<LessonResponse>(client, $"/api/v1/learning/lessons/{next.Id}");
 
         Assert.Equal("في البقالة", lesson!.Title);
-        Assert.Equal(["apple", "milk", "rice"], lesson.Words.Select(w => w.English));
+        Assert.Equal(["apple", "milk", "rice"], lesson.Words.Select(w => w.Target));
         Assert.Equal(3, lesson.Dialogue.Length);
     }
 

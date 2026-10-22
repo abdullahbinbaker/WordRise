@@ -6,10 +6,10 @@
       <span class="line__who">{{ line.speaker }}</span>
       <div class="bubble">
         <div class="bubble__text">
-          <span class="bubble__en en" dir="ltr">{{ line.english }}</span>
-          <span class="bubble__ar">{{ line.arabic }}</span>
+          <span class="bubble__en en" dir="ltr">{{ line.target }}</span>
+          <span class="bubble__ar">{{ line.native }}</span>
         </div>
-        <app-speak-button [text]="line.english" [size]="46" [iconSize]="22" />
+        <app-speak-button [text]="line.target" [size]="46" [iconSize]="22" />
       </div>
     </div>
   }

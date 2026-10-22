@@ -1,7 +1,9 @@
 using Mediator;
+using Microsoft.Extensions.Logging;
 using Wordrise.Modules.Learning.Application.Abstractions;
 using Wordrise.Modules.Learning.Contracts;
 using Wordrise.Modules.Learning.Domain.Lessons;
+using Wordrise.Modules.Media.Contracts;
 using Wordrise.Shared.Kernel;
 
 namespace Wordrise.Modules.Learning.Application.Features.Lessons;
@@ -12,7 +14,11 @@ namespace Wordrise.Modules.Learning.Application.Features.Lessons;
 /// </summary>
 public sealed record PublishLessonCommand(PublishLessonRequest Request) : ICommand<Result<PublishedLessonInfo>>;
 
-public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnitOfWork unitOfWork)
+public sealed class PublishLessonCommandHandler(
+    ILessonRepository lessons,
+    IUnitOfWork unitOfWork,
+    IAudioLibrary audio,
+    ILogger<PublishLessonCommandHandler> logger)
     : ICommandHandler<PublishLessonCommand, Result<PublishedLessonInfo>>
 {
     public async ValueTask<Result<PublishedLessonInfo>> Handle(
@@ -32,12 +38,12 @@ public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnit
             [
                 .. request.Words.Select(w => new LessonWord
                 {
-                    Id = WordIdentity.For(w.English),
-                    English = w.English.Trim(),
-                    Arabic = w.Arabic.Trim(),
+                    Id = WordIdentity.For(request.TargetLanguage, w.Target),
+                    Target = w.Target.Trim(),
+                    Native = w.Native.Trim(),
                     Pronunciation = w.Pronunciation.Trim(),
                     Example = w.Example.Trim(),
-                    ExampleArabic = w.ExampleArabic.Trim(),
+                    ExampleNative = w.ExampleNative.Trim(),
                 }),
             ],
             Dialogue =
@@ -46,8 +52,8 @@ public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnit
                 {
                     Speaker = d.Speaker,
                     IsLearner = d.IsLearner,
-                    English = d.English,
-                    Arabic = d.Arabic,
+                    Target = d.Target,
+                    Native = d.Native,
                 }),
             ],
             ChatPrompt = request.ChatPrompt,
@@ -58,7 +64,7 @@ public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnit
                 Meaning = request.Grammar.Meaning,
                 Explanation = request.Grammar.Explanation,
                 Pattern = request.Grammar.Pattern,
-                Examples = [.. request.Grammar.Examples.Select(e => new GrammarExample { English = e.English, Arabic = e.Arabic })],
+                Examples = [.. request.Grammar.Examples.Select(e => new GrammarExample { Target = e.Target, Native = e.Native })],
                 Note = request.Grammar.Note,
             },
             ListeningSentence = request.ListeningSentence,
@@ -66,10 +72,32 @@ public sealed class PublishLessonCommandHandler(ILessonRepository lessons, IUnit
         };
 
         var number = await lessons.NextNumberAsync(cancellationToken);
-        var lesson = Lesson.Create(request.LessonId, number, request.Title, request.Scenario, request.GrammarPoint, content);
+        var lesson = Lesson.Create(request.LessonId, number, request.TargetLanguage, request.NativeLanguage, request.Title, request.Scenario, request.GrammarPoint, content);
         lessons.Add(lesson);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await RecordAudioAsync(lesson, cancellationToken);
+
         return new PublishedLessonInfo(lesson.Id, lesson.Number, AlreadyPublished: false);
+    }
+
+    /// <summary>
+    /// The lesson is already saved, so a speech outage must not undo the publication: the app
+    /// speaks with the device's voice until the audio is made (see <see cref="GenerateLessonAudioCommand"/>).
+    /// </summary>
+    private async Task RecordAudioAsync(Lesson lesson, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await audio.EnsureAsync(LessonSpeech.Collect(lesson), cancellationToken);
+            if (result.Failed > 0)
+            {
+                logger.LogWarning("Lesson {Number}: {Failed} of {Requested} recordings failed", lesson.Number, result.Failed, result.Requested);
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogWarning(exception, "Lesson {Number} was published without audio", lesson.Number);
+        }
     }
 }

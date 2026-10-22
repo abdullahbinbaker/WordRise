@@ -41,9 +41,9 @@ public sealed class WordProgress
 
     public Guid LessonId { get; private set; }
 
-    public string English { get; private set; } = string.Empty;
+    public string Target { get; private set; } = string.Empty;
 
-    public string Arabic { get; private set; } = string.Empty;
+    public string Native { get; private set; } = string.Empty;
 
     public int IntervalDays { get; private set; }
 
@@ -59,8 +59,8 @@ public sealed class WordProgress
         LearnerId = learnerId,
         WordId = word.Id,
         LessonId = lessonId,
-        English = word.English,
-        Arabic = word.Arabic,
+        Target = word.Target,
+        Native = word.Native,
         DueOn = today.AddDays(1),
     };
 

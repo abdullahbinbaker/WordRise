@@ -22,10 +22,10 @@
 <ul class="list">
   @for (word of store.words(); track word.wordId) {
     <li class="word">
-      <app-speak-button [text]="word.english" [size]="50" [iconSize]="22" />
+      <app-speak-button [text]="word.target" [size]="50" [iconSize]="22" />
       <div class="word__text">
-        <span class="word__en en" dir="ltr">{{ word.english }}</span>
-        <span class="word__ar">{{ word.arabic }}</span>
+        <span class="word__en en" dir="ltr">{{ word.target }}</span>
+        <span class="word__ar">{{ word.native }}</span>
       </div>
       <span [class]="'tag tag--' + word.status">{{ statusLabels[word.status] }}</span>
     </li>

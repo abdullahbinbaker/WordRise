@@ -99,7 +99,7 @@ public sealed class DraftProcessor(
     {
         var context = new AuthoringContext(
             draft.Brief,
-            await vocabulary.GetTaughtWordsAsync(cancellationToken),
+            await vocabulary.GetTaughtWordsAsync(draft.Brief.TargetLanguage, cancellationToken),
             [.. draft.Feedback.Select(f => f.Text)]);
 
         for (var cycle = 1; cycle <= settings.MaxCycles; cycle++)

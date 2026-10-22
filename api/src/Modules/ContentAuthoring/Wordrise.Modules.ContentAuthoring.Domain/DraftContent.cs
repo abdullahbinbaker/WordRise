@@ -27,16 +27,16 @@ public sealed class DraftContent
 
 public sealed class DraftWord
 {
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 
-    /// <summary>How the word sounds, written in Arabic letters.</summary>
+    /// <summary>How the word sounds, written in the learner's own script.</summary>
     public string Pronunciation { get; init; } = string.Empty;
 
     public string Example { get; init; } = string.Empty;
 
-    public string ExampleArabic { get; init; } = string.Empty;
+    public string ExampleNative { get; init; } = string.Empty;
 }
 
 public sealed class DraftDialogueLine
@@ -46,9 +46,9 @@ public sealed class DraftDialogueLine
     /// <summary>True when the learner says this line.</summary>
     public bool IsLearner { get; init; }
 
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 }
 
 public sealed class DraftAnswerOption
@@ -75,7 +75,7 @@ public sealed class DraftGrammar
 
 public sealed class DraftGrammarExample
 {
-    public string English { get; init; } = string.Empty;
+    public string Target { get; init; } = string.Empty;
 
-    public string Arabic { get; init; } = string.Empty;
+    public string Native { get; init; } = string.Empty;
 }

@@ -14,6 +14,8 @@ public sealed record DraftListItemDto(
     DateTime UpdatedAtUtc);
 
 public sealed record BriefDto(
+    string TargetLanguage,
+    string NativeLanguage,
     string Scenario,
     int GrammarStep,
     string GrammarPoint,
@@ -60,9 +62,9 @@ public sealed record DraftContentDto(
     string ListeningSentence,
     IReadOnlyList<DraftAnswerOptionDto> ListeningOptions);
 
-public sealed record DraftWordDto(string English, string Arabic, string Pronunciation, string Example, string ExampleArabic);
+public sealed record DraftWordDto(string Target, string Native, string Pronunciation, string Example, string ExampleNative);
 
-public sealed record DraftDialogueLineDto(string Speaker, bool IsLearner, string English, string Arabic);
+public sealed record DraftDialogueLineDto(string Speaker, bool IsLearner, string Target, string Native);
 
 public sealed record DraftAnswerOptionDto(string Text, bool IsCorrect);
 
@@ -74,7 +76,7 @@ public sealed record DraftGrammarDto(
     IReadOnlyList<DraftGrammarExampleDto> Examples,
     string Note);
 
-public sealed record DraftGrammarExampleDto(string English, string Arabic);
+public sealed record DraftGrammarExampleDto(string Target, string Native);
 
 public sealed record PublishedLessonDto(Guid LessonId, int Number);
 
@@ -97,6 +99,8 @@ public static class DraftMapping
     public static DraftDetailDto ToDetail(LessonDraft draft) => new(
         draft.Id,
         new BriefDto(
+            draft.Brief.TargetLanguage,
+            draft.Brief.NativeLanguage,
             draft.Brief.Scenario,
             draft.Brief.GrammarStep,
             draft.Brief.Grammar.Title,
@@ -125,8 +129,8 @@ public static class DraftMapping
 
     private static DraftContentDto ToContent(DraftContent c) => new(
         c.Title,
-        [.. c.Words.Select(w => new DraftWordDto(w.English, w.Arabic, w.Pronunciation, w.Example, w.ExampleArabic))],
-        [.. c.Dialogue.Select(d => new DraftDialogueLineDto(d.Speaker, d.IsLearner, d.English, d.Arabic))],
+        [.. c.Words.Select(w => new DraftWordDto(w.Target, w.Native, w.Pronunciation, w.Example, w.ExampleNative))],
+        [.. c.Dialogue.Select(d => new DraftDialogueLineDto(d.Speaker, d.IsLearner, d.Target, d.Native))],
         c.ChatPrompt,
         [.. c.ChatOptions.Select(o => new DraftAnswerOptionDto(o.Text, o.IsCorrect))],
         new DraftGrammarDto(
@@ -134,7 +138,7 @@ public static class DraftMapping
             c.Grammar.Meaning,
             c.Grammar.Explanation,
             c.Grammar.Pattern,
-            [.. c.Grammar.Examples.Select(e => new DraftGrammarExampleDto(e.English, e.Arabic))],
+            [.. c.Grammar.Examples.Select(e => new DraftGrammarExampleDto(e.Target, e.Native))],
             c.Grammar.Note),
         c.ListeningSentence,
         [.. c.ListeningOptions.Select(o => new DraftAnswerOptionDto(o.Text, o.IsCorrect))]);

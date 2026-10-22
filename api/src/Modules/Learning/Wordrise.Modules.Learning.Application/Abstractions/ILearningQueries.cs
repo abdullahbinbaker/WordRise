@@ -15,7 +15,7 @@ public interface ILearningQueries
 
     Task<LessonDto?> GetLessonAsync(Guid lessonId, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<string>> GetTaughtWordsAsync(string targetLanguage, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<DueReviewDto>> GetDueReviewsAsync(
         Guid learnerId,

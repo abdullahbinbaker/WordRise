@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Shared\Wordrise.Shared.Abstractions\Wordrise.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\Modules\Identity\Wordrise.Modules.Identity.Core\Wordrise.Modules.Identity.Core.csproj" />
     <ProjectReference Include="..\Modules\Learning\Wordrise.Modules.Learning.Api\Wordrise.Modules.Learning.Api.csproj" />
+    <ProjectReference Include="../Modules/Media/Wordrise.Modules.Media.Core/Wordrise.Modules.Media.Core.csproj" />
     <ProjectReference Include="..\Modules\ContentAuthoring\Wordrise.Modules.ContentAuthoring.Api\Wordrise.Modules.ContentAuthoring.Api.csproj" />
   </ItemGroup>
 

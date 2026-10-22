@@ -9,4 +9,4 @@ public enum WordFilter
     Mastered,
 }
 
-public sealed record MyWordDto(Guid WordId, string English, string Arabic, WordStatus Status, DateOnly NextReviewOn);
+public sealed record MyWordDto(Guid WordId, string Target, string Native, WordStatus Status, DateOnly NextReviewOn);

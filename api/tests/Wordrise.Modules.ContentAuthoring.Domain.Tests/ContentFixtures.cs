@@ -19,13 +19,13 @@ public static class ContentFixtures
         // Two new words per learner line, so a long lesson still fits the dialogue length limit.
         List<DraftDialogueLine> dialogue =
         [
-            new() { Speaker = "الكاشير", English = "Hello! Can I help you?", Arabic = "مرحباً! هل أستطيع مساعدتك؟" },
+            new() { Speaker = "الكاشير", Target = "Hello! Can I help you?", Native = "مرحباً! هل أستطيع مساعدتك؟" },
             .. english.Chunk(2).Select(pair => new DraftDialogueLine
             {
                 Speaker = "أنت",
                 IsLearner = true,
-                English = $"Can I have {string.Join(" and ", pair)}, please?",
-                Arabic = "هل أستطيع الحصول عليها من فضلك؟",
+                Target = $"Can I have {string.Join(" and ", pair)}, please?",
+                Native = "هل أستطيع الحصول عليها من فضلك؟",
             }),
         ];
 
@@ -39,11 +39,11 @@ public static class ContentFixtures
             [
                 .. english.Select(w => new DraftWord
                 {
-                    English = w,
-                    Arabic = "معنى",
+                    Target = w,
+                    Native = "معنى",
                     Pronunciation = "نُطق",
                     Example = $"I like {w}.",
-                    ExampleArabic = "أحب هذا.",
+                    ExampleNative = "أحب هذا.",
                 }),
             ],
             Dialogue = dialogue,
@@ -61,9 +61,9 @@ public static class ContentFixtures
                 Pattern = "الشخص + can + الفعل",
                 Examples =
                 [
-                    new DraftGrammarExample { English = "I can read.", Arabic = "أستطيع القراءة." },
-                    new DraftGrammarExample { English = "She can cook.", Arabic = "هي تستطيع الطبخ." },
-                    new DraftGrammarExample { English = "I can't drive.", Arabic = "لا أستطيع القيادة." },
+                    new DraftGrammarExample { Target = "I can read.", Native = "أستطيع القراءة." },
+                    new DraftGrammarExample { Target = "She can cook.", Native = "هي تستطيع الطبخ." },
+                    new DraftGrammarExample { Target = "I can't drive.", Native = "لا أستطيع القيادة." },
                 ],
                 Note = "الفعل بعد can لا يتغيّر.",
             },

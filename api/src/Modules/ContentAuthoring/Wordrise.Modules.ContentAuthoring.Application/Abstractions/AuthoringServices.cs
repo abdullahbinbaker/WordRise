@@ -33,7 +33,7 @@ public interface ILessonReviewer
 /// <summary>The words learners were already taught.</summary>
 public interface IKnownVocabulary
 {
-    Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<string>> GetTaughtWordsAsync(string targetLanguage, CancellationToken cancellationToken);
 }
 
 public sealed record PublishedLesson(Guid LessonId, int Number);

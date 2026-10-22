@@ -75,12 +75,12 @@ import { CRITERION_LABELS, DraftDetail, STATUS_LABELS } from './admin.models';
           <table>
             <thead><tr><th>English</th><th>العربية</th><th>النطق</th><th>مثال</th></tr></thead>
             <tbody>
-              @for (word of c.words; track word.english) {
+              @for (word of c.words; track word.target) {
                 <tr>
-                  <td class="en" dir="ltr"><strong>{{ word.english }}</strong></td>
-                  <td>{{ word.arabic }}</td>
+                  <td class="en" dir="ltr"><strong>{{ word.target }}</strong></td>
+                  <td>{{ word.native }}</td>
                   <td>{{ word.pronunciation }}</td>
-                  <td><span class="en" dir="ltr">{{ word.example }}</span><br /><span class="muted">{{ word.exampleArabic }}</span></td>
+                  <td><span class="en" dir="ltr">{{ word.example }}</span><br /><span class="muted">{{ word.exampleNative }}</span></td>
                 </tr>
               }
             </tbody>
@@ -92,8 +92,8 @@ import { CRITERION_LABELS, DraftDetail, STATUS_LABELS } from './admin.models';
           @for (line of c.dialogue; track $index) {
             <p>
               <strong>{{ line.speaker }}{{ line.isLearner ? ' (المتعلّم)' : '' }}:</strong>
-              <span class="en" dir="ltr"> {{ line.english }}</span><br />
-              <span class="muted">{{ line.arabic }}</span>
+              <span class="en" dir="ltr"> {{ line.target }}</span><br />
+              <span class="muted">{{ line.native }}</span>
             </p>
           }
         </section>
@@ -103,8 +103,8 @@ import { CRITERION_LABELS, DraftDetail, STATUS_LABELS } from './admin.models';
           <p>{{ c.grammar.explanation }}</p>
           <p class="muted">{{ c.grammar.pattern }}</p>
           <ul class="plain">
-            @for (example of c.grammar.examples; track example.english) {
-              <li><span class="en" dir="ltr">{{ example.english }}</span> — {{ example.arabic }}</li>
+            @for (example of c.grammar.examples; track example.target) {
+              <li><span class="en" dir="ltr">{{ example.target }}</span> — {{ example.native }}</li>
             }
           </ul>
           @if (c.grammar.note) {

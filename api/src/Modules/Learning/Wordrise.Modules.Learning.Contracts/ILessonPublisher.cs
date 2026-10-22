@@ -14,12 +14,14 @@ public interface ILessonPublisher
 /// <summary>What other modules may know about the vocabulary learners were taught.</summary>
 public interface IPublishedVocabulary
 {
-    /// <summary>The English words of every published lesson, without repeats.</summary>
-    Task<IReadOnlyList<string>> GetTaughtWordsAsync(CancellationToken cancellationToken);
+    /// <summary>The words of every published lesson that teaches this language, without repeats.</summary>
+    Task<IReadOnlyList<string>> GetTaughtWordsAsync(string targetLanguage, CancellationToken cancellationToken);
 }
 
 public sealed record PublishLessonRequest(
     Guid LessonId,
+    string TargetLanguage,
+    string NativeLanguage,
     string Title,
     string Scenario,
     string GrammarPoint,
@@ -32,13 +34,13 @@ public sealed record PublishLessonRequest(
     IReadOnlyList<PublishedAnswerOption> ListeningOptions);
 
 public sealed record PublishedWord(
-    string English,
-    string Arabic,
+    string Target,
+    string Native,
     string Pronunciation,
     string Example,
-    string ExampleArabic);
+    string ExampleNative);
 
-public sealed record PublishedDialogueLine(string Speaker, bool IsLearner, string English, string Arabic);
+public sealed record PublishedDialogueLine(string Speaker, bool IsLearner, string Target, string Native);
 
 public sealed record PublishedAnswerOption(string Text, bool IsCorrect);
 
@@ -50,6 +52,6 @@ public sealed record PublishedGrammar(
     IReadOnlyList<PublishedGrammarExample> Examples,
     string Note);
 
-public sealed record PublishedGrammarExample(string English, string Arabic);
+public sealed record PublishedGrammarExample(string Target, string Native);
 
 public sealed record PublishedLessonInfo(Guid LessonId, int Number, bool AlreadyPublished);

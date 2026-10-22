@@ -13,6 +13,10 @@
     <Project Path="src/Modules/Identity/Wordrise.Modules.Identity.Contracts/Wordrise.Modules.Identity.Contracts.csproj" />
     <Project Path="src/Modules/Identity/Wordrise.Modules.Identity.Core/Wordrise.Modules.Identity.Core.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Media/">
+    <Project Path="src/Modules/Media/Wordrise.Modules.Media.Contracts/Wordrise.Modules.Media.Contracts.csproj" />
+    <Project Path="src/Modules/Media/Wordrise.Modules.Media.Core/Wordrise.Modules.Media.Core.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Learning/">
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Api/Wordrise.Modules.Learning.Api.csproj" />
     <Project Path="src/Modules/Learning/Wordrise.Modules.Learning.Application/Wordrise.Modules.Learning.Application.csproj" />
@@ -32,6 +36,7 @@
     <Project Path="tests/Wordrise.Modules.Identity.Tests/Wordrise.Modules.Identity.Tests.csproj" />
     <Project Path="tests/Wordrise.Modules.Learning.Domain.Tests/Wordrise.Modules.Learning.Domain.Tests.csproj" />
     <Project Path="tests/Wordrise.Modules.Learning.Tests/Wordrise.Modules.Learning.Tests.csproj" />
+    <Project Path="tests/Wordrise.Modules.Media.Tests/Wordrise.Modules.Media.Tests.csproj" />
     <Project Path="tests/Wordrise.Testing/Wordrise.Testing.csproj" />
   </Folder>
 </Solution>

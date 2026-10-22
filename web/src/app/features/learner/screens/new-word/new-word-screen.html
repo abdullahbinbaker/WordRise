@@ -6,24 +6,24 @@
     </div>
 
     <!-- Placeholder until each word has an illustration. -->
-    <div class="photo" role="img" [attr.aria-label]="'صورة: ' + word.arabic">
-      <span class="photo__label" dir="ltr">photo: {{ word.english }}</span>
+    <div class="photo" role="img" [attr.aria-label]="'صورة: ' + word.native">
+      <span class="photo__label" dir="ltr">photo: {{ word.target }}</span>
     </div>
 
     <div class="headword">
       <div class="headword__text">
-        <span class="headword__en en" dir="ltr">{{ word.english }}</span>
+        <span class="headword__en en" dir="ltr">{{ word.target }}</span>
         <span class="headword__tr">تُنطق: «{{ word.pronunciation }}»</span>
       </div>
-      <app-speak-button [text]="word.english" [size]="80" [iconSize]="36" />
+      <app-speak-button [text]="word.target" [size]="80" [iconSize]="36" />
     </div>
 
-    <div class="meaning">{{ word.arabic }}</div>
+    <div class="meaning">{{ word.native }}</div>
 
     <div class="example card">
       <div class="example__text">
         <span class="example__en en" dir="ltr">{{ word.example }}</span>
-        <span class="example__ar">{{ word.exampleArabic }}</span>
+        <span class="example__ar">{{ word.exampleNative }}</span>
       </div>
       <app-speak-button [text]="word.example" [size]="52" [iconSize]="24" label="استمع للجملة" />
     </div>
