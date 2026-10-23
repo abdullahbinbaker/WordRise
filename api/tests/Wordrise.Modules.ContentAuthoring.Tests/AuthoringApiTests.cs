@@ -69,7 +69,7 @@ public sealed class AuthoringApiTests(WordriseApiFactory factory) : IClassFixtur
 
         Assert.Equal(HttpStatusCode.OK, (await staff.GetAsync(Drafts)).StatusCode);
         var curriculum = await staff.GetFromJsonAsync<JsonElement[]>("/api/v1/admin/lessons/curriculum", Json);
-        Assert.Equal(11, curriculum!.Length);
+        Assert.Equal(25, curriculum!.Length);
     }
 
     [Fact]

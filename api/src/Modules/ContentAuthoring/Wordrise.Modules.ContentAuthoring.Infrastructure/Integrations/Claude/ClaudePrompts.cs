@@ -15,8 +15,8 @@ internal static class ClaudePrompts
 
     private const string Platform = """
         Wordrise is a free charity platform that teaches American English to Arabic speakers.
-        Its learners are adult beginners (many are older and new to English) from conservative
-        Muslim communities in the Arab world. Each lesson is one short daily lesson built around one
+        Its learners are adults, from complete beginners (A1) up to intermediate (B1); many are older and
+        some are new to English. They come from conservative Muslim communities in the Arab world. Each lesson is one short daily lesson built around one
         real-life situation (the scenario) and one grammar point: the learner studies the new words,
         reads a dialogue that uses them, learns the grammar from that dialogue, then does two short
         exercises (a question about what to say, and a listening exercise).
@@ -37,7 +37,12 @@ internal static class ClaudePrompts
            appear naturally in the dialogue and in the examples. Never use grammar from a later point.
         3. Vocabulary: the dialogue may use the new words, the known words you are given, and very basic
            function words (a, the, I, you, my, please, thank you, yes, no, hello, goodbye, and numbers).
-           Avoid every other word: a beginner must understand all of it.
+           At level A1 and A2 avoid every other word: the learner must understand all of it. At level B1 you
+           may also use ordinary everyday words that a B1 learner knows (roughly the 2000 most common English
+           words), but nothing rare, no idioms and no slang.
+        3b. Length follows the level. A1: sentences of up to 8 words. A2: up to 12 words, with simple
+           linking (and, but, because). B1: up to 18 words, and topics beyond the basics (work, health, travel,
+           plans, opinions, experiences).
         4. Sentences are short and natural: the way people really talk in this situation, in American English.
         5. Content must suit every learner and respect Islamic values: no alcohol, pork, gambling, dating or
            romance, music or dancing, or anything immodest. Prefer neutral everyday topics and names.
@@ -72,10 +77,11 @@ internal static class ClaudePrompts
         sentence (in English):
         - LanguageAccuracy: no spelling, grammar or translation mistake in the English or in the Arabic;
           pronunciations in Arabic letters are right; the Arabic reads naturally.
-        - LevelMatch: the words and sentences suit the lesson's CEFR level for an absolute beginner.
+        - LevelMatch: the words and sentences suit the CEFR level named in the brief (A1 and A2 are
+          beginners, B1 is an intermediate learner).
         - VocabularyAndGrammarAdherence: only the allowed grammar is used (never a later point), the lesson's
           own grammar point is really used, and the dialogue sticks to the new words, the known words and
-          very basic function words.
+          very basic function words (at B1 also ordinary everyday words a B1 learner knows).
         - AgeAppropriateness: suitable for any learner, from a child to an older adult.
         - CulturalFit: nothing against Islamic values or Arab customs: no alcohol, pork, gambling, dating or
           romance, music or dancing, or anything immodest.
