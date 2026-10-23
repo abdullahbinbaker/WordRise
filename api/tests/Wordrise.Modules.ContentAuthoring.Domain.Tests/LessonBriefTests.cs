@@ -37,6 +37,9 @@ public sealed class LessonBriefTests
     [InlineData(9, "A1")]
     [InlineData(10, "A2")]
     [InlineData(11, "A2")]
+    [InlineData(15, "A2")]
+    [InlineData(16, "B1")]
+    [InlineData(25, "B1")]
     public void The_level_follows_the_grammar_step(int step, string level)
     {
         Assert.Equal(level, LessonBrief.Create("hotel", step, 5).Level);
@@ -62,7 +65,7 @@ public sealed class LessonBriefTests
 
     [Theory]
     [InlineData(0)]
-    [InlineData(12)]
+    [InlineData(26)]
     [InlineData(-1)]
     public void A_grammar_step_outside_the_curriculum_is_refused(int step)
     {
