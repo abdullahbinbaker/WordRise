@@ -22,6 +22,7 @@ public sealed class FoundationsApiTests(WordriseApiFactory factory) : IClassFixt
     private sealed record Today(
         NextLesson? NextLesson,
         bool NoLessonsAtYourLevelYet,
+        bool CompletedLessonToday,
         bool OnboardingDone,
         bool NewLessonsPaused,
         int LearnedWordsCount);
@@ -111,14 +112,44 @@ public sealed class FoundationsApiTests(WordriseApiFactory factory) : IClassFixt
     }
 
     [Fact]
+    public async Task The_course_starts_with_the_letters_then_numbers_then_greetings()
+    {
+        var client = await factory.CreateSignedInClientAsync();
+        await Choose(client, knowsLetters: false, startStep: 1);
+
+        var order = new List<string>();
+        for (var i = 0; i < 3; i++)
+        {
+            var next = (await TodayAsync(client))!.NextLesson!;
+            order.Add(next.Title);
+            await client.PostAsync($"/api/v1/learning/lessons/{next.Id}/complete", null);
+        }
+
+        Assert.Equal(["الأبجدية الإنجليزية", "الأرقام من 0 إلى 20", "التحيات"], order);
+    }
+
+    [Fact]
+    public async Task Foundations_lessons_are_not_held_to_one_a_day()
+    {
+        var client = await factory.CreateSignedInClientAsync();
+        await Choose(client, knowsLetters: false, startStep: 1);
+        var first = (await TodayAsync(client))!.NextLesson!;
+
+        await client.PostAsync($"/api/v1/learning/lessons/{first.Id}/complete", null);
+        var today = (await TodayAsync(client))!;
+
+        Assert.False(today.CompletedLessonToday);
+        Assert.NotEqual(first.Id, today.NextLesson!.Id);
+        Assert.Equal("foundations", today.NextLesson.Track);
+    }
+
+    [Fact]
     public async Task A_foundations_lesson_carries_its_items_and_exercises_and_plays_letters_by_style()
     {
         var client = await factory.CreateSignedInClientAsync();
         await Choose(client, knowsLetters: false, startStep: 1);
 
-        // The alphabet is the second foundations lesson.
-        var greetings = (await TodayAsync(client))!.NextLesson!;
-        await client.PostAsync($"/api/v1/learning/lessons/{greetings.Id}/complete", null);
+        // The alphabet is the very first thing a beginner sees.
         var alphabetId = (await TodayAsync(client))!.NextLesson!.Id;
 
         var lesson = await client.GetFromJsonAsync<Lesson>($"/api/v1/learning/lessons/{alphabetId}", Json);

@@ -67,7 +67,8 @@ internal sealed class LearningQueries(LearningDbContext db, ILearningSettings se
             ReviewsEnabled: settings.ReviewsEnabled,
             DueReviewCount: dueCount,
             LearnedWordsCount: learnedCount,
-            CompletedLessonToday: learner?.CompletedAnyLessonOn(today) ?? false,
+            // The daily limit is for the main course; the short foundations lessons can follow one another.
+            CompletedLessonToday: (learner?.CompletedAnyLessonOn(today) ?? false) && next?.Track != LessonTrack.Foundations,
             NewLessonsPaused: next?.Track != LessonTrack.Foundations && settings.ReviewBacklog.PausesNewLessons(dueCount),
             ReviewBacklogLimit: settings.ReviewBacklog.Limit,
             NextLesson: next is null
