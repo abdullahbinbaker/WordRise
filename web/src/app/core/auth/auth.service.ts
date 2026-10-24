@@ -32,6 +32,13 @@ export class TwoFactorRequiredError extends Error {
   }
 }
 
+/** Thrown when the account exists but its email address was not confirmed yet. */
+export class EmailNotConfirmedError extends Error {
+  constructor() {
+    super('فعّل بريدك الإلكتروني أولاً: أرسلنا إليك رابط التفعيل.');
+  }
+}
+
 /** The website signs in with an HttpOnly cookie; the API sets and reads it. */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -75,6 +82,12 @@ export class AuthService {
         if (detail === 'RequiresTwoFactor') {
           throw new TwoFactorRequiredError();
         }
+        if (detail === 'NotAllowed') {
+          throw new EmailNotConfirmedError();
+        }
+        if (detail === 'LockedOut') {
+          throw new Error('تم إيقاف الدخول مؤقتاً بسبب محاولات خاطئة كثيرة. انتظر 5 دقائق ثم حاول مرة أخرى، أو اختر «نسيت كلمة المرور».');
+        }
         throw new Error(
           twoFactorCode ? 'الرمز غير صحيح أو انتهت صلاحيته.' : 'البريد أو كلمة المرور غير صحيحة.',
         );
@@ -82,6 +95,7 @@ export class AuthService {
       throw new Error('تعذّر تسجيل الدخول. حاول مرة أخرى.');
     }
     await this.loadUser();
+    await this.applyRememberedName(email);
   }
 
   async register(displayName: string, email: string, password: string): Promise<void> {
@@ -90,10 +104,45 @@ export class AuthService {
     } catch (error) {
       throw new Error(this.registerError(error));
     }
+    // The name is saved once the account can sign in (right now, or after its email is confirmed).
+    this.rememberName(email, displayName);
     await this.login(email, password);
-    if (displayName.trim()) {
-      await firstValueFrom(this.http.put('/api/v1/me', { displayName: displayName.trim() }));
-      await this.loadUser();
+  }
+
+  /** Always succeeds from the learner's side: the API does not reveal whether the address has an account. */
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      await firstValueFrom(this.http.post('/api/v1/auth/forgotPassword', { email }));
+    } catch {
+      throw new Error('تعذّر إرسال الرسالة. حاول مرة أخرى بعد قليل.');
+    }
+  }
+
+  async resetPassword(email: string, resetCode: string, newPassword: string): Promise<void> {
+    try {
+      await firstValueFrom(this.http.post('/api/v1/auth/resetPassword', { email, resetCode, newPassword }));
+    } catch (error) {
+      const codes = error instanceof HttpErrorResponse ? Object.keys((error.error as ValidationProblem)?.errors ?? {}) : [];
+      const known = codes.map((code) => REGISTER_ERRORS[code]).filter(Boolean);
+      throw new Error(known[0] ?? 'الرابط غير صالح أو انتهت صلاحيته. اطلب رابطاً جديداً.');
+    }
+  }
+
+  async confirmEmail(userId: string, code: string, changedEmail?: string): Promise<void> {
+    const params = new URLSearchParams({ userId, code });
+    if (changedEmail) params.set('changedEmail', changedEmail);
+    try {
+      await firstValueFrom(this.http.get(`/api/v1/auth/confirmEmail?${params}`, { responseType: 'text' }));
+    } catch {
+      throw new Error('الرابط غير صالح أو انتهت صلاحيته.');
+    }
+  }
+
+  async resendConfirmation(email: string): Promise<void> {
+    try {
+      await firstValueFrom(this.http.post('/api/v1/auth/resendConfirmationEmail', { email }));
+    } catch {
+      throw new Error('تعذّر إرسال الرسالة. حاول مرة أخرى بعد قليل.');
     }
   }
 
@@ -102,6 +151,30 @@ export class AuthService {
       await firstValueFrom(this.http.post('/api/v1/auth/logout', null));
     } finally {
       this.user.set(null);
+    }
+  }
+
+  private static readonly NameKey = 'wordrise.pending-name';
+
+  private rememberName(email: string, displayName: string): void {
+    try {
+      if (displayName.trim()) {
+        localStorage.setItem(AuthService.NameKey, JSON.stringify({ email: email.toLowerCase(), name: displayName.trim() }));
+      }
+    } catch {
+      // Without storage the learner is greeted by the start of their email instead.
+    }
+  }
+
+  private async applyRememberedName(email: string): Promise<void> {
+    try {
+      const saved = JSON.parse(localStorage.getItem(AuthService.NameKey) ?? 'null') as { email: string; name: string } | null;
+      if (!saved || saved.email !== email.toLowerCase()) return;
+      localStorage.removeItem(AuthService.NameKey);
+      await firstValueFrom(this.http.put('/api/v1/me', { displayName: saved.name }));
+      await this.loadUser();
+    } catch {
+      // The name is a nicety; never fail a sign-in over it.
     }
   }
 

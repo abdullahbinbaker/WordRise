@@ -11,7 +11,7 @@
     </nav>
     <div class="account">
       @if (auth.isSignedIn()) {
-        <a class="user" routerLink="/app">
+        <a class="user" [routerLink]="auth.isStaff() ? '/admin' : '/app'">
           <span class="user__avatar" aria-hidden="true">{{ initial() }}</span>
           {{ auth.displayName() }}
         </a>

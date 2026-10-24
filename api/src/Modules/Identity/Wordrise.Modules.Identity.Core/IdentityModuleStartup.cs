@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Wordrise.Modules.Identity.Contracts;
 using Wordrise.Modules.Identity.Core.Data;
 using Wordrise.Modules.Identity.Core.Domain;
+using Wordrise.Modules.Identity.Core.Email;
 using Wordrise.Modules.Identity.Core.Profiles;
 using Wordrise.Shared.Abstractions;
 using Wordrise.Shared.Infrastructure.Database;
@@ -35,6 +36,7 @@ public sealed class IdentityModuleStartup : ModuleStartup
     {
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
         services.Configure<IdentityModuleOptions>(configuration.GetSection(IdentityModuleOptions.SectionName));
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         services.AddDbContext<IdentityModuleDbContext>((provider, options) =>
             options.UseWordriseDatabase(
@@ -55,6 +57,16 @@ public sealed class IdentityModuleStartup : ModuleStartup
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<IdentityModuleDbContext>();
+
+        services.AddOptions<IdentityOptions>().Configure<IOptions<IdentityModuleOptions>>((identity, module) =>
+            identity.SignIn.RequireConfirmedEmail = module.Value.RequireConfirmedEmail);
+
+        // Registered after Identity's own no-op sender, so these replace it.
+        services.AddSingleton<IMailTransport>(provider =>
+            provider.GetRequiredService<IOptions<EmailOptions>>().Value.Provider == EmailProvider.Smtp
+                ? ActivatorUtilities.CreateInstance<SmtpMailTransport>(provider)
+                : ActivatorUtilities.CreateInstance<LogMailTransport>(provider));
+        services.AddSingleton<IEmailSender<AppUser>, AccountEmailSender>();
 
         services.ConfigureApplicationCookie(options =>
         {
@@ -139,10 +151,13 @@ public sealed class IdentityModuleStartup : ModuleStartup
 
         // The owner registers normally, then is named an admin in settings; nobody can become one through the API.
         var users = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-        var adminEmails = scope.ServiceProvider.GetRequiredService<IOptions<IdentityModuleOptions>>().Value.AdminEmails;
-        foreach (var email in adminEmails.Where(e => !string.IsNullOrWhiteSpace(e)).Select(e => e.Trim()))
+        var moduleOptions = scope.ServiceProvider.GetRequiredService<IOptions<IdentityModuleOptions>>().Value;
+        foreach (var email in moduleOptions.AdminEmails.Where(e => !string.IsNullOrWhiteSpace(e)).Select(e => e.Trim()))
         {
-            if (await users.FindByEmailAsync(email) is { } admin && !await users.IsInRoleAsync(admin, Roles.Admin))
+            // An address nobody has proven they own (the link was never opened) cannot be made an admin.
+            if (await users.FindByEmailAsync(email) is { } admin
+                && (admin.EmailConfirmed || !moduleOptions.RequireConfirmedEmail)
+                && !await users.IsInRoleAsync(admin, Roles.Admin))
             {
                 await users.AddToRoleAsync(admin, Roles.Admin);
             }

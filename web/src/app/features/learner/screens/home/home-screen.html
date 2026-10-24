@@ -4,9 +4,14 @@
       <span class="greeting__hello">{{ greeting() }}</span>
       <span class="greeting__name">{{ store.learnerName() }}</span>
     </div>
-    <div class="streak">
-      <span class="dot" aria-hidden="true"></span>
-      {{ today().streak | arabicDigits }} أيام
+    <div class="greeting__side">
+      <div class="streak">
+        <span class="dot" aria-hidden="true"></span>
+        {{ today().streak | arabicDigits }} أيام
+      </div>
+      @if (store.logoutHandler(); as logout) {
+        <button type="button" class="logout" (click)="logout()">تسجيل الخروج</button>
+      }
     </div>
   </div>
 

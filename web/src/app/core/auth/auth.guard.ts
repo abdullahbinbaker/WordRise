@@ -13,5 +13,7 @@ export const authGuard: CanActivateFn = async (_route, state) => {
 export const guestGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  return (await auth.ensureUser()) ? router.createUrlTree(['/app']) : true;
+  if (!(await auth.ensureUser())) return true;
+  // Staff land in the review portal; learners in the app.
+  return router.createUrlTree([auth.isStaff() ? '/admin' : '/app']);
 };

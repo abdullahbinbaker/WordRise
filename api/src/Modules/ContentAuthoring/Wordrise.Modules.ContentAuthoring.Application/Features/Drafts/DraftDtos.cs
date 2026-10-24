@@ -143,3 +143,6 @@ public static class DraftMapping
         c.ListeningSentence,
         [.. c.ListeningOptions.Select(o => new DraftAnswerOptionDto(o.Text, o.IsCorrect))]);
 }
+
+/// <summary>How many drafts are in one state, for the numbers on the filter tabs.</summary>
+public sealed record DraftCountDto(DraftStatus Status, int Count);

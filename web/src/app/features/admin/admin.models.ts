@@ -1,6 +1,12 @@
-export type DraftStatus = 'queued' | 'inProgress' | 'aiApproved' | 'needsAttention' | 'failed' | 'published';
+export type DraftStatus = 'queued' | 'inProgress' | 'aiApproved' | 'needsAttention' | 'failed' | 'published' | 'discarded';
+
+export interface DraftCount {
+  status: DraftStatus;
+  count: number;
+}
 
 export const STATUS_LABELS: Record<DraftStatus, string> = {
+  discarded: 'ملغى',
   queued: 'في الانتظار',
   inProgress: 'قيد الكتابة',
   aiApproved: 'جاهز لمراجعتك',

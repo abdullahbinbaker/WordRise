@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { DraftDetail, DraftListItem, DraftStatus, GrammarPoint, StaffMember, TwoFactorState } from './admin.models';
+import { DraftCount, DraftDetail, DraftListItem, DraftStatus, GrammarPoint, StaffMember, TwoFactorState } from './admin.models';
 
 const BASE = '/api/v1/admin';
 
@@ -34,6 +34,12 @@ export class AdminApi {
   reject = (id: string, note: string) => firstValueFrom(this.http.post(`${BASE}/lessons/drafts/${id}/reject`, { note }));
 
   requeue = (id: string) => firstValueFrom(this.http.post(`${BASE}/lessons/drafts/${id}/requeue`, null));
+
+  draftCounts = () => firstValueFrom(this.http.get<DraftCount[]>(`${BASE}/lessons/drafts/counts`));
+
+  discard = (id: string) => firstValueFrom(this.http.post(`${BASE}/lessons/drafts/${id}/discard`, null));
+
+  restore = (id: string) => firstValueFrom(this.http.post(`${BASE}/lessons/drafts/${id}/restore`, null));
 
   staff = () => firstValueFrom(this.http.get<StaffMember[]>(`${BASE}/staff`));
 

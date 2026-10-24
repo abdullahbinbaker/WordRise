@@ -25,6 +25,12 @@ internal sealed class DraftsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> List([FromQuery] DraftStatus? status, CancellationToken cancellationToken) =>
         this.ToActionResult(await mediator.Send(new ListDraftsQuery(status), cancellationToken));
 
+    /// <summary>How many drafts are in each state, for the numbers on the filter tabs.</summary>
+    [HttpGet("counts")]
+    [ProducesResponseType<IReadOnlyList<DraftCountDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Counts(CancellationToken cancellationToken) =>
+        this.ToActionResult(await mediator.Send(new CountDraftsQuery(), cancellationToken));
+
     /// <summary>The lesson as it stands, every version of it, and every verdict.</summary>
     [HttpGet("{draftId:guid}")]
     [ProducesResponseType<DraftDetailDto>(StatusCodes.Status200OK)]
@@ -67,6 +73,22 @@ internal sealed class DraftsController(IMediator mediator) : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Reject(Guid draftId, RejectDraftRequest request, CancellationToken cancellationToken) =>
         this.ToActionResult(await mediator.Send(new RejectDraftCommand(draftId, request.Note), cancellationToken));
+
+    /// <summary>Sets a lesson aside. It is kept (not deleted) and can be restored.</summary>
+    [HttpPost("{draftId:guid}/discard")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Discard(Guid draftId, CancellationToken cancellationToken) =>
+        this.ToActionResult(await mediator.Send(new DiscardDraftCommand(draftId), cancellationToken));
+
+    /// <summary>Brings a discarded lesson back to where it was.</summary>
+    [HttpPost("{draftId:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Restore(Guid draftId, CancellationToken cancellationToken) =>
+        this.ToActionResult(await mediator.Send(new RestoreDraftCommand(draftId), cancellationToken));
 
     /// <summary>Puts a draft whose run broke (an outage, a bad answer) back in the queue.</summary>
     [HttpPost("{draftId:guid}/requeue")]

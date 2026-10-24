@@ -49,6 +49,8 @@ public sealed class WordriseApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Database:Provider", "Sqlite");
         builder.UseSetting("Database:ConnectionString", _connectionString);
         builder.UseSetting("Identity:AuthRequestsPerMinute", "1000");
+        // Most tests sign in straight after registering; the email tests switch this back on.
+        builder.UseSetting("Identity:RequireConfirmedEmail", "false");
 
         // Tests never call Claude, and the worker is driven by hand so runs are deterministic.
         builder.UseSetting("Authoring:Provider", "Sample");

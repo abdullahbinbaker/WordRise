@@ -54,6 +54,17 @@ services:
       # The account must already be registered; it still needs two-factor to use the role.
       Identity__AdminEmails__0: ${ADMIN_EMAIL:-}
 
+      # Account emails (confirm address, forgot password). Provider Smtp sends through your mail server;
+      # empty/Log only writes the message to the api log. While no mail server is set, set
+      # REQUIRE_CONFIRMED_EMAIL=false, otherwise new accounts cannot sign in.
+      Identity__RequireConfirmedEmail: ${REQUIRE_CONFIRMED_EMAIL:-}
+      Email__Provider: ${EMAIL_PROVIDER:-}
+      Email__From: ${EMAIL_FROM:-}
+      Email__Smtp__Host: ${SMTP_HOST:-}
+      Email__Smtp__Port: ${SMTP_PORT:-}
+      Email__Smtp__User: ${SMTP_USER:-}
+      Email__Smtp__Password: ${SMTP_PASSWORD:-}
+
       # An empty value here means "not set": the app then uses appsettings.json (Claude for lesson writing,
       # no audio provider). Missing keys are fine: the app starts, drafts fail with a clear message and
       # the app speaks with the device voice until they are set.
