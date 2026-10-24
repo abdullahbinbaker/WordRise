@@ -39,3 +39,13 @@ public sealed class GetCurriculumQueryHandler : IQueryHandler<GetCurriculumQuery
         ValueTask.FromResult(Result<IReadOnlyList<GrammarPointDto>>.Success(
             [.. GrammarCurriculum.Steps.Select(s => new GrammarPointDto(s.Number, s.Title, s.Level))]));
 }
+
+/// <summary>How many drafts are in each state.</summary>
+public sealed record CountDraftsQuery : IQuery<Result<IReadOnlyList<DraftCountDto>>>;
+
+public sealed class CountDraftsQueryHandler(IAuthoringQueries queries)
+    : IQueryHandler<CountDraftsQuery, Result<IReadOnlyList<DraftCountDto>>>
+{
+    public async ValueTask<Result<IReadOnlyList<DraftCountDto>>> Handle(CountDraftsQuery query, CancellationToken cancellationToken) =>
+        Result<IReadOnlyList<DraftCountDto>>.Success(await queries.CountDraftsAsync(cancellationToken));
+}

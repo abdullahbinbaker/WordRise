@@ -1,7 +1,7 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, TwoFactorRequiredError } from '../../core/auth/auth.service';
+import { AuthService, EmailNotConfirmedError, TwoFactorRequiredError } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -39,12 +39,20 @@ import { AuthService, TwoFactorRequiredError } from '../../core/auth/auth.servic
         @if (error()) {
           <p class="error" role="alert">{{ error() }}</p>
         }
+        @if (unconfirmed()) {
+          @if (resent()) {
+            <p class="note" role="status">أرسلنا الرابط من جديد. افتح بريدك.</p>
+          } @else {
+            <button type="button" class="link-button" [disabled]="busy()" (click)="resend()">أرسل رابط التفعيل مرة أخرى</button>
+          }
+        }
 
         <button type="submit" class="btn-primary" [disabled]="busy()">
           {{ busy() ? 'جارٍ الدخول…' : 'تسجيل الدخول' }}
         </button>
       </form>
 
+      <p class="switch"><a routerLink="/forgot-password">نسيت كلمة المرور؟</a></p>
       <p class="switch">ليس لديك حساب؟ <a routerLink="/register">أنشئ حساباً مجاناً</a></p>
     </main>
   `,
@@ -60,12 +68,26 @@ export class LoginPage {
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly needsCode = signal(false);
+  protected readonly unconfirmed = signal(false);
+  protected readonly resent = signal(false);
 
   protected readonly form = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     code: new FormControl('', { nonNullable: true }),
   });
+
+  protected async resend(): Promise<void> {
+    this.busy.set(true);
+    try {
+      await this.auth.resendConfirmation(this.form.getRawValue().email);
+      this.resent.set(true);
+    } catch (error) {
+      this.error.set((error as Error).message);
+    } finally {
+      this.busy.set(false);
+    }
+  }
 
   protected async submit(): Promise<void> {
     if (this.form.invalid) {
@@ -75,12 +97,15 @@ export class LoginPage {
 
     this.busy.set(true);
     this.error.set(null);
+    this.unconfirmed.set(false);
     try {
       const { email, password, code } = this.form.getRawValue();
       await this.auth.login(email, password, code.trim());
       await this.router.navigateByUrl(this.returnUrl() || (this.auth.isStaff() ? '/admin' : '/app'));
     } catch (error) {
       this.needsCode.set(this.needsCode() || error instanceof TwoFactorRequiredError);
+      this.unconfirmed.set(error instanceof EmailNotConfirmedError);
+      this.resent.set(false);
       this.error.set((error as Error).message);
     } finally {
       this.busy.set(false);

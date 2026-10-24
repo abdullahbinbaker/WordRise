@@ -95,3 +95,43 @@ public sealed class RequeueDraftCommandHandler(IDraftRepository drafts, IUnitOfW
         return Result.Success();
     }
 }
+
+/// <summary>Sets a lesson aside. It stays in the database and can be restored.</summary>
+public sealed record DiscardDraftCommand(Guid DraftId) : ICommand<Result>;
+
+public sealed class DiscardDraftCommandHandler(IDraftRepository drafts, IUnitOfWork unitOfWork, TimeProvider clock)
+    : ICommandHandler<DiscardDraftCommand, Result>
+{
+    public async ValueTask<Result> Handle(DiscardDraftCommand command, CancellationToken cancellationToken)
+    {
+        if (await drafts.GetAsync(command.DraftId, cancellationToken) is not { } draft)
+        {
+            return Error.NotFound(AuthoringErrors.DraftNotFound, "Draft not found.");
+        }
+
+        draft.Discard(clock.GetUtcNow().UtcDateTime);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+}
+
+/// <summary>Brings a discarded lesson back to where it was.</summary>
+public sealed record RestoreDraftCommand(Guid DraftId) : ICommand<Result>;
+
+public sealed class RestoreDraftCommandHandler(IDraftRepository drafts, IUnitOfWork unitOfWork, TimeProvider clock)
+    : ICommandHandler<RestoreDraftCommand, Result>
+{
+    public async ValueTask<Result> Handle(RestoreDraftCommand command, CancellationToken cancellationToken)
+    {
+        if (await drafts.GetAsync(command.DraftId, cancellationToken) is not { } draft)
+        {
+            return Error.NotFound(AuthoringErrors.DraftNotFound, "Draft not found.");
+        }
+
+        draft.Restore(clock.GetUtcNow().UtcDateTime);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+}

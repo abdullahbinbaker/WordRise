@@ -73,5 +73,37 @@ public static class LearningInfrastructureExtensions
             db.Lessons.AddRange(FoundationLessons.All);
             await db.SaveChangesAsync(cancellationToken);
         }
+        else
+        {
+            await RenumberFoundationsAsync(db, cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// The course order is letters, numbers, greetings, then the rest. A database seeded with an older order
+    /// is renumbered in place (through temporary numbers, because a number is unique within its course).
+    /// </summary>
+    private static async Task RenumberFoundationsAsync(LearningDbContext db, CancellationToken cancellationToken)
+    {
+        var wanted = FoundationLessons.All.ToDictionary(l => l.Id, l => l.Number);
+        var current = await db.Lessons
+            .Where(l => l.Track == LessonTrack.Foundations)
+            .Select(l => new { l.Id, l.Number })
+            .ToListAsync(cancellationToken);
+        var stale = current.Where(l => wanted.TryGetValue(l.Id, out var number) && number != l.Number).ToList();
+
+        foreach (var lesson in stale)
+        {
+            var temporary = -lesson.Number;
+            await db.Lessons.Where(l => l.Id == lesson.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(l => l.Number, temporary), cancellationToken);
+        }
+
+        foreach (var lesson in stale)
+        {
+            var number = wanted[lesson.Id];
+            await db.Lessons.Where(l => l.Id == lesson.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(l => l.Number, number), cancellationToken);
+        }
     }
 }

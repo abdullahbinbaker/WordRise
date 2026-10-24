@@ -12,6 +12,7 @@ internal sealed class LessonDraftConfiguration : IEntityTypeConfiguration<Lesson
         builder.HasKey(d => d.Id);
         builder.Property(d => d.Id).ValueGeneratedNever();
         builder.Property(d => d.Status).HasConversion<string>().HasMaxLength(20);
+        builder.Property(d => d.DiscardedFrom).HasConversion<string>().HasMaxLength(20);
         builder.Property(d => d.Error).HasMaxLength(500);
 
         // The queue asks "what is waiting?"; the admin list asks "what changed last?".

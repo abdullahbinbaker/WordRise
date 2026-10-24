@@ -181,6 +181,59 @@ public sealed class AuthoringApiTests(WordriseApiFactory factory) : IClassFixtur
         Assert.Equal("queued", (await GetAsync(staff, id))!.Status);
     }
 
+    private sealed record Item(Guid Id, string Status);
+
+    private sealed record Total(string Status, int Count);
+
+    [Fact]
+    public async Task A_discarded_lesson_leaves_the_default_list_keeps_its_place_and_can_be_restored()
+    {
+        var staff = factory.CreateStaffClient();
+        var id = await CreateDraftAsync(staff);
+        await RunWorkerAsync();
+        Assert.Equal("aiApproved", (await GetAsync(staff, id))!.Status);
+
+        (await staff.PostAsync($"{Drafts}/{id}/discard", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal("discarded", (await GetAsync(staff, id))!.Status);
+        Assert.DoesNotContain((await staff.GetFromJsonAsync<Item[]>(Drafts, Json))!, d => d.Id == id);
+        Assert.Contains((await staff.GetFromJsonAsync<Item[]>($"{Drafts}?status=discarded", Json))!, d => d.Id == id);
+        Assert.Contains((await staff.GetFromJsonAsync<Total[]>($"{Drafts}/counts", Json))!, c => c.Status == "discarded" && c.Count >= 1);
+
+        (await staff.PostAsync($"{Drafts}/{id}/restore", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal("aiApproved", (await GetAsync(staff, id))!.Status);
+        Assert.Contains((await staff.GetFromJsonAsync<Item[]>(Drafts, Json))!, d => d.Id == id);
+    }
+
+    [Fact]
+    public async Task A_discarded_lesson_cannot_be_published_or_discarded_again_and_a_live_one_cannot_be_restored()
+    {
+        var staff = factory.CreateStaffClient();
+        var id = await CreateDraftAsync(staff);
+        await RunWorkerAsync();
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await staff.PostAsync($"{Drafts}/{id}/restore", null)).StatusCode);
+
+        (await staff.PostAsync($"{Drafts}/{id}/discard", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await staff.PostAsync($"{Drafts}/{id}/discard", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await staff.PostAsync($"{Drafts}/{id}/approve", null)).StatusCode);
+    }
+
+    [Fact]
+    public async Task A_discarded_queued_draft_is_ignored_by_the_writer()
+    {
+        var staff = factory.CreateStaffClient();
+        var id = await CreateDraftAsync(staff);
+        (await staff.PostAsync($"{Drafts}/{id}/discard", null)).EnsureSuccessStatusCode();
+
+        await RunWorkerAsync();
+
+        Assert.Equal("discarded", (await GetAsync(staff, id))!.Status);
+        Assert.Equal(0, (await GetAsync(staff, id))!.CyclesUsed);
+    }
+
     [Fact]
     public async Task Only_a_failed_draft_can_be_requeued()
     {

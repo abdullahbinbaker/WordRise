@@ -54,6 +54,27 @@ import { CRITERION_LABELS, DraftDetail, STATUS_LABELS } from './admin.models';
         </section>
       }
 
+      @if (d.status === 'queued' || d.status === 'aiApproved' || d.status === 'needsAttention' || d.status === 'failed') {
+        <section class="card">
+          @if (confirmingDiscard()) {
+            <p>سيُحفظ الدرس في تبويب «ملغى» ولن يصل إلى المتعلّمين، ويمكنك استرجاعه لاحقاً. هل تريد إلغاءه؟</p>
+            <div class="row">
+              <button type="button" class="btn-warn" [disabled]="busy()" (click)="discard()">نعم، ألغِ الدرس</button>
+              <button type="button" class="btn-quiet" [disabled]="busy()" (click)="confirmingDiscard.set(false)">تراجع</button>
+            </div>
+          } @else {
+            <button type="button" class="btn-quiet" [disabled]="busy()" (click)="confirmingDiscard.set(true)">ألغِ هذا الدرس</button>
+          }
+        </section>
+      }
+
+      @if (d.status === 'discarded') {
+        <section class="card">
+          <p>هذا الدرس مُلغى: محفوظ للسجلّ ولا يصل إلى المتعلّمين.</p>
+          <button type="button" class="btn-primary" [disabled]="busy()" (click)="restore()">استرجع الدرس</button>
+        </section>
+      }
+
       @if (d.status === 'published') {
         <p class="ok">منشور للمتعلّمين كالدرس رقم {{ d.publishedLessonNumber }}.</p>
       }
@@ -176,6 +197,7 @@ export class DraftPage implements OnInit {
   protected readonly message = signal<string | null>(null);
   protected readonly loadError = signal<string | null>(null);
   protected note = '';
+  protected readonly confirmingDiscard = signal(false);
 
   protected readonly statusLabel = computed(() => {
     const draft = this.draft();
@@ -196,6 +218,15 @@ export class DraftPage implements OnInit {
     const note = this.note;
     await this.act(() => this.api.reject(this.id(), note), 'أُعيد الدرس إلى الكاتب مع ملاحظتك.');
     this.note = '';
+  }
+
+  protected async discard(): Promise<void> {
+    await this.act(() => this.api.discard(this.id()), 'أُلغي الدرس. تجده في تبويب «ملغى».');
+    this.confirmingDiscard.set(false);
+  }
+
+  protected restore(): Promise<void> {
+    return this.act(() => this.api.restore(this.id()), 'استُرجع الدرس.');
   }
 
   protected requeue(): Promise<void> {

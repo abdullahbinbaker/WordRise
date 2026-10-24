@@ -29,4 +29,6 @@ public interface IAuthoringQueries
     Task<IReadOnlyList<DraftListItemDto>> ListDraftsAsync(DraftStatus? status, CancellationToken cancellationToken);
 
     Task<DraftDetailDto?> GetDraftAsync(Guid draftId, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<DraftCountDto>> CountDraftsAsync(CancellationToken cancellationToken);
 }

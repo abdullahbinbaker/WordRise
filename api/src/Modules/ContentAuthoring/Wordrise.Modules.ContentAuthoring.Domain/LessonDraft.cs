@@ -21,6 +21,9 @@ public enum DraftStatus
 
     /// <summary>A person approved it and learners can take it.</summary>
     Published,
+
+    /// <summary>A person set it aside. It is kept for history and can be restored; the writer never touches it.</summary>
+    Discarded,
 }
 
 /// <summary>One version of the lesson with the verdict on it.</summary>
@@ -78,6 +81,9 @@ public sealed class LessonDraft
 
     /// <summary>Why the last run broke; set while <see cref="DraftStatus.Failed"/>.</summary>
     public string? Error { get; private set; }
+
+    /// <summary>Where the draft was before it was discarded; restoring puts it back there.</summary>
+    public DraftStatus? DiscardedFrom { get; private set; }
 
     public Guid CreatedBy { get; private set; }
 
@@ -177,6 +183,24 @@ public sealed class LessonDraft
 
         _feedback.Add(new FeedbackNote { By = by, Text = note.Trim(), AtUtc = now });
         Status = DraftStatus.Queued;
+        Touch(now);
+    }
+
+    /// <summary>A person sets a lesson aside. Only a draft nobody is working on can be discarded.</summary>
+    public void Discard(DateTime now)
+    {
+        Require(DraftStatus.Queued, DraftStatus.AiApproved, DraftStatus.NeedsAttention, DraftStatus.Failed);
+        DiscardedFrom = Status;
+        Status = DraftStatus.Discarded;
+        Touch(now);
+    }
+
+    /// <summary>Brings a discarded lesson back to where it was.</summary>
+    public void Restore(DateTime now)
+    {
+        Require(DraftStatus.Discarded);
+        Status = DiscardedFrom ?? DraftStatus.NeedsAttention;
+        DiscardedFrom = null;
         Touch(now);
     }
 

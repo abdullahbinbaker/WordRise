@@ -37,6 +37,10 @@ namespace Wordrise.Modules.ContentAuthoring.Infrastructure.Migrations
                     b.Property<int>("CyclesUsed")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DiscardedFrom")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("Error")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");

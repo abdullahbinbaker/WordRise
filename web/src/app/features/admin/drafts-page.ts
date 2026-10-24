@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminApi, describeError } from './admin.api';
-import { DraftListItem, DraftStatus, GrammarPoint, STATUS_LABELS } from './admin.models';
+import { DraftCount, DraftListItem, DraftStatus, GrammarPoint, STATUS_LABELS } from './admin.models';
 
 const FILTERS: { value: DraftStatus | undefined; label: string }[] = [
   { value: undefined, label: 'الكل' },
@@ -13,6 +13,7 @@ const FILTERS: { value: DraftStatus | undefined; label: string }[] = [
   { value: 'inProgress', label: STATUS_LABELS.inProgress },
   { value: 'failed', label: STATUS_LABELS.failed },
   { value: 'published', label: STATUS_LABELS.published },
+  { value: 'discarded', label: STATUS_LABELS.discarded },
 ];
 
 /** The review queue: lessons the AI wrote, waiting for a person, plus a form to ask for more. */
@@ -54,6 +55,9 @@ const FILTERS: { value: DraftStatus | undefined; label: string }[] = [
       @for (filter of filters; track filter.label) {
         <button type="button" [class.on]="filter.value === status()" (click)="setFilter(filter.value)">
           {{ filter.label }}
+          @if (countOf(filter.value); as n) {
+            <span class="muted">({{ n }})</span>
+          }
         </button>
       }
     </div>
@@ -117,7 +121,17 @@ export class DraftsPage implements OnInit {
     wordCount: new FormControl(5, { nonNullable: true }),
   });
 
+  protected readonly counts = signal<DraftCount[]>([]);
+
   protected label = (status: DraftStatus) => STATUS_LABELS[status];
+
+  /** The number on a tab; "all" counts everything still alive (not the discarded). */
+  protected countOf(status: DraftStatus | undefined): number {
+    const counts = this.counts();
+    return status
+      ? (counts.find((c) => c.status === status)?.count ?? 0)
+      : counts.filter((c) => c.status !== 'discarded').reduce((sum, c) => sum + c.count, 0);
+  }
 
   async ngOnInit(): Promise<void> {
     // New drafts move on their own while the worker runs, so the list refreshes itself.
@@ -159,7 +173,9 @@ export class DraftsPage implements OnInit {
 
   private async refresh(): Promise<void> {
     try {
-      this.drafts.set(await this.api.drafts(this.status()));
+      const [drafts, counts] = await Promise.all([this.api.drafts(this.status()), this.api.draftCounts()]);
+      this.drafts.set(drafts);
+      this.counts.set(counts);
       this.loadError.set(null);
     } catch (error) {
       this.loadError.set(describeError(error, 'تعذّر تحميل الدروس.'));

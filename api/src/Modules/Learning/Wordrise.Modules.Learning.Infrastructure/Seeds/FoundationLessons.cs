@@ -19,9 +19,9 @@ internal static class FoundationLessons
 
     public static IReadOnlyList<Lesson> All =>
     [
-        Foundation(GreetingsId, 1, "التحيات", Greetings()),
-        Foundation(AlphabetId, 2, "الأبجدية الإنجليزية", Alphabet()),
-        Foundation(NumbersId, 3, "الأرقام من 0 إلى 20", Numbers()),
+        Foundation(AlphabetId, 1, "الأبجدية الإنجليزية", Alphabet()),
+        Foundation(NumbersId, 2, "الأرقام من 0 إلى 20", Numbers()),
+        Foundation(GreetingsId, 3, "التحيات", Greetings()),
         Foundation(SpellingId, 4, "اسمك بالحروف", Spelling()),
         Foundation(ReadingId, 5, "اقرأ كلماتك الأولى", Reading()),
     ];

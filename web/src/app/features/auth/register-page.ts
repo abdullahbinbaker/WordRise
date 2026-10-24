@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
+import { AuthService, EmailNotConfirmedError } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-register-page',
@@ -18,6 +18,12 @@ import { AuthService } from '../../core/auth/auth.service';
         <p>مجاني بالكامل. دقيقة واحدة وتبدأ أول درس.</p>
       </div>
 
+      @if (confirmSent()) {
+        <p class="note" role="status">
+          أنشأنا حسابك. أرسلنا رابط التفعيل إلى بريدك الإلكتروني، افتحه واضغط عليه ثم سجّل الدخول.
+        </p>
+        <a class="btn-primary" routerLink="/login">تسجيل الدخول</a>
+      } @else {
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="field">
           <label for="register-name">اسمك</label>
@@ -42,6 +48,7 @@ import { AuthService } from '../../core/auth/auth.service';
           {{ busy() ? 'جارٍ إنشاء الحساب…' : 'إنشاء الحساب' }}
         </button>
       </form>
+      }
 
       <p class="switch">لديك حساب؟ <a routerLink="/login">سجّل الدخول</a></p>
     </main>
@@ -54,6 +61,7 @@ export class RegisterPage {
 
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly confirmSent = signal(false);
 
   protected readonly form = new FormGroup({
     displayName: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(40)] }),
@@ -87,7 +95,12 @@ export class RegisterPage {
       // A new learner starts by choosing their daily word commitment.
       await this.router.navigate(['/app'], { queryParams: { start: 'goal' } });
     } catch (error) {
-      this.error.set((error as Error).message);
+      // The account was created; it only has to confirm its email before the first sign-in.
+      if (error instanceof EmailNotConfirmedError) {
+        this.confirmSent.set(true);
+      } else {
+        this.error.set((error as Error).message);
+      }
     } finally {
       this.busy.set(false);
     }
