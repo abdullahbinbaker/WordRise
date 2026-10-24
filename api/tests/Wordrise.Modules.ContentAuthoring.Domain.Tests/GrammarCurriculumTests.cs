@@ -29,6 +29,26 @@ public sealed class GrammarCurriculumTests
     }
 
     [Fact]
+    public void The_first_step_teaches_every_subject_pronoun_not_just_three()
+    {
+        var title = GrammarCurriculum.Steps[0].Title;
+
+        foreach (var form in new[] { "I am", "you are", "he", "she", "it", "we", "they" })
+        {
+            Assert.Contains(form, title);
+        }
+    }
+
+    [Fact]
+    public void Possessives_come_early_because_introductions_need_them()
+    {
+        var possessives = GrammarCurriculum.Steps.Single(s => s.Title.StartsWith("Possessive", StringComparison.Ordinal));
+
+        Assert.True(possessives.Number <= 3);
+        Assert.Equal("A1", possessives.Level);
+    }
+
+    [Fact]
     public void Titles_are_unique()
     {
         Assert.Equal(GrammarCurriculum.Steps.Count, GrammarCurriculum.Steps.Select(s => s.Title).Distinct().Count());
@@ -37,7 +57,7 @@ public sealed class GrammarCurriculumTests
     [Fact]
     public void A_lesson_may_use_its_own_grammar_and_every_earlier_one()
     {
-        Assert.Equal(16, GrammarCurriculum.UpTo(16).Count);
-        Assert.Equal("Present perfect: experience (ever, never, just, already, yet)", GrammarCurriculum.UpTo(16)[^1].Title);
+        Assert.Equal(21, GrammarCurriculum.UpTo(21).Count);
+        Assert.Equal("Present perfect: experience (ever, never, just, already, yet)", GrammarCurriculum.UpTo(21)[^1].Title);
     }
 }

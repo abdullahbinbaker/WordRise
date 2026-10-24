@@ -24,22 +24,21 @@ public sealed class LessonBriefTests
     [Fact]
     public void A_lesson_may_use_its_own_grammar_and_every_earlier_point()
     {
-        var brief = LessonBrief.Create("restaurant", 4, 5);
+        var brief = LessonBrief.Create("restaurant", 5, 5);
 
         Assert.Equal("can / can't", brief.Grammar.Title);
-        Assert.Equal(4, brief.AllowedGrammar.Count);
+        Assert.Equal(5, brief.AllowedGrammar.Count);
         Assert.Equal(GrammarCurriculum.Steps[0].Title, brief.AllowedGrammar[0]);
         Assert.DoesNotContain("Present simple", brief.AllowedGrammar);
     }
 
     [Theory]
     [InlineData(1, "A1")]
-    [InlineData(9, "A1")]
-    [InlineData(10, "A2")]
+    [InlineData(10, "A1")]
     [InlineData(11, "A2")]
-    [InlineData(15, "A2")]
-    [InlineData(16, "B1")]
-    [InlineData(25, "B1")]
+    [InlineData(22, "A2")]
+    [InlineData(23, "B1")]
+    [InlineData(34, "B1")]
     public void The_level_follows_the_grammar_step(int step, string level)
     {
         Assert.Equal(level, LessonBrief.Create("hotel", step, 5).Level);
@@ -65,7 +64,7 @@ public sealed class LessonBriefTests
 
     [Theory]
     [InlineData(0)]
-    [InlineData(26)]
+    [InlineData(35)]
     [InlineData(-1)]
     public void A_grammar_step_outside_the_curriculum_is_refused(int step)
     {
