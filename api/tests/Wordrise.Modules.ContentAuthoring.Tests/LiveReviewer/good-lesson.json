@@ -1,0 +1,143 @@
+{
+  "ChatPrompt": "حسن طالب مثلك. كيف تقول له إنك طالب أيضًا؟",
+  "ListeningSentence": "He is a teacher.",
+  "Title": "تعريف بالنفس",
+  "ChatOptions": [
+    {
+      "IsCorrect": true,
+      "Text": "I am a student."
+    },
+    {
+      "IsCorrect": false,
+      "Text": "I student."
+    },
+    {
+      "IsCorrect": false,
+      "Text": "He is a teacher."
+    }
+  ],
+  "Dialogue": [
+    {
+      "IsLearner": false,
+      "Native": "مرحبًا! اسمي عمر. أنا معلّم.",
+      "Speaker": "عمر",
+      "Target": "Hello! My name is Omar. I am a teacher."
+    },
+    {
+      "IsLearner": true,
+      "Native": "مرحبًا يا عمر. اسمي علي. أنا طالب.",
+      "Speaker": "أنت",
+      "Target": "Hello, Omar. My name is Ali. I am a student."
+    },
+    {
+      "IsLearner": false,
+      "Native": "أنت طالب! أنا من عمّان.",
+      "Speaker": "عمر",
+      "Target": "You are a student! I am from Amman."
+    },
+    {
+      "IsLearner": true,
+      "Native": "أنا من القاهرة.",
+      "Speaker": "أنت",
+      "Target": "I am from Cairo."
+    },
+    {
+      "IsLearner": false,
+      "Native": "حسن صديقي. هو طالب.",
+      "Speaker": "عمر",
+      "Target": "Hasan is my friend. He is a student."
+    },
+    {
+      "IsLearner": true,
+      "Native": "مرحبًا يا حسن! اسمي علي.",
+      "Speaker": "أنت",
+      "Target": "Hello, Hasan! My name is Ali."
+    },
+    {
+      "IsLearner": false,
+      "Native": "مرحبًا يا علي! عمر معلّمي.",
+      "Speaker": "حسن",
+      "Target": "Hello, Ali! Omar is my teacher."
+    }
+  ],
+  "Grammar": {
+    "Explanation": "في العربية نقول «أنا طالب» بدون فعل. لكن في الإنجليزية نضع دائمًا am أو are أو is بعد الشخص: I am و you are و he is. ونضع a قبل المهنة، مثل: I am a student.",
+    "Meaning": "فعل الكينونة: أنا / أنت / هو",
+    "Note": "خطأ شائع: حذف am أو is كما في العربية، فيقول المتعلم «I student» أو «He my friend». الصحيح: I am a student و He is my friend.",
+    "Pattern": "I am / You are / He is + (a + المهنة) أو from + المكان",
+    "Title": "To be (I am, you are, he is)",
+    "Examples": [
+      {
+        "Native": "أنا طالب.",
+        "Target": "I am a student."
+      },
+      {
+        "Native": "أنت معلّم.",
+        "Target": "You are a teacher."
+      },
+      {
+        "Native": "هو صديقي.",
+        "Target": "He is my friend."
+      },
+      {
+        "Native": "أنا من القاهرة.",
+        "Target": "I am from Cairo."
+      }
+    ]
+  },
+  "ListeningOptions": [
+    {
+      "IsCorrect": true,
+      "Text": "is"
+    },
+    {
+      "IsCorrect": false,
+      "Text": "am"
+    },
+    {
+      "IsCorrect": false,
+      "Text": "are"
+    },
+    {
+      "IsCorrect": false,
+      "Text": "student"
+    }
+  ],
+  "Words": [
+    {
+      "Example": "My name is Ali.",
+      "ExampleNative": "اسمي علي.",
+      "Native": "اسم",
+      "Pronunciation": "نَيْم",
+      "Target": "name"
+    },
+    {
+      "Example": "I am a student.",
+      "ExampleNative": "أنا طالب.",
+      "Native": "طالب",
+      "Pronunciation": "سْتُودِنْت",
+      "Target": "student"
+    },
+    {
+      "Example": "He is a teacher.",
+      "ExampleNative": "هو معلّم.",
+      "Native": "معلّم",
+      "Pronunciation": "تِيتْشَر",
+      "Target": "teacher"
+    },
+    {
+      "Example": "I am from Cairo.",
+      "ExampleNative": "أنا من القاهرة.",
+      "Native": "مِن",
+      "Pronunciation": "فْرَم",
+      "Target": "from"
+    },
+    {
+      "Example": "You are my friend.",
+      "ExampleNative": "أنت صديقي.",
+      "Native": "صديق",
+      "Pronunciation": "فْرِنْد",
+      "Target": "friend"
+    }
+  ]
+}
