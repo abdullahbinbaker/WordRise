@@ -78,6 +78,93 @@ describe('LearnerStore', () => {
     expect(store.cardIndex()).toBe(0);
   });
 
+  describe('foundations and the starting point', () => {
+    const foundations = (): LearnerData => {
+      const data = new DemoLearnerData();
+      const today = data.today.bind(data);
+      data.today = async () => {
+        const result = await today();
+        return { ...result, nextLesson: { ...result.nextLesson!, track: 'foundations' } };
+      };
+      data.lesson = async () => {
+        const lesson = await DemoLearnerData.prototype.lesson.call(data);
+        const option = (text: string, isCorrect: boolean) => ({ text, isCorrect });
+        return {
+          ...lesson,
+          track: 'foundations',
+          exercises: [
+            { prompt: 'q1', stimulus: 'A', audioText: '', audioStyle: '', options: [option('a', true), option('b', false)] },
+            { prompt: 'q2', stimulus: 'B', audioText: '', audioStyle: '', options: [option('a', false), option('b', true)] },
+          ],
+        };
+      };
+      return data;
+    };
+
+    it('opens a foundations lesson on its own screen, first showing the items', async () => {
+      await store.init(foundations(), 'home');
+
+      await store.startLesson();
+
+      expect(store.screen()).toBe('foundation');
+      expect(store.foundationPhase()).toBe('items');
+    });
+
+    it('lets a wrong answer be retried and finishes the lesson after the last question', async () => {
+      await store.init(foundations(), 'home');
+      await store.startLesson();
+      store.startExercises();
+
+      store.pickExercise(1);
+      store.checkExercise();
+      expect(store.exerciseOk()).toBe(false);
+      store.retryExercise();
+      store.pickExercise(0);
+      store.checkExercise();
+      expect(store.exerciseOk()).toBe(true);
+
+      await store.nextExercise();
+      expect(store.exerciseIndex()).toBe(1);
+      store.pickExercise(1);
+      store.checkExercise();
+      await store.nextExercise();
+
+      expect(store.screen()).toBe('done');
+    });
+
+    it('asks a new learner where to start right after the goal, then goes home', async () => {
+      const data = new DemoLearnerData();
+      let saved: [boolean, number] | null = null;
+      data.onboarding = () =>
+        Promise.resolve({ knowsLetters: true, startStep: 1, done: false, startingPoints: [{ step: 1, title: 't', example: 'e' }] });
+      data.setOnboarding = (knowsLetters, startStep) => {
+        saved = [knowsLetters, startStep];
+        return Promise.resolve();
+      };
+      await store.init(data, 'goal');
+
+      await store.saveGoal();
+      expect(store.screen()).toBe('welcome');
+
+      store.knowsLetters.set(false);
+      store.startStep.set(11);
+      await store.saveWelcome();
+
+      expect(saved).toEqual([false, 1]);
+      expect(store.screen()).toBe('home');
+    });
+
+    it('asks a learner who never answered, when the app opens on home', async () => {
+      const data = new DemoLearnerData();
+      const today = data.today.bind(data);
+      data.today = async () => ({ ...(await today()), onboardingDone: false });
+
+      await store.init(data, 'home');
+
+      expect(store.screen()).toBe('welcome');
+    });
+  });
+
   it('walks the quiz button through choose, check, retry and next', () => {
     expect(answerStep(null, false, false)).toBe('choose');
     expect(answerStep(0, false, true)).toBe('check');

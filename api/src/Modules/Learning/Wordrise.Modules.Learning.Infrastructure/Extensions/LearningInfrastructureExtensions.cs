@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Wordrise.Modules.Learning.Application.Abstractions;
+using Wordrise.Modules.Learning.Domain.Lessons;
 using Wordrise.Modules.Learning.Infrastructure.Contexts;
 using Wordrise.Modules.Learning.Infrastructure.Queries;
 using Wordrise.Modules.Learning.Infrastructure.Repositories;
@@ -46,7 +47,7 @@ public static class LearningInfrastructureExtensions
         return services;
     }
 
-    /// <summary>Creates or migrates the schema, then adds the sample lessons to an empty course.</summary>
+    /// <summary>Creates or migrates the schema, then adds the sample lesson to an empty course and the foundations course.</summary>
     public static async Task InitializeLearningDatabaseAsync(this IServiceProvider services, CancellationToken cancellationToken)
     {
         await using var scope = services.CreateAsyncScope();
@@ -63,6 +64,13 @@ public static class LearningInfrastructureExtensions
         if (!await db.Lessons.AnyAsync(cancellationToken))
         {
             db.Lessons.AddRange(SampleLessons.All);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        // The foundations course is part of the product, so it is added to any database that lacks it.
+        if (!await db.Lessons.AnyAsync(l => l.Track == LessonTrack.Foundations, cancellationToken))
+        {
+            db.Lessons.AddRange(FoundationLessons.All);
             await db.SaveChangesAsync(cancellationToken);
         }
     }

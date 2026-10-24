@@ -34,6 +34,10 @@
     <span>{{ tip() }}</span>
   </div>
 
+  @if (store.onboarded() && store.logoutHandler()) {
+    <button type="button" class="logout" (click)="store.openWelcome()">تغيير نقطة البداية</button>
+  }
+
   @if (store.onboarded() && store.logoutHandler(); as logout) {
     <button type="button" class="logout" (click)="logout()">تسجيل الخروج</button>
   }

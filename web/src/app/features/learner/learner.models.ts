@@ -4,6 +4,8 @@ export type Rating = 'hard' | 'good' | 'easy';
 export type WordStatus = 'new' | 'due' | 'learning' | 'mastered';
 export type WordFilter = 'all' | 'due' | 'mastered';
 
+export type LessonTrack = 'main' | 'foundations';
+
 export interface NextLesson {
   id: string;
   number: number;
@@ -11,6 +13,8 @@ export interface NextLesson {
   scenario: string;
   grammarPoint: string;
   newWordsCount: number;
+  /** Foundations: letters, numbers and the first words, before the main course. */
+  track: LessonTrack;
 }
 
 export interface Today {
@@ -26,6 +30,9 @@ export interface Today {
   reviewBacklogLimit: number | null;
   /** Null once every published lesson is completed. */
   nextLesson: NextLesson | null;
+  /** The learner started further on and no lesson exists at that level yet. */
+  noLessonsAtYourLevelYet: boolean;
+  onboardingDone: boolean;
 }
 
 export interface DailyGoal {
@@ -41,6 +48,10 @@ export interface LessonWord {
   pronunciation: string;
   example: string;
   exampleNative: string;
+  /** What is shown big when it differs from the spoken text: "Aa" for the letter A, "7" for seven. */
+  symbol: string;
+  /** A letter: it has a name and a sound, and its name is spoken by spelling it. */
+  isLetter: boolean;
 }
 
 export interface DialogueLine {
@@ -69,9 +80,24 @@ export interface Grammar {
   note: string;
 }
 
+/** One question of a foundations lesson: look, listen, then choose. */
+export interface FoundationExercise {
+  prompt: string;
+  /** What is shown big; empty when the exercise is only listening. */
+  stimulus: string;
+  /** What the speaker button plays; empty when there is nothing to hear. */
+  audioText: string;
+  /** Empty for ordinary speech, "letter" for a letter's name, "sound" for its sound. */
+  audioStyle: '' | 'letter' | 'sound';
+  options: AnswerOption[];
+}
+
 export interface Lesson {
   id: string;
   number: number;
+  track: LessonTrack;
+  /** The grammar curriculum step this lesson teaches, when it has one. */
+  grammarStep: number | null;
   /** ISO code of the language being taught, for example en. */
   targetLanguage: string;
   /** ISO code of the language the lesson explains it in, for example ar. */
@@ -85,6 +111,8 @@ export interface Lesson {
   chatOptions: AnswerOption[];
   grammar: Grammar;
   listening: { sentence: string; options: AnswerOption[] };
+  /** The practice of a foundations lesson; empty in the main course. */
+  exercises: FoundationExercise[];
 }
 
 export interface ReviewCard {
@@ -107,6 +135,19 @@ export interface MyWord {
   nextReviewOn: string;
 }
 
+export interface StartingPoint {
+  step: number;
+  title: string;
+  example: string;
+}
+
+export interface Onboarding {
+  knowsLetters: boolean;
+  startStep: number;
+  done: boolean;
+  startingPoints: StartingPoint[];
+}
+
 /** Where the learner app gets and saves its data. */
 export abstract class LearnerData {
   abstract today(): Promise<Today>;
@@ -117,4 +158,6 @@ export abstract class LearnerData {
   abstract rate(wordId: string, rating: Rating): Promise<void>;
   abstract completeLesson(lessonId: string): Promise<CompleteResult>;
   abstract words(filter: WordFilter): Promise<MyWord[]>;
+  abstract onboarding(): Promise<Onboarding>;
+  abstract setOnboarding(knowsLetters: boolean, startStep: number): Promise<void>;
 }

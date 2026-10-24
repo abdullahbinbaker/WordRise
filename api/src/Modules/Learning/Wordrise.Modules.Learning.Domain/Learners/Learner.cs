@@ -21,6 +21,15 @@ public sealed class Learner
     /// <summary>New words per day the learner committed to.</summary>
     public int DailyGoal { get; private set; }
 
+    /// <summary>False when the learner does not know the Latin letters yet: they start with the foundations course.</summary>
+    public bool KnowsLetters { get; private set; } = true;
+
+    /// <summary>The grammar step the learner starts the main course from (1 is the beginning).</summary>
+    public int StartStep { get; private set; } = 1;
+
+    /// <summary>True once the learner answered the questions at sign-up.</summary>
+    public bool OnboardingDone { get; private set; }
+
     public int CurrentStreak { get; private set; }
 
     public int LongestStreak { get; private set; }
@@ -30,6 +39,19 @@ public sealed class Learner
     public IReadOnlyCollection<LessonCompletion> CompletedLessons => _completedLessons;
 
     public static Learner Start(Guid id) => new() { Id = id, DailyGoal = DefaultDailyGoal };
+
+    /// <exception cref="BusinessRuleException">The step is not one of the <see cref="StartingPoints"/>.</exception>
+    public void ChooseStart(bool knowsLetters, int startStep)
+    {
+        if (!StartingPoints.IsValid(startStep))
+        {
+            throw new BusinessRuleException(LearningErrors.InvalidStartingPoint, "Choose one of the starting points offered.");
+        }
+
+        KnowsLetters = knowsLetters;
+        StartStep = startStep;
+        OnboardingDone = true;
+    }
 
     public void SetDailyGoal(int wordsPerDay)
     {

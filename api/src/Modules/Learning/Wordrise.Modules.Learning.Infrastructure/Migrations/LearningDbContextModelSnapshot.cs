@@ -34,11 +34,24 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                     b.Property<int>("DailyGoal")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("KnowsLetters")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<DateOnly?>("LastStudyDate")
                         .HasColumnType("date");
 
                     b.Property<int>("LongestStreak")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("OnboardingDone")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("StartStep")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -54,6 +67,9 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("GrammarStep")
+                        .HasColumnType("integer");
 
                     b.Property<string>("NativeLanguage")
                         .IsRequired()
@@ -78,9 +94,14 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Track")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Number")
+                    b.HasIndex("Track", "Number")
                         .IsUnique();
 
                     b.ToTable("Lessons", "learning");
@@ -200,6 +221,60 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                                         .HasForeignKey("LessonContentLessonId");
                                 });
 
+                            b1.OwnsMany("Wordrise.Modules.Learning.Domain.Lessons.FoundationExercise", "Exercises", b2 =>
+                                {
+                                    b2.Property<Guid>("LessonContentLessonId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<string>("AudioIpa")
+                                        .IsRequired();
+
+                                    b2.Property<string>("AudioStyle")
+                                        .IsRequired();
+
+                                    b2.Property<string>("AudioText")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Prompt")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Stimulus")
+                                        .IsRequired();
+
+                                    b2.HasKey("LessonContentLessonId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("Lessons", "learning");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("LessonContentLessonId");
+
+                                    b2.OwnsMany("Wordrise.Modules.Learning.Domain.Lessons.AnswerOption", "Options", b3 =>
+                                        {
+                                            b3.Property<Guid>("FoundationExerciseLessonContentLessonId");
+
+                                            b3.Property<int>("FoundationExercise__synthesizedOrdinal");
+
+                                            b3.Property<int>("__synthesizedOrdinal")
+                                                .ValueGeneratedOnAdd();
+
+                                            b3.Property<bool>("IsCorrect");
+
+                                            b3.Property<string>("Text")
+                                                .IsRequired();
+
+                                            b3.HasKey("FoundationExerciseLessonContentLessonId", "FoundationExercise__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                            b3.ToTable("Lessons", "learning");
+
+                                            b3.WithOwner()
+                                                .HasForeignKey("FoundationExerciseLessonContentLessonId", "FoundationExercise__synthesizedOrdinal");
+                                        });
+
+                                    b2.Navigation("Options");
+                                });
+
                             b1.OwnsOne("Wordrise.Modules.Learning.Domain.Lessons.GrammarExplanation", "Grammar", b2 =>
                                 {
                                     b2.Property<Guid>("LessonContentLessonId");
@@ -305,10 +380,18 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
 
                                     b2.Property<Guid>("Id");
 
+                                    b2.Property<string>("Ipa")
+                                        .IsRequired();
+
+                                    b2.Property<bool>("IsLetter");
+
                                     b2.Property<string>("Native")
                                         .IsRequired();
 
                                     b2.Property<string>("Pronunciation")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Symbol")
                                         .IsRequired();
 
                                     b2.Property<string>("Target")
@@ -325,6 +408,8 @@ namespace Wordrise.Modules.Learning.Infrastructure.Migrations
                             b1.Navigation("ChatOptions");
 
                             b1.Navigation("Dialogue");
+
+                            b1.Navigation("Exercises");
 
                             b1.Navigation("Grammar")
                                 .IsRequired();

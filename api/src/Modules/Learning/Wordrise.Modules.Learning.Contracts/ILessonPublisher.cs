@@ -22,6 +22,7 @@ public sealed record PublishLessonRequest(
     Guid LessonId,
     string TargetLanguage,
     string NativeLanguage,
+    int? GrammarStep,
     string Title,
     string Scenario,
     string GrammarPoint,

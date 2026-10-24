@@ -1,0 +1,57 @@
+<div class="screen__body welcome">
+  <div class="intro">
+    <h2>من أين تريد أن تبدأ؟</h2>
+    <p>اختر ما يناسبك، ويمكنك التغيير لاحقاً.</p>
+  </div>
+
+  <div class="group" role="radiogroup" aria-label="هل تعرف الحروف الإنجليزية">
+    <h3>هل تعرف الحروف الإنجليزية؟</h3>
+    <button
+      type="button"
+      role="radio"
+      class="option"
+      [class.option--on]="!store.knowsLetters()"
+      [attr.aria-checked]="!store.knowsLetters()"
+      (click)="store.knowsLetters.set(false)"
+    >
+      <span class="option__title">لا، أريد أن أبدأ من الحروف</span>
+      <span class="option__sub">نتعلّم الحروف والأرقام والتحيات وأول الكلمات</span>
+    </button>
+    <button
+      type="button"
+      role="radio"
+      class="option"
+      [class.option--on]="store.knowsLetters()"
+      [attr.aria-checked]="store.knowsLetters()"
+      (click)="store.knowsLetters.set(true)"
+    >
+      <span class="option__title">نعم، أعرفها</span>
+      <span class="option__sub">ننتقل مباشرة إلى الدروس</span>
+    </button>
+  </div>
+
+  @if (store.knowsLetters() && store.onboarding(); as onboarding) {
+    @if (onboarding.startingPoints.length > 0) {
+      <div class="group" role="radiogroup" aria-label="نقطة البداية">
+        <h3>أين مستواك تقريباً؟</h3>
+        @for (point of onboarding.startingPoints; track point.step) {
+          <button
+            type="button"
+            role="radio"
+            class="option"
+            [class.option--on]="store.startStep() === point.step"
+            [attr.aria-checked]="store.startStep() === point.step"
+            (click)="store.startStep.set(point.step)"
+          >
+            <span class="option__title">{{ point.title }}</span>
+            <span class="option__sub en" dir="ltr">{{ point.example }}</span>
+          </button>
+        }
+      </div>
+    }
+  }
+</div>
+
+<div class="screen__footer">
+  <button type="button" class="btn-primary" [disabled]="store.loading()" (click)="store.saveWelcome()">ابدأ</button>
+</div>

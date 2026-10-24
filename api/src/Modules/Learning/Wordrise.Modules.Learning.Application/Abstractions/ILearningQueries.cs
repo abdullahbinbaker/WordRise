@@ -1,5 +1,6 @@
 using Wordrise.Modules.Learning.Application.Features.Goal;
 using Wordrise.Modules.Learning.Application.Features.Lessons;
+using Wordrise.Modules.Learning.Application.Features.Onboarding;
 using Wordrise.Modules.Learning.Application.Features.Reviews;
 using Wordrise.Modules.Learning.Application.Features.Today;
 using Wordrise.Modules.Learning.Application.Features.Words;
@@ -10,6 +11,8 @@ namespace Wordrise.Modules.Learning.Application.Abstractions;
 public interface ILearningQueries
 {
     Task<DailyGoalDto> GetDailyGoalAsync(Guid learnerId, CancellationToken cancellationToken);
+
+    Task<OnboardingDto> GetOnboardingAsync(Guid learnerId, CancellationToken cancellationToken);
 
     Task<TodayDto> GetTodayAsync(Guid learnerId, DateOnly today, CancellationToken cancellationToken);
 

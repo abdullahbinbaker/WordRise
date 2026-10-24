@@ -71,8 +71,15 @@ public sealed class PublishLessonCommandHandler(
             ListeningOptions = [.. request.ListeningOptions.Select(o => new AnswerOption { Text = o.Text, IsCorrect = o.IsCorrect })],
         };
 
-        var number = await lessons.NextNumberAsync(cancellationToken);
-        var lesson = Lesson.Create(request.LessonId, number, request.TargetLanguage, request.NativeLanguage, request.Title, request.Scenario, request.GrammarPoint, content);
+        var number = await lessons.NextNumberAsync(LessonTrack.Main, cancellationToken);
+        var lesson = Lesson.Create(
+            request.LessonId,
+            number,
+            LessonTrack.Main,
+            request.GrammarStep,
+            request.TargetLanguage,
+            request.NativeLanguage,
+            request.Title, request.Scenario, request.GrammarPoint, content);
         lessons.Add(lesson);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

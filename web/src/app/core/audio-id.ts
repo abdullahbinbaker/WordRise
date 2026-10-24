@@ -1,11 +1,15 @@
+/** How a text is spoken: letters need their own styles, or "A" would be read as a word. */
+export type SpeechStyle = '' | 'letter' | 'sound';
+
 /**
  * The name of a recording, worked out from its text alone, so the app finds it without asking the
  * server which recordings exist. Mirrors `AudioId` in the API (Media.Contracts); change both together.
  * Synchronous on purpose: playback must start inside the tap, or Safari refuses to play it.
  */
-export function audioId(language: string, text: string, slow = false): string {
+export function audioId(language: string, text: string, slow = false, style: SpeechStyle = ''): string {
   const normalized = text.replace(/\s+/g, ' ').trim();
-  const key = `wordrise:audio:v2:${language.trim().toLowerCase()}:${slow ? 'slow:' : ''}${normalized}`;
+  const styleKey = style ? `${style}:` : '';
+  const key = `wordrise:audio:v2:${language.trim().toLowerCase()}:${slow ? 'slow:' : ''}${styleKey}${normalized}`;
   return sha256(new TextEncoder().encode(key))
     .slice(0, 16)
     .reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '');

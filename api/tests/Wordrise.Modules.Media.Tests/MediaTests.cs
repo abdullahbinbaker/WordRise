@@ -92,6 +92,44 @@ public sealed class MediaTests : IAsyncLifetime
     }
 
     [Fact]
+    public void A_letter_is_named_by_its_style_so_it_is_not_confused_with_the_word_it_looks_like()
+    {
+        Assert.Equal("3babf7d9328a6a421474ed0dd3005a09", AudioId.For("en", "A", style: SpeechStyle.Letter));
+        Assert.Equal("dc186e4fcad4c6b63eb28a5cfd5ac383", AudioId.For("en", "a", style: SpeechStyle.Sound));
+        Assert.Equal("b36f3b2b84621c8681c620993ca843f4", AudioId.For("en", "A", slow: true, style: SpeechStyle.Letter));
+        Assert.NotEqual(AudioId.For("en", "A"), AudioId.For("en", "A", style: SpeechStyle.Letter));
+
+        // Ordinary recordings keep the names they already have.
+        Assert.Equal("d01ed9e3956e6691c598373b1345a965", AudioId.For("en", "A"));
+    }
+
+    [Fact]
+    public async Task A_letter_is_spelled_out_and_its_sound_is_read_from_the_phonetic_spelling()
+    {
+        using var factory = Factory();
+
+        var result = await EnsureAsync(
+            factory,
+            new SpokenText("A", "en", Style: SpeechStyle.Letter),
+            new SpokenText("a", "en", Style: SpeechStyle.Sound, Ipa: "æ"));
+
+        Assert.Equal(new AudioGenerationResult(true, 2, 2, 0, 0), result);
+        Assert.Contains(_requests, r => r.Ssml.Contains("<say-as interpret-as=\"characters\">A</say-as>"));
+        Assert.Contains(_requests, r => r.Ssml.Contains("<phoneme alphabet=\"ipa\" ph=\"æ\">a</phoneme>"));
+    }
+
+    [Fact]
+    public async Task A_letter_sound_without_its_phonetic_spelling_fails_instead_of_guessing()
+    {
+        using var factory = Factory();
+
+        var result = await EnsureAsync(factory, new SpokenText("a", "en", Style: SpeechStyle.Sound));
+
+        Assert.Equal(1, result.Failed);
+        Assert.Empty(_requests);
+    }
+
+    [Fact]
     public async Task Missing_recordings_are_made_with_the_right_voice_and_format()
     {
         using var factory = Factory();
@@ -263,6 +301,25 @@ public sealed class MediaTests : IAsyncLifetime
         Assert.True(result!.Created > 0);
         Assert.Equal(0, result.Failed);
         Assert.Equal(HttpStatusCode.OK, (await factory.CreateHttpsClient().GetAsync(Url("bread"))).StatusCode);
+    }
+
+    [Fact]
+    public async Task The_foundations_course_gets_its_letter_names_and_letter_sounds_from_the_same_run()
+    {
+        using var factory = Factory();
+        using var staff = factory.CreateStaffClient();
+
+        var response = await staff.PostAsync("/api/v1/admin/lessons/audio", null);
+        var result = await response.Content.ReadFromJsonAsync<AudioGenerationResult>();
+
+        Assert.Equal(0, result!.Failed);
+        var client = factory.CreateHttpsClient();
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/v1/media/audio/{AudioId.For("en", "A", style: SpeechStyle.Letter)}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/v1/media/audio/{AudioId.For("en", "a", style: SpeechStyle.Sound)}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/v1/media/audio/{AudioId.For("en", "ALI", style: SpeechStyle.Letter)}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/v1/media/audio/{AudioId.For("en", "thank you")}")).StatusCode);
+        Assert.Contains(_requests, r => r.Ssml.Contains("<phoneme alphabet=\"ipa\" ph=\"æ\">a</phoneme>"));
+        Assert.Contains(_requests, r => r.Ssml.Contains("<say-as interpret-as=\"characters\">ALI</say-as>"));
     }
 
     [Fact]

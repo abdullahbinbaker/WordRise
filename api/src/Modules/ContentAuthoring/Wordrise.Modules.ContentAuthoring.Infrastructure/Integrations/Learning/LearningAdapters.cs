@@ -22,6 +22,7 @@ internal sealed class LearningLessonPublisher(LearningContracts.ILessonPublisher
             draftId,
             brief.TargetLanguage,
             brief.NativeLanguage,
+            brief.GrammarStep,
             content.Title,
             brief.Scenario,
             brief.Grammar.Title,

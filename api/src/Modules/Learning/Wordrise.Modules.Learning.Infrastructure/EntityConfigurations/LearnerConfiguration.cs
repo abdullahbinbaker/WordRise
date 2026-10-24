@@ -11,6 +11,8 @@ internal sealed class LearnerConfiguration : IEntityTypeConfiguration<Learner>
         builder.ToTable("Learners");
         builder.HasKey(l => l.Id);
         builder.Property(l => l.Id).ValueGeneratedNever();
+        builder.Property(l => l.KnowsLetters).HasDefaultValue(true);
+        builder.Property(l => l.StartStep).HasDefaultValue(1);
 
         builder.OwnsMany(l => l.CompletedLessons, completion =>
         {

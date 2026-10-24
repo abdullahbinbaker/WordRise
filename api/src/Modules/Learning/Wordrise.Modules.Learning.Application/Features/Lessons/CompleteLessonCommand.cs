@@ -1,6 +1,7 @@
 using Mediator;
 using Wordrise.Modules.Learning.Application.Abstractions;
 using Wordrise.Modules.Learning.Domain;
+using Wordrise.Modules.Learning.Domain.Lessons;
 using Wordrise.Modules.Learning.Domain.Vocabulary;
 using Wordrise.Shared.Kernel;
 
@@ -32,11 +33,19 @@ public sealed class CompleteLessonCommandHandler(
 
         var today = calendar.Today;
         var learner = await learners.GetOrStartAsync(currentLearner.Id, cancellationToken);
-        var dueReviewCount = await words.CountDueAsync(learner.Id, today, cancellationToken);
+        // Letters and first words are not reviewed and never wait behind a review backlog.
+        var foundations = lesson.Track == LessonTrack.Foundations;
+        var dueReviewCount = foundations ? 0 : await words.CountDueAsync(learner.Id, today, cancellationToken);
 
         if (!learner.CompleteLesson(lesson.Id, today, dueReviewCount, settings.ReviewBacklog))
         {
             return new CompleteLessonDto(AlreadyCompleted: true, WordsAdded: 0, Streak: learner.StreakOn(today));
+        }
+
+        if (foundations)
+        {
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return new CompleteLessonDto(AlreadyCompleted: false, WordsAdded: 0, learner.StreakOn(today));
         }
 
         // A word can appear in more than one lesson; it is only introduced once.

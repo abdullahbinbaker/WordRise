@@ -8,6 +8,7 @@ import {
   LearnerData,
   Lesson,
   MyWord,
+  Onboarding,
   Rating,
   ReviewCard,
   Today,
@@ -23,6 +24,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   'learning.daily_goal_invalid': 'اختر 5 أو 10 أو 15 كلمة.',
   'learning.lesson_not_found': 'هذا الدرس غير موجود.',
   'learning.word_not_found': 'هذه الكلمة ليست في مراجعاتك.',
+  'learning.starting_point_invalid': 'اختر إحدى نقاط البداية المعروضة.',
 };
 
 /** The signed-in learner's real data, through the Learning API. */
@@ -40,6 +42,9 @@ export class ApiLearnerData extends LearnerData {
   completeLesson = (lessonId: string) =>
     this.call(this.http.post<CompleteResult>(`${BASE}/lessons/${lessonId}/complete`, null));
   words = (filter: WordFilter) => this.call(this.http.get<MyWord[]>(`${BASE}/words`, { params: { filter } }));
+  onboarding = () => this.call(this.http.get<Onboarding>(`${BASE}/onboarding`));
+  setOnboarding = (knowsLetters: boolean, startStep: number) =>
+    this.call(this.http.put<void>(`${BASE}/onboarding`, { knowsLetters, startStep }));
 
   private async call<T>(request: Observable<T>): Promise<T> {
     try {

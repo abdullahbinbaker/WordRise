@@ -63,7 +63,17 @@ internal sealed class AzureSpeechSynthesizer(HttpClient http, IOptions<MediaOpti
 
         var voice = text.Voice == SpeakerVoice.Secondary ? voices.Secondary : voices.Primary;
         var spoken = SecurityElement.Escape(AudioId.Normalize(text.Text));
-        var body = text.Slow ? $"<prosody rate=\"{SecurityElement.Escape(azure.SlowRate)}\">{spoken}</prosody>" : spoken;
+        var said = text.Style switch
+        {
+            // Read the letter out by its name, not as the word it looks like.
+            SpeechStyle.Letter => $"<say-as interpret-as=\"characters\">{spoken}</say-as>",
+            // Read the sound the letter makes, from its phonetic spelling.
+            SpeechStyle.Sound when !string.IsNullOrWhiteSpace(text.Ipa) =>
+                $"<phoneme alphabet=\"ipa\" ph=\"{SecurityElement.Escape(text.Ipa)}\">{spoken}</phoneme>",
+            SpeechStyle.Sound => throw new InvalidOperationException($"The sound of '{text.Text}' needs its IPA spelling."),
+            _ => spoken,
+        };
+        var body = text.Slow ? $"<prosody rate=\"{SecurityElement.Escape(azure.SlowRate)}\">{said}</prosody>" : said;
         return $"<speak version=\"1.0\" xml:lang=\"{SecurityElement.Escape(voices.Locale)}\"><voice name=\"{SecurityElement.Escape(voice)}\">{body}</voice></speak>";
     }
 }

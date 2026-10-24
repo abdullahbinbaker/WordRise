@@ -4,6 +4,7 @@ import {
   LearnerData,
   Lesson,
   MyWord,
+  Onboarding,
   Rating,
   ReviewCard,
   Today,
@@ -14,15 +15,17 @@ import {
 export const DEMO_LESSON: Lesson = {
   id: 'demo-grocery',
   number: 1,
+  track: 'main',
+  grammarStep: 5,
   targetLanguage: 'en',
   nativeLanguage: 'ar',
   title: 'في البقالة',
   scenario: 'grocery',
   grammarPoint: 'can / can\'t',
   words: [
-    { id: 'apple', target: 'apple', native: 'تفاحة', pronunciation: 'آبِل', example: 'I want an apple.', exampleNative: 'أريد تفاحة.' },
-    { id: 'milk', target: 'milk', native: 'حليب', pronunciation: 'مِلك', example: 'The milk is cold.', exampleNative: 'الحليب بارد.' },
-    { id: 'rice', target: 'rice', native: 'أرز', pronunciation: 'رايس', example: 'I buy rice every week.', exampleNative: 'أشتري الأرز كل أسبوع.' },
+    { id: 'apple', target: 'apple', native: 'تفاحة', pronunciation: 'آبِل', example: 'I want an apple.', exampleNative: 'أريد تفاحة.', symbol: '', isLetter: false },
+    { id: 'milk', target: 'milk', native: 'حليب', pronunciation: 'مِلك', example: 'The milk is cold.', exampleNative: 'الحليب بارد.', symbol: '', isLetter: false },
+    { id: 'rice', target: 'rice', native: 'أرز', pronunciation: 'رايس', example: 'I buy rice every week.', exampleNative: 'أشتري الأرز كل أسبوع.', symbol: '', isLetter: false },
   ],
   dialogue: [
     { speaker: 'الكاشير', isLearner: false, target: 'Hello! Can I help you?', native: 'مرحباً! هل أستطيع مساعدتك؟' },
@@ -56,6 +59,7 @@ export const DEMO_LESSON: Lesson = {
       { text: 'water', isCorrect: false },
     ],
   },
+  exercises: [],
 };
 
 const DEMO_REVIEWS: ReviewCard[] = [
@@ -101,7 +105,10 @@ export class DemoLearnerData extends LearnerData {
             scenario: DEMO_LESSON.scenario,
             grammarPoint: DEMO_LESSON.grammarPoint,
             newWordsCount: DEMO_LESSON.words.length,
+            track: 'main',
           },
+      noLessonsAtYourLevelYet: false,
+      onboardingDone: true,
     });
   }
 
@@ -134,5 +141,13 @@ export class DemoLearnerData extends LearnerData {
 
   words(filter: WordFilter): Promise<MyWord[]> {
     return Promise.resolve(filter === 'all' ? DEMO_WORDS : DEMO_WORDS.filter((w) => w.status === filter));
+  }
+
+  onboarding(): Promise<Onboarding> {
+    return Promise.resolve({ knowsLetters: true, startStep: 1, done: true, startingPoints: [] });
+  }
+
+  setOnboarding(_knowsLetters: boolean, _startStep: number): Promise<void> {
+    return Promise.resolve();
   }
 }

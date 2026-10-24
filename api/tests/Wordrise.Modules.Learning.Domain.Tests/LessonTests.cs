@@ -18,7 +18,7 @@ public sealed class LessonTests
     };
 
     private static Lesson Create(LessonContent content, string title = "في البقالة") =>
-        Lesson.Create(Guid.NewGuid(), 1, "en", "ar", title, "grocery", "can / can't", content);
+        Lesson.Create(Guid.NewGuid(), 1, LessonTrack.Main, 5, "en", "ar", title, "grocery", "can / can't", content);
 
     [Fact]
     public void A_complete_lesson_is_created()
@@ -46,7 +46,7 @@ public sealed class LessonTests
     [Fact]
     public void A_lesson_remembers_the_languages_it_teaches_and_explains_in()
     {
-        var lesson = Lesson.Create(Guid.NewGuid(), 1, " EN ", "ar", "في البقالة", "grocery", "can", ValidContent());
+        var lesson = Lesson.Create(Guid.NewGuid(), 1, LessonTrack.Main, null, " EN ", "ar", "في البقالة", "grocery", "can", ValidContent());
 
         Assert.Equal("en", lesson.TargetLanguage);
         Assert.Equal("ar", lesson.NativeLanguage);
@@ -60,7 +60,7 @@ public sealed class LessonTests
     public void A_lesson_needs_valid_language_codes(string target, string native)
     {
         var error = Assert.Throws<BusinessRuleException>(
-            () => Lesson.Create(Guid.NewGuid(), 1, target, native, "في البقالة", "grocery", "can", ValidContent()));
+            () => Lesson.Create(Guid.NewGuid(), 1, LessonTrack.Main, null, target, native, "في البقالة", "grocery", "can", ValidContent()));
 
         Assert.Equal(LearningErrors.LessonInvalid, error.Code);
     }
