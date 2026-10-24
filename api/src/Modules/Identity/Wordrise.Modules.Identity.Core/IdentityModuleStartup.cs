@@ -140,9 +140,9 @@ public sealed class IdentityModuleStartup : ModuleStartup
         // The owner registers normally, then is named an admin in settings; nobody can become one through the API.
         var users = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
         var adminEmails = scope.ServiceProvider.GetRequiredService<IOptions<IdentityModuleOptions>>().Value.AdminEmails;
-        foreach (var email in adminEmails.Where(e => !string.IsNullOrWhiteSpace(e)))
+        foreach (var email in adminEmails.Where(e => !string.IsNullOrWhiteSpace(e)).Select(e => e.Trim()))
         {
-            if (await users.FindByEmailAsync(email.Trim()) is { } admin && !await users.IsInRoleAsync(admin, Roles.Admin))
+            if (await users.FindByEmailAsync(email) is { } admin && !await users.IsInRoleAsync(admin, Roles.Admin))
             {
                 await users.AddToRoleAsync(admin, Roles.Admin);
             }

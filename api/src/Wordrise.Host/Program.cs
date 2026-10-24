@@ -9,6 +9,9 @@ using Wordrise.Modules.Media.Core;
 using Wordrise.Shared.Abstractions;
 using Wordrise.Shared.Infrastructure.Web;
 
+// An empty setting in the environment means "not set" (see the class), so appsettings.json can supply it.
+EmptyEnvironmentVariables.Ignore();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Every module of the monolith, listed explicitly so nothing starts by accident.
