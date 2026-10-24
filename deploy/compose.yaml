@@ -50,14 +50,16 @@ services:
       Database__ConnectionString: Host=postgres;Database=wordrise;Username=wordrise;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       Database__ApplyMigrationsOnStartup: "true"
 
-      # Named admins must already have registered; they still need two-factor to use the role.
+      # The first admin. Empty means "not set" (the app then uses Identity:AdminEmails from appsettings).
+      # The account must already be registered; it still needs two-factor to use the role.
       Identity__AdminEmails__0: ${ADMIN_EMAIL:-}
 
-      # Lesson writing (Claude) and audio (Azure Speech). Empty keys are fine: the app starts, and
-      # drafts fail with a clear message / the app speaks with the device voice until they are set.
-      Authoring__Provider: ${AUTHORING_PROVIDER:-Claude}
+      # An empty value here means "not set": the app then uses appsettings.json (Claude for lesson writing,
+      # no audio provider). Missing keys are fine: the app starts, drafts fail with a clear message and
+      # the app speaks with the device voice until they are set.
+      Authoring__Provider: ${AUTHORING_PROVIDER:-}
       Authoring__Claude__ApiKey: ${CLAUDE_API_KEY:-}
-      Media__Provider: ${MEDIA_PROVIDER:-None}
+      Media__Provider: ${MEDIA_PROVIDER:-}
       Media__Azure__Key: ${AZURE_SPEECH_KEY:-}
       Media__Azure__Region: ${AZURE_SPEECH_REGION:-}
     volumes:
