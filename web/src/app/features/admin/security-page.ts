@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AdminApi, describeError } from './admin.api';
+import { buildOtpAuthUri, qrCodeFor } from './two-factor-qr';
 
 /** Two-factor sign-in: staff cannot open the lesson tools without it. */
 @Component({
@@ -34,11 +35,19 @@ import { AdminApi, describeError } from './admin.api';
         <h2>تفعيل التحقق بخطوتين</h2>
         @if (key()) {
           <ol class="plain">
-            <li>في تطبيق المصادقة اختر «إضافة حساب» ثم «إدخال مفتاح الإعداد».</li>
-            <li>أدخل هذا المفتاح (الحساب: Wordrise، النوع: مبني على الوقت):</li>
+            <li>افتح تطبيق المصادقة على هاتفك واختر «إضافة حساب» ثم «مسح رمز QR».</li>
+            <li>وجّه كاميرا التطبيق إلى هذا الرمز:</li>
           </ol>
-          <p><span class="key">{{ formattedKey() }}</span></p>
-          <p class="muted">أو افتح الرابط من الهاتف نفسه: <a [href]="otpauthUri()">إضافة إلى تطبيق المصادقة</a></p>
+           @if (qrImage(); as image) {
+            <p><img class="qr" [src]="image" width="240" height="240" alt="رمز QR لإضافة الحساب إلى تطبيق المصادقة" /></p>
+          }
+          <details>
+            <summary>لا تستطيع المسح؟ أدخل المفتاح يدوياً</summary>
+            <p>في التطبيق اختر «إدخال مفتاح الإعداد» (الحساب: Wordrise، النوع: مبني على الوقت):</p>
+            <p><span class="key">{{ formattedKey() }}</span></p>
+            <p class="muted">أو إن كنتَ تفتح هذه الصفحة من الهاتف نفسه: <a [href]="otpauthUri()">إضافة إلى تطبيق المصادقة</a></p>
+          </details>
+          <p class="muted">بعد الإضافة، اكتب الرمز المكوّن من 6 أرقام الظاهر في التطبيق:</p>
           <div class="row">
             <div class="field" style="max-width: 220px">
               <label for="sec-code">الرمز المكوّن من 6 أرقام</label>
@@ -75,10 +84,8 @@ export class SecurityPage implements OnInit {
 
   protected readonly signedInWithTwoFactor = computed(() => !!this.auth.user()?.signedInWithTwoFactor);
   protected readonly formattedKey = computed(() => (this.key() ?? '').replace(/(.{4})/g, '$1 ').trim());
-  protected readonly otpauthUri = computed(() => {
-    const email = encodeURIComponent(this.auth.user()?.email ?? '');
-    return `otpauth://totp/Wordrise:${email}?secret=${this.key()}&issuer=Wordrise&digits=6`;
-  });
+  protected readonly otpauthUri = computed(() => buildOtpAuthUri(this.auth.user()?.email ?? '', this.key() ?? ''));
+  protected readonly qrImage = signal<string | null>(null);
 
   async ngOnInit(): Promise<void> {
     try {
@@ -86,6 +93,7 @@ export class SecurityPage implements OnInit {
       this.enabled.set(state.isTwoFactorEnabled);
       if (!state.isTwoFactorEnabled) {
         this.key.set((await this.api.newTwoFactorKey()).sharedKey);
+        this.qrImage.set(await qrCodeFor(this.otpauthUri()));
       }
     } catch (error) {
       this.error.set(describeError(error, 'تعذّر تحميل إعدادات الأمان.'));

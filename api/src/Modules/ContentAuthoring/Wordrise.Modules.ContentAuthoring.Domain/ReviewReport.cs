@@ -82,7 +82,7 @@ public sealed class ReviewReport
 
     /// <summary>
     /// An AI verdict. A point the reviewer skipped counts as failed, so a lazy answer can never
-    /// approve a lesson; the lesson passes only when every point passes and nothing blocks it.
+    /// approve a lesson; see <see cref="Decide"/> for when a lesson passes.
     /// </summary>
     public static ReviewReport FromAi(
         string summary,
@@ -90,6 +90,7 @@ public sealed class ReviewReport
         IEnumerable<ReviewIssue> issues)
     {
         var given = criteria.GroupBy(c => c.Criterion).ToDictionary(g => g.Key, g => g.Last());
+        var missing = Enum.GetValues<ReviewCriterion>().Count(criterion => !given.ContainsKey(criterion));
         List<CriterionResult> complete =
         [
             .. Enum.GetValues<ReviewCriterion>().Select(criterion =>
@@ -105,8 +106,25 @@ public sealed class ReviewReport
             Summary = summary,
             Criteria = complete,
             Issues = issueList,
-            Passed = complete.All(c => c.Passed) && issueList.All(i => i.Severity != IssueSeverity.Blocking),
+            Passed = Decide(missing, complete, issueList),
         };
+    }
+
+    /// <summary>
+    /// The lesson passes when nothing blocks it. Suggestions never block: they are shown to the person
+    /// and sent to the writer, but a lesson is not rejected for being improvable. Two things stay strict,
+    /// because they mean the verdict cannot be trusted: a point the reviewer did not evaluate, and a point
+    /// it marked failed without reporting a single issue to explain it.
+    /// </summary>
+    private static bool Decide(int missingPoints, IReadOnlyList<CriterionResult> criteria, IReadOnlyList<ReviewIssue> issues)
+    {
+        if (missingPoints > 0 || issues.Any(issue => issue.Severity == IssueSeverity.Blocking))
+        {
+            return false;
+        }
+
+        var failedWithoutExplanation = criteria.Any(c => !c.Passed) && issues.Count == 0;
+        return !failedWithoutExplanation;
     }
 
     /// <summary>A failed verdict from the free code checks.</summary>

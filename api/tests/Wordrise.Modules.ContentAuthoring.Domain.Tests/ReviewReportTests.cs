@@ -58,6 +58,49 @@ public sealed class ReviewReportTests
         Assert.True(ReviewReport.FromAi("ok", AllPassing(), [issue]).Passed);
     }
 
+    private static IEnumerable<CriterionResult> AllPassingExcept(ReviewCriterion failed) =>
+        Enum.GetValues<ReviewCriterion>().Select(c => new CriterionResult { Criterion = c, Passed = c != failed });
+
+    [Fact]
+    public void A_point_marked_failed_for_suggestions_only_does_not_reject_the_lesson()
+    {
+        // The reviewer used to fail whole points over style remarks, so lessons never passed.
+        var suggestion = new ReviewIssue { Severity = IssueSeverity.Suggestion, Where = "listening", Problem = "Options could be more alike." };
+
+        var report = ReviewReport.FromAi("fine", AllPassingExcept(ReviewCriterion.ExerciseQuality), [suggestion]);
+
+        Assert.True(report.Passed);
+        Assert.Single(report.Issues);
+    }
+
+    [Fact]
+    public void A_point_marked_failed_with_a_blocking_issue_rejects_the_lesson()
+    {
+        var blocking = new ReviewIssue { Severity = IssueSeverity.Blocking, Where = "dialogue line 4", Problem = "Wrong translation." };
+
+        var report = ReviewReport.FromAi("no", AllPassingExcept(ReviewCriterion.LanguageAccuracy), [blocking]);
+
+        Assert.False(report.Passed);
+    }
+
+    [Fact]
+    public void A_point_marked_failed_with_no_explanation_at_all_still_rejects_the_lesson()
+    {
+        // A failure nobody can read cannot be trusted either way, so it is not waved through.
+        Assert.False(ReviewReport.FromAi("no", AllPassingExcept(ReviewCriterion.CulturalFit), []).Passed);
+    }
+
+    [Fact]
+    public void Many_suggestions_with_every_point_passing_still_pass()
+    {
+        ReviewIssue[] suggestions =
+        [
+            .. Enumerable.Range(1, 6).Select(i => new ReviewIssue { Severity = IssueSeverity.Suggestion, Problem = $"Idea {i}." }),
+        ];
+
+        Assert.True(ReviewReport.FromAi("fine", AllPassing(), suggestions).Passed);
+    }
+
     [Fact]
     public void A_criterion_given_twice_keeps_the_last_verdict()
     {

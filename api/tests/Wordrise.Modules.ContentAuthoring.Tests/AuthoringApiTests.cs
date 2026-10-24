@@ -25,9 +25,9 @@ public sealed class AuthoringApiTests(WordriseApiFactory factory) : IClassFixtur
 
     private sealed record LessonSummary(Guid Id, string Title);
 
-    internal static async Task<Guid> CreateDraftAsync(HttpClient staff, string scenario = "grocery store", int step = 4)
+    internal static async Task<Guid> CreateDraftAsync(HttpClient staff, string scenario = "grocery store", int step = 4, int wordCount = 4)
     {
-        var response = await staff.PostAsJsonAsync(Drafts, new { scenario, grammarStep = step, wordCount = 4 });
+        var response = await staff.PostAsJsonAsync(Drafts, new { scenario, grammarStep = step, wordCount });
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         return (await response.Content.ReadFromJsonAsync<Created>(Json))!.Id;
     }

@@ -82,6 +82,10 @@ internal static class ClaudePrompts
         - VocabularyAndGrammarAdherence: only the allowed grammar is used (never a later point), the lesson's
           own grammar point is really used, and the dialogue sticks to the new words, the known words and
           very basic function words (at B1 also ordinary everyday words a B1 learner knows).
+          The function words allowed at every level are: a, the, I, you, my, please, thank you, yes, no, hello,
+          goodbye and numbers, plus the words of the allowed grammar points themselves (for example pronouns
+          and am/is/are at step 1). Using them is never a violation. Known words from earlier lessons are
+          optional: the lesson does not have to use them.
         - AgeAppropriateness: suitable for any learner, from a child to an older adult.
         - CulturalFit: nothing against Islamic values or Arab customs: no alcohol, pork, gambling, dating or
           romance, music or dancing, or anything immodest.
@@ -89,10 +93,15 @@ internal static class ClaudePrompts
         - ExerciseQuality: each question has exactly one clearly correct answer, the wrong answers are
           clearly wrong, and the exercises test what the lesson taught.
 
-        A point fails if there is any real problem under it. Report every problem as an issue: severity
-        "blocking" if the lesson must not be published until it is fixed, "suggestion" if it is only worth
-        improving. For each issue say where it is, what is wrong, and how to fix it. If the lesson is good,
-        say so: do not invent problems.
+        Report every problem as an issue, and say where it is, what is wrong, and how to fix it. The severity
+        decides what happens to the lesson:
+        - "blocking" for every real mistake: wrong English or Arabic, a wrong or misleading translation, a
+          sentence that makes no sense in the situation, a question with no correct answer or with more than one,
+          grammar from a later point, or anything against the values above. A mistake is never only a suggestion.
+        - "suggestion" for everything that would merely be nicer: wording or style preferences, a better
+          distractor, an extra example, a different name.
+        Mark a point as failed only when you report at least one blocking issue under it. If all your remarks
+        on a point are suggestions, the point passes. If the lesson is good, say so: do not invent problems.
 
         Return only the review as JSON that matches the schema, with all seven points.
         """;
