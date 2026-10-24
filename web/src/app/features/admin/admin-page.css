@@ -224,3 +224,21 @@ ul.plain {
   padding-inline-start: 20px;
   line-height: 1.8;
 }
+
+.qr {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+}
+
+details {
+  margin: 12px 0;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--blue);
+  font-weight: 600;
+}
