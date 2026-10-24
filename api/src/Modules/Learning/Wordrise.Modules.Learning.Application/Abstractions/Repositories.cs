@@ -36,8 +36,8 @@ public interface ILessonRepository
     /// <returns>The number of the lesson, or null when it is not published.</returns>
     Task<int?> GetNumberAsync(Guid lessonId, CancellationToken cancellationToken);
 
-    /// <summary>The number a newly published lesson takes: one after the last.</summary>
-    Task<int> NextNumberAsync(CancellationToken cancellationToken);
+    /// <summary>The number a newly published lesson takes in its course: one after the last.</summary>
+    Task<int> NextNumberAsync(LessonTrack track, CancellationToken cancellationToken);
 
     void Add(Lesson lesson);
 }

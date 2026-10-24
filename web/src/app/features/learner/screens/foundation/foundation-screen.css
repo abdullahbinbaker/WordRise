@@ -1,0 +1,181 @@
+.foundation {
+  gap: 16px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heading__label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.heading__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* All the items on one screen: the whole alphabet is a page to tap through. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 10px;
+}
+
+.cell {
+  height: 64px;
+  border-radius: 16px;
+  border: 2px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 26px;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.cell--long {
+  font-size: 17px;
+}
+
+.cell:hover {
+  border-color: var(--blue-line);
+}
+
+.cell--on {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue-tag);
+}
+
+.detail {
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail__symbol {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.detail__players {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.chip {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: var(--blue-soft);
+  color: var(--blue-tag);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.chip:hover {
+  background: var(--blue-line);
+}
+
+.detail__native {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.detail__hint {
+  margin: 0;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.detail__example {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--divider);
+  font-size: 20px;
+}
+
+.detail__example-native {
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.prompt {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.stimulus {
+  text-align: center;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 8px 0;
+}
+
+.play {
+  display: flex;
+  justify-content: center;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.option {
+  min-height: 64px;
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+.feedback {
+  margin: 0 20px 8px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.feedback--right {
+  background: var(--green-soft);
+  color: var(--green-ink);
+}
+
+.feedback--wrong {
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+}

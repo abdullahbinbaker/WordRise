@@ -4,6 +4,8 @@ namespace Wordrise.Modules.Learning.Application.Features.Lessons;
 public sealed record LessonDto(
     Guid Id,
     int Number,
+    string Track,
+    int? GrammarStep,
     string TargetLanguage,
     string NativeLanguage,
     string Title,
@@ -14,7 +16,8 @@ public sealed record LessonDto(
     string ChatPrompt,
     IReadOnlyList<AnswerOptionDto> ChatOptions,
     GrammarDto Grammar,
-    ListeningDto Listening);
+    ListeningDto Listening,
+    IReadOnlyList<FoundationExerciseDto> Exercises);
 
 public sealed record LessonWordDto(
     Guid Id,
@@ -22,7 +25,9 @@ public sealed record LessonWordDto(
     string Native,
     string Pronunciation,
     string Example,
-    string ExampleNative);
+    string ExampleNative,
+    string Symbol,
+    bool IsLetter);
 
 public sealed record DialogueLineDto(string Speaker, bool IsLearner, string Target, string Native);
 
@@ -41,3 +46,12 @@ public sealed record GrammarExampleDto(string Target, string Native);
 public sealed record ListeningDto(string Sentence, IReadOnlyList<AnswerOptionDto> Options);
 
 public sealed record CompleteLessonDto(bool AlreadyCompleted, int WordsAdded, int Streak);
+
+/// <summary>One question of a foundations lesson.</summary>
+/// <param name="AudioStyle">Empty for ordinary speech, "letter" for a letter's name, "sound" for its sound.</param>
+public sealed record FoundationExerciseDto(
+    string Prompt,
+    string Stimulus,
+    string AudioText,
+    string AudioStyle,
+    IReadOnlyList<AnswerOptionDto> Options);

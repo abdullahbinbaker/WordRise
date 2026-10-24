@@ -1,4 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
+import { SpeechStyle } from '../../core/audio-id';
 import { SpeechService } from '../../core/speech.service';
 
 @Component({
@@ -10,7 +11,7 @@ import { SpeechService } from '../../core/speech.service';
       [style.width.px]="size()"
       [style.height.px]="size()"
       [attr.aria-label]="label()"
-      (click)="speech.speak(text())"
+      (click)="speech.speak(text(), false, style())"
     >
       <svg [attr.width]="iconSize()" [attr.height]="iconSize()" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
@@ -35,6 +36,8 @@ export class SpeakButton {
   protected readonly speech = inject(SpeechService);
 
   readonly text = input.required<string>();
+  /** Letters are spoken by name or by sound; ordinary text is spoken as written. */
+  readonly style = input<SpeechStyle>('');
   readonly size = input(48);
   readonly iconSize = input(22);
   readonly label = input('استمع');

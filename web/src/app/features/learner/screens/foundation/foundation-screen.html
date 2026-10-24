@@ -1,0 +1,122 @@
+@if (store.foundationPhase() === 'items') {
+  <div class="screen__body foundation">
+    <div class="heading">
+      <span class="heading__label">{{ lesson().title }}</span>
+      <h2 class="heading__title">اضغط على أي واحد لتسمعه، وخذ وقتك</h2>
+    </div>
+
+    <div class="grid" role="list">
+      @for (item of items(); track item.id) {
+        <button
+          type="button"
+          role="listitem"
+          class="cell en"
+          dir="ltr"
+          [class.cell--on]="selected()?.id === item.id"
+          [class.cell--long]="symbolOf(item).length > 4"
+          [attr.aria-label]="item.target"
+          (click)="select(item)"
+        >
+          {{ symbolOf(item) }}
+        </button>
+      }
+    </div>
+
+    @if (selected(); as item) {
+      <section class="detail card" aria-live="polite">
+        <div class="detail__head">
+          <span class="detail__symbol en" dir="ltr">{{ symbolOf(item) }}</span>
+          <div class="detail__players">
+            @if (item.isLetter) {
+              <button type="button" class="chip" (click)="select(item)">🔊 الاسم</button>
+              <button type="button" class="chip" (click)="sound(item)">🔊 الصوت</button>
+            } @else {
+              <app-speak-button [text]="item.target" [size]="56" [iconSize]="26" />
+            }
+          </div>
+        </div>
+
+        <p class="detail__native">
+          @if (item.isLetter) {
+            اسمه: «{{ item.native }}»
+          } @else {
+            {{ item.native }}
+          }
+        </p>
+
+        @if (item.pronunciation) {
+          <p class="detail__hint">{{ item.isLetter ? 'صوته' : 'يُنطق' }}: {{ item.pronunciation }}</p>
+        }
+
+        @if (item.example) {
+          <div class="detail__example">
+            <app-speak-button [text]="item.example" [size]="44" [iconSize]="20" label="استمع للمثال" />
+            <span class="en" dir="ltr">{{ item.example }}</span>
+            @if (item.exampleNative) {
+              <span class="detail__example-native">{{ item.exampleNative }}</span>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+
+  <div class="screen__footer">
+    <button type="button" class="btn-primary" (click)="store.startExercises()">ابدأ التمارين</button>
+  </div>
+} @else if (exercise(); as ex) {
+  <div class="screen__body foundation">
+    <div class="meta">
+      <strong>تمرين</strong>
+      <span>{{ store.exerciseIndex() + 1 }} من {{ total() }}</span>
+    </div>
+
+    <h2 class="prompt">{{ ex.prompt }}</h2>
+
+    @if (ex.stimulus) {
+      <div class="stimulus en" dir="ltr">{{ ex.stimulus }}</div>
+    }
+
+    @if (ex.audioText) {
+      <div class="play">
+        <app-speak-button [text]="ex.audioText" [style]="styleOf(ex.audioStyle)" [size]="88" [iconSize]="38" label="استمع" />
+      </div>
+    }
+
+    <div class="options">
+      @for (option of options(); track $index; let i = $index) {
+        <button
+          type="button"
+          class="option choice"
+          [class.en]="option.latin"
+          [attr.dir]="option.latin ? 'ltr' : 'rtl'"
+          [class.choice--selected]="option.state === 'selected'"
+          [class.choice--right]="option.state === 'right'"
+          [class.choice--wrong]="option.state === 'wrong'"
+          [attr.aria-pressed]="option.state !== 'idle'"
+          (click)="store.pickExercise(i)"
+        >
+          {{ option.text }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (step() === 'next') {
+    <div class="feedback feedback--right" role="status">صحيح! أحسنت.</div>
+  }
+  @if (step() === 'retry') {
+    <div class="feedback feedback--wrong" role="status">ليست هذه. جرّب مرة أخرى، لا بأس.</div>
+  }
+
+  <div class="screen__footer">
+    <button type="button" class="btn-primary" [disabled]="step() === 'choose' || store.loading()" (click)="primaryAction()">
+      @switch (step()) {
+        @case ('choose') { اختر إجابة }
+        @case ('check') { تحقّق }
+        @case ('retry') { حاول مرة أخرى }
+        @case ('next') { {{ isLast() ? (store.loading() ? 'جارٍ الحفظ…' : 'أنهِ الدرس') : 'التالي' }} }
+      }
+    </button>
+  </div>
+}

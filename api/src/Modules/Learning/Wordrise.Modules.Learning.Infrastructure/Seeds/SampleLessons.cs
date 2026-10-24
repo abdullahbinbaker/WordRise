@@ -15,6 +15,8 @@ internal static class SampleLessons
         Lesson.Create(
             GroceryLessonId,
             number: 1,
+            track: LessonTrack.Main,
+            grammarStep: 5,
             targetLanguage: LessonLanguages.English,
             nativeLanguage: LessonLanguages.Arabic,
             title: "في البقالة",

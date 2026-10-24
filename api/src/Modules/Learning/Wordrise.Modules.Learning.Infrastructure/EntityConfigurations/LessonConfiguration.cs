@@ -11,7 +11,9 @@ internal sealed class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.ToTable("Lessons");
         builder.HasKey(l => l.Id);
         builder.Property(l => l.Id).ValueGeneratedNever();
-        builder.HasIndex(l => l.Number).IsUnique();
+        // Each course counts its lessons from 1.
+        builder.Property(l => l.Track).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(l => new { l.Track, l.Number }).IsUnique();
         builder.Property(l => l.TargetLanguage).HasMaxLength(8);
         builder.Property(l => l.NativeLanguage).HasMaxLength(8);
         builder.Property(l => l.Title).HasMaxLength(100);
@@ -26,6 +28,11 @@ internal sealed class LessonConfiguration : IEntityTypeConfiguration<Lesson>
             content.OwnsMany(c => c.Dialogue);
             content.OwnsMany(c => c.ChatOptions);
             content.OwnsMany(c => c.ListeningOptions);
+            content.OwnsMany(c => c.Exercises, exercise =>
+            {
+                exercise.Property(e => e.AudioStyle).HasConversion<string>();
+                exercise.OwnsMany(e => e.Options);
+            });
             content.OwnsOne(c => c.Grammar, grammar => grammar.OwnsMany(g => g.Examples));
         });
     }

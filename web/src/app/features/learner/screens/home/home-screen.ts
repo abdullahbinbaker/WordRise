@@ -25,6 +25,9 @@ export class HomeScreen {
     const today = this.today();
     const next = today.nextLesson;
     if (!next) return [];
+    if (next.track === 'foundations') {
+      return [`${toArabicDigits(next.newWordsCount)} عناصر نتعرّف عليها`, 'تمارين قصيرة للتثبيت'];
+    }
     return [
       ...(today.reviewsEnabled && today.dueReviewCount > 0 ? [`مراجعة ${toArabicDigits(today.dueReviewCount)} كلمات`] : []),
       `${toArabicDigits(next.newWordsCount)} كلمات جديدة`,

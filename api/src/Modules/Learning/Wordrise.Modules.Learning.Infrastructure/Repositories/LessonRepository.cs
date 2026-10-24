@@ -20,8 +20,8 @@ internal sealed class LessonRepository(LearningDbContext db) : ILessonRepository
             .Select(l => (int?)l.Number)
             .SingleOrDefaultAsync(cancellationToken);
 
-    public async Task<int> NextNumberAsync(CancellationToken cancellationToken) =>
-        (await db.Lessons.MaxAsync(l => (int?)l.Number, cancellationToken) ?? 0) + 1;
+    public async Task<int> NextNumberAsync(LessonTrack track, CancellationToken cancellationToken) =>
+        (await db.Lessons.Where(l => l.Track == track).MaxAsync(l => (int?)l.Number, cancellationToken) ?? 0) + 1;
 
     public void Add(Lesson lesson) => db.Lessons.Add(lesson);
 }

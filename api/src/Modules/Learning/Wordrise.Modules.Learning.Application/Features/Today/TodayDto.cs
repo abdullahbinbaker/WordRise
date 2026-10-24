@@ -15,7 +15,9 @@ public sealed record TodayDto(
     bool CompletedLessonToday,
     bool NewLessonsPaused,
     int? ReviewBacklogLimit,
-    NextLessonDto? NextLesson);
+    NextLessonDto? NextLesson,
+    bool NoLessonsAtYourLevelYet,
+    bool OnboardingDone);
 
 /// <summary>Null on <see cref="TodayDto"/> once every published lesson is completed.</summary>
 public sealed record NextLessonDto(
@@ -24,4 +26,5 @@ public sealed record NextLessonDto(
     string Title,
     string Scenario,
     string GrammarPoint,
-    int NewWordsCount);
+    int NewWordsCount,
+    string Track);

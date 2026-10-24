@@ -1,0 +1,64 @@
+.welcome {
+  padding: 20px 24px;
+  gap: 24px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.intro h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.intro p {
+  margin: 0;
+  font-size: 19px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.group h3 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  text-align: right;
+  background: #fff;
+  border: 2px solid var(--line-strong);
+}
+
+.option--on {
+  background: var(--blue-soft);
+  border: 3px solid var(--blue);
+}
+
+.option__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.option__sub {
+  font-size: 17px;
+  color: var(--muted);
+  line-height: 1.5;
+}

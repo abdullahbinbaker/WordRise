@@ -19,6 +19,13 @@ describe('audioId', () => {
     expect(audioId('en', 'I can buy bread.', true)).toBe('cedab8a21e7469cae5d949e73a29038c');
   });
 
+  it('names letters by style, as the API does', () => {
+    expect(audioId('en', 'A', false, 'letter')).toBe('3babf7d9328a6a421474ed0dd3005a09');
+    expect(audioId('en', 'a', false, 'sound')).toBe('dc186e4fcad4c6b63eb28a5cfd5ac383');
+    expect(audioId('en', 'A', true, 'letter')).toBe('b36f3b2b84621c8681c620993ca843f4');
+    expect(audioId('en', 'A')).toBe('d01ed9e3956e6691c598373b1345a965');
+  });
+
   it('ignores extra spaces, as the API does', () => {
     expect(audioId('en', '  I want   an apple. ')).toBe(audioId('en', 'I want an apple.'));
   });

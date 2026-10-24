@@ -17,7 +17,7 @@ internal sealed class AudioLibrary(
         // The same sentence often appears in several places; it is recorded once.
         var wanted = texts
             .Where(t => !string.IsNullOrWhiteSpace(t.Text))
-            .GroupBy(t => AudioId.For(t.Language, t.Text, t.Slow))
+            .GroupBy(t => AudioId.For(t.Language, t.Text, t.Slow, t.Style))
             .ToDictionary(group => group.Key, group => group.First());
 
         if (!synthesizer.IsConfigured)

@@ -4,12 +4,14 @@ import { DemoLearnerData } from './demo-learner-data';
 import { LearnerStore, Screen } from './learner.store';
 import { DoneScreen } from './screens/done/done-screen';
 import { DialogueScreen } from './screens/dialogue/dialogue-screen';
+import { FoundationScreen } from './screens/foundation/foundation-screen';
 import { GoalScreen } from './screens/goal/goal-screen';
 import { GrammarScreen } from './screens/grammar/grammar-screen';
 import { HomeScreen } from './screens/home/home-screen';
 import { ListenScreen } from './screens/listen/listen-screen';
 import { NewWordScreen } from './screens/new-word/new-word-screen';
 import { ReviewScreen } from './screens/review/review-screen';
+import { WelcomeScreen } from './screens/welcome/welcome-screen';
 import { WordsScreen } from './screens/words/words-screen';
 
 /**
@@ -26,6 +28,8 @@ import { WordsScreen } from './screens/words/words-screen';
     DialogueScreen,
     GrammarScreen,
     ListenScreen,
+    FoundationScreen,
+    WelcomeScreen,
     DoneScreen,
     WordsScreen,
   ],
@@ -58,7 +62,7 @@ export class Learner implements OnInit {
   protected readonly ready = computed(() => {
     const screen = this.store.screen();
     if (screen === 'home') return !!this.store.today();
-    if (['newword', 'dialogue', 'grammar', 'listen'].includes(screen)) return !!this.store.lesson();
+    if (['newword', 'dialogue', 'grammar', 'listen', 'foundation'].includes(screen)) return !!this.store.lesson();
     return true;
   });
 

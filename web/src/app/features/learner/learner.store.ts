@@ -1,8 +1,32 @@
 import { Injectable, PendingTasks, computed, inject, signal } from '@angular/core';
 import { SpeechService } from '../../core/speech.service';
-import { CompleteResult, LearnerData, Lesson, MyWord, Rating, ReviewCard, Today, WordFilter } from './learner.models';
+import {
+  CompleteResult,
+  LearnerData,
+  Lesson,
+  MyWord,
+  Onboarding,
+  Rating,
+  ReviewCard,
+  Today,
+  WordFilter,
+} from './learner.models';
 
-export type Screen = 'goal' | 'home' | 'review' | 'newword' | 'dialogue' | 'grammar' | 'listen' | 'done' | 'words';
+export type Screen =
+  | 'goal'
+  | 'home'
+  | 'review'
+  | 'newword'
+  | 'dialogue'
+  | 'grammar'
+  | 'listen'
+  | 'foundation'
+  | 'welcome'
+  | 'done'
+  | 'words';
+
+/** A foundations lesson first shows its items, then practises them with questions. */
+export type FoundationPhase = 'items' | 'quiz';
 export type AnswerState = 'idle' | 'selected' | 'right' | 'wrong';
 /** What the primary button of a quiz screen does next. */
 export type AnswerStep = 'choose' | 'check' | 'retry' | 'next';
@@ -42,6 +66,11 @@ export class LearnerStore {
   readonly goal = signal(10);
   readonly allowedGoals = signal<number[]>([5, 10, 15]);
 
+  /** What the learner tells us at sign-up: do they know the letters, and where to start. */
+  readonly onboarding = signal<Onboarding | null>(null);
+  readonly knowsLetters = signal(true);
+  readonly startStep = signal(1);
+
   readonly lesson = signal<Lesson | null>(null);
   readonly reviewCards = signal<ReviewCard[]>([]);
   /** A review-only session: started from home or "My words", it ends without a lesson. */
@@ -60,9 +89,23 @@ export class LearnerStore {
   readonly listenPick = signal<number | null>(null);
   readonly listenChecked = signal(false);
 
+  readonly foundationPhase = signal<FoundationPhase>('items');
+  readonly exerciseIndex = signal(0);
+  readonly exercisePick = signal<number | null>(null);
+  readonly exerciseChecked = signal(false);
+
   readonly currentCard = computed(() => this.reviewCards()[this.cardIndex()] ?? null);
   readonly currentWord = computed(() => this.lesson()?.words[this.wordIndex()] ?? null);
-  readonly inLesson = computed(() => LESSON_ORDER.includes(this.screen()) && this.screen() !== 'done');
+  readonly inLesson = computed(
+    () => (LESSON_ORDER.includes(this.screen()) && this.screen() !== 'done') || this.screen() === 'foundation',
+  );
+
+  readonly currentExercise = computed(() => this.lesson()?.exercises[this.exerciseIndex()] ?? null);
+
+  readonly exerciseOk = computed(() => {
+    const pick = this.exercisePick();
+    return pick !== null && !!this.currentExercise()?.options[pick]?.isCorrect;
+  });
 
   readonly lessonProgress = computed(() => {
     const screen = this.screen();
@@ -70,6 +113,10 @@ export class LearnerStore {
       (this.cardIndex() + (this.revealed() ? 0.5 : 0)) / Math.max(this.reviewCards().length, 1);
     if (this.reviewOnly()) {
       return screen === 'review' ? cardProgress * 100 : 0;
+    }
+    if (screen === 'foundation') {
+      const total = Math.max(this.lesson()?.exercises.length ?? 1, 1);
+      return this.foundationPhase() === 'items' ? 5 : 10 + (this.exerciseIndex() / total) * 90;
     }
     if (screen === 'review') return cardProgress * 20;
     if (screen === 'newword') return 20 + (this.wordIndex() / Math.max(this.lesson()?.words.length ?? 1, 1)) * 20;
@@ -92,6 +139,24 @@ export class LearnerStore {
     this.onboarded.set(start !== 'goal');
     this.screen.set(start);
     await this.refresh();
+    // Someone who never said where they start (new, or signed up before this existed) is asked once.
+    const today = this.today();
+    if (start === 'home' && today && !today.onboardingDone) await this.openWelcome();
+  }
+
+  async openWelcome(): Promise<void> {
+    await this.run(async () => {
+      const onboarding = await this.data.onboarding();
+      this.onboarding.set(onboarding);
+      this.knowsLetters.set(onboarding.knowsLetters);
+      this.startStep.set(onboarding.startStep);
+    });
+    if (!this.error()) this.go('welcome');
+  }
+
+  async saveWelcome(): Promise<void> {
+    await this.run(() => this.data.setOnboarding(this.knowsLetters(), this.knowsLetters() ? this.startStep() : 1));
+    if (!this.error()) await this.goHome();
   }
 
   async refresh(): Promise<void> {
@@ -114,11 +179,18 @@ export class LearnerStore {
   }
 
   async saveGoal(): Promise<void> {
+    const firstTime = !this.onboarded();
     await this.run(async () => {
       await this.data.setGoal(this.goal());
       this.onboarded.set(true);
     });
-    if (!this.error()) await this.goHome();
+    if (this.error()) return;
+    // Right after signing up, the next question is where to start.
+    if (firstTime) {
+      await this.openWelcome();
+      if (!this.error()) return;
+    }
+    await this.goHome();
   }
 
   /** Today's lesson: due reviews first (when there are any), then the new lesson. */
@@ -127,12 +199,17 @@ export class LearnerStore {
     if (!next) return;
 
     await this.run(async () => {
-      const reviewsOn = this.today()?.reviewsEnabled ?? false;
+      const reviewsOn = (this.today()?.reviewsEnabled ?? false) && next.track === 'main';
       const [lesson, cards] = await Promise.all([
         this.data.lesson(next.id),
         reviewsOn ? this.data.dueReviews() : Promise.resolve([]),
       ]);
       this.resetSession(lesson, cards, false);
+      // Letters and the first words are not reviewed and have their own screen.
+      if (lesson.track === 'foundations') {
+        this.go('foundation');
+        return;
+      }
       this.go(cards.length > 0 ? 'review' : 'newword');
     });
   }
@@ -205,6 +282,37 @@ export class LearnerStore {
     this.listenChecked.set(false);
   }
 
+  startExercises(): void {
+    this.exerciseIndex.set(0);
+    this.retryExercise();
+    this.foundationPhase.set('quiz');
+  }
+
+  pickExercise(index: number): void {
+    if (!this.exerciseChecked()) this.exercisePick.set(index);
+  }
+
+  checkExercise(): void {
+    this.exerciseChecked.set(true);
+  }
+
+  /** A wrong answer is never final: the learner tries again, so nobody is held back by a mistake. */
+  retryExercise(): void {
+    this.exercisePick.set(null);
+    this.exerciseChecked.set(false);
+  }
+
+  /** The next question, or the end of the lesson after the last one. */
+  async nextExercise(): Promise<void> {
+    const total = this.lesson()?.exercises.length ?? 0;
+    if (this.exerciseIndex() < total - 1) {
+      this.exerciseIndex.update((index) => index + 1);
+      this.retryExercise();
+    } else {
+      await this.finishLesson();
+    }
+  }
+
   /** The last exercise is done: save the lesson, its words join the reviews. */
   async finishLesson(): Promise<void> {
     const lesson = this.lesson();
@@ -235,6 +343,9 @@ export class LearnerStore {
     this.wordIndex.set(0);
     this.retryChat();
     this.retryListen();
+    this.foundationPhase.set('items');
+    this.exerciseIndex.set(0);
+    this.retryExercise();
   }
 
   /** Runs one data call: tracks loading, keeps server rendering waiting, turns failures into a message. */
